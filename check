@@ -1,0 +1,14 @@
+#!/bin/bash
+set -eu
+
+export BIN=bin
+
+./signals/scripts/reformat.sh
+
+make -j`nproc`
+
+readonly t1=$(date +%s)
+scripts/run_tests.sh
+readonly t2=$(date +%s)
+echo "$((t2-t1))s"
+
