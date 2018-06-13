@@ -31,7 +31,7 @@ function run_test
 
 function load_library
 {
-  $BIN/loader.exe
+  $BIN/loader.exe $BIN/signals-unity-bridge.so
 }
 
 main "$@"

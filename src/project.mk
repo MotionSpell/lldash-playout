@@ -10,9 +10,12 @@ SUB_SRCS:=\
 $(BIN)/signals-unity-bridge.so: $(SUB_SRCS:%=$(BIN)/%.o)
 TARGETS+=$(BIN)/signals-unity-bridge.so
 
+LOADER_SRCS:=\
+	$(MYDIR)/loader.cpp\
+
 TARGETS+=$(BIN)/loader.exe
-$(BIN)/loader.exe: $(MYDIR)/loader.cpp
-	$(CXX) -o "$@" $<
+$(BIN)/loader.exe: $(LOADER_SRCS:%.cpp=%.o)
+	$(CXX) -o "$@" $^ -ldl
 
 $(BIN)/%.so:
 	$(CXX) -static-libstdc++ -shared -o "$@" $^ -Wl,--no-undefined $(LDFLAGS)
