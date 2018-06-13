@@ -18,4 +18,7 @@ $(BIN)/loader.exe: $(LOADER_SRCS:%.cpp=%.o)
 	$(CXX) -o "$@" $^ -ldl -pthread
 
 $(BIN)/%.so:
-	$(CXX) -static-libstdc++ -shared -o "$@" $^ -Wl,--no-undefined $(LDFLAGS)
+	$(CXX) -static-libstdc++ -shared -o "$@" $^ \
+		-Wl,--no-undefined \
+		-Wl,--version-script=$(MYDIR)/plugin.version \
+		$(LDFLAGS)
