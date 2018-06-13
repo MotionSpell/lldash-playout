@@ -31,7 +31,7 @@ function run_test
 
 function load_library
 {
-  $BIN/loader.exe $BIN/signals-unity-bridge.so
+  $BIN/loader.exe $BIN/signals-unity-bridge.so signals/data/sine.mp3
 }
 
 main "$@"
