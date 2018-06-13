@@ -25,8 +25,7 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 
-	if(0)
-		play(url);
+	play(url);
 
 	dlclose(handle);
 	return 0;

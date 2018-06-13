@@ -15,7 +15,7 @@ LOADER_SRCS:=\
 
 TARGETS+=$(BIN)/loader.exe
 $(BIN)/loader.exe: $(LOADER_SRCS:%.cpp=%.o)
-	$(CXX) -o "$@" $^ -ldl
+	$(CXX) -o "$@" $^ -ldl -pthread
 
 $(BIN)/%.so:
 	$(CXX) -static-libstdc++ -shared -o "$@" $^ -Wl,--no-undefined $(LDFLAGS)
