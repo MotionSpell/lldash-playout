@@ -1,39 +1,36 @@
-// this file is GNU/Linux specific
+// this file is MS Windows specific
 #include "dynlib.h"
-#include <dlfcn.h>
+#include <windows.h>
 #include <stdexcept>
 #include <string>
 
 using namespace std;
 
 struct DynLibGnu : DynLib {
-	DynLibGnu(const char* name) : handle(dlopen(name, RTLD_NOW)) {
+	DynLibGnu(const char* name) : handle(LoadLibrary(name)) {
 		if(!handle) {
 			string msg = "can't load '";
 			msg += name;
-			msg += "' (";
-			msg += dlerror();
-			msg += ")";
 			throw runtime_error(msg);
 		}
 	}
 
 	~DynLibGnu() {
-		dlclose(handle);
+		FreeLibrary(handle);
 	}
 
 	virtual void* getSymbol(const char* name) {
-		auto func = dlsym(handle, name);
+		auto func = GetProcAddress(handle, "play");
 		if(!func) {
 			string msg = "can't find symbol '";
 			msg += name;
 			throw runtime_error(msg);
 		}
 
-		return func;
+		return (void*)func;
 	}
 
-	void* const handle;
+	HMODULE const handle;
 };
 
 unique_ptr<DynLib> loadLibrary(const char* name) {
