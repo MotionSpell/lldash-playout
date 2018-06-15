@@ -14,7 +14,7 @@ LOADER_SRCS:=\
 	$(MYDIR)/loader.cpp\
 
 TARGETS+=$(BIN)/loader.exe
-$(BIN)/loader.exe: $(LOADER_SRCS:%.cpp=%.o)
+$(BIN)/loader.exe: $(LOADER_SRCS:%=$(BIN)/%.o)
 	$(CXX) -o "$@" $^ -ldl -pthread
 
 $(BIN)/%.so:
