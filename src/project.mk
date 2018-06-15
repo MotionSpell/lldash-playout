@@ -10,9 +10,12 @@ SUB_SRCS:=\
 $(BIN)/signals-unity-bridge.so: $(SUB_SRCS:%=$(BIN)/%.o)
 TARGETS+=$(BIN)/signals-unity-bridge.so
 
+# Never test the value of this variable!
+HOST:=$(shell $(CXX) -dumpmachine | sed "s/.*-//")
+
 LOADER_SRCS:=\
 	$(MYDIR)/loader.cpp\
-	$(MYDIR)/dynlib_gnu.cpp\
+	$(MYDIR)/dynlib_$(HOST).cpp\
 
 $(BIN)/loader.exe: LDFLAGS+=-ldl -pthread
 
