@@ -10,7 +10,7 @@ SUB_SRCS:=\
 $(BIN)/signals-unity-bridge.so: $(SUB_SRCS:%=$(BIN)/%.o)
 TARGETS+=$(BIN)/signals-unity-bridge.so
 
-# Never test the value of this variable!
+# Never compare the value of this variable to anything!
 HOST:=$(shell $(CXX) -dumpmachine | sed "s/.*-//")
 
 LOADER_SRCS:=\
