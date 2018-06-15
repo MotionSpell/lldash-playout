@@ -17,7 +17,7 @@ LOADER_SRCS:=\
 	$(MYDIR)/loader.cpp\
 	$(MYDIR)/dynlib_$(HOST).cpp\
 
-$(BIN)/loader.exe: LDFLAGS+=-ldl -pthread
+include $(MYDIR)/$(HOST).mk
 
 TARGETS+=$(BIN)/loader.exe
 $(BIN)/loader.exe: $(LOADER_SRCS:%=$(BIN)/%.o)
