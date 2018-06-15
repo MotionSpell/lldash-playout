@@ -1,13 +1,14 @@
 #include <cstdio>
-#include <cassert>
+#include <stdexcept>
 #include "dynlib.h"
+
+using namespace std;
 
 typedef void (*PlayFunction)(char const* url);
 
-int main(int argc, char* argv[]) {
+void safeMain(int argc, char* argv[]) {
 	if(argc != 3) {
-		fprintf(stderr, "Usage: %s <my_library> <my_url>\n", argv[0]);
-		return 1;
+		throw runtime_error("Usage: loader.exe <my_library> <my_url>");
 	}
 
 	auto libName = argv[1];
@@ -20,6 +21,15 @@ int main(int argc, char* argv[]) {
 	}
 
 	printf("Input file successfully processed.\n");
-
-	return 0;
 }
+
+int main(int argc, char* argv[]) {
+	try {
+		safeMain(argc, argv);
+		return 0;
+	} catch(exception const& e) {
+		fprintf(stderr, "Fatal: %s\n", e.what());
+		return 1;
+	}
+}
+
