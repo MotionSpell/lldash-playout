@@ -28,5 +28,8 @@ int main(int argc, char* argv[]) {
 	play(url);
 
 	dlclose(handle);
+
+	printf("Input file successfully processed.\n");
+
 	return 0;
 }
