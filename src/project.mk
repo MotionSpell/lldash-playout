@@ -12,6 +12,7 @@ TARGETS+=$(BIN)/signals-unity-bridge.so
 
 LOADER_SRCS:=\
 	$(MYDIR)/loader.cpp\
+	$(MYDIR)/dynlib_gnu.cpp\
 
 $(BIN)/loader.exe: LDFLAGS+=-ldl -pthread
 
