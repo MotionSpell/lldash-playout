@@ -13,9 +13,10 @@ TARGETS+=$(BIN)/signals-unity-bridge.so
 LOADER_SRCS:=\
 	$(MYDIR)/loader.cpp\
 
+$(BIN)/loader.exe: LDFLAGS+=-ldl -pthread
+
 TARGETS+=$(BIN)/loader.exe
 $(BIN)/loader.exe: $(LOADER_SRCS:%=$(BIN)/%.o)
-	$(CXX) -o "$@" $^ -ldl -pthread
 
 $(BIN)/%.so:
 	$(CXX) -static-libstdc++ -shared -o "$@" $^ \
