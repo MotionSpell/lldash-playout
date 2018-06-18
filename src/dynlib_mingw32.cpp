@@ -11,6 +11,7 @@ struct DynLibGnu : DynLib {
 		if(!handle) {
 			string msg = "can't load '";
 			msg += name;
+			msg += "'";
 			throw runtime_error(msg);
 		}
 	}
