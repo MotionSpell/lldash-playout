@@ -70,10 +70,9 @@ void* sub_play(char const* url) {
 
 void sub_stop(void* handle) {
 	try {
-		auto pipeline = static_cast<Pipeline*>(handle);
+		unique_ptr<Pipeline> pipeline(static_cast<Pipeline*>(handle));
 		if(!pipeline)
 			throw runtime_error("invalid handle");
-		unique_ptr<Pipeline> pipelinePtr(pipeline);
 		pipeline->waitForEndOfStream();
 	} catch(runtime_error const& err) {
 		fprintf(stderr, "cannot stop: %s\n", err.what());
