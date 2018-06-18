@@ -20,7 +20,7 @@ struct DynLibGnu : DynLib {
 	}
 
 	virtual void* getSymbol(const char* name) {
-		auto func = GetProcAddress(handle, "play");
+		auto func = GetProcAddress(handle, name);
 		if(!func) {
 			string msg = "can't find symbol '";
 			msg += name;

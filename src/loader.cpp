@@ -4,7 +4,8 @@
 
 using namespace std;
 
-typedef void (*PlayFunction)(char const* url);
+typedef void* (*PlayFunction)(char const* url);
+typedef void (*StopFunction)(void*);
 
 void safeMain(int argc, char* argv[]) {
 	if(argc != 3) {
@@ -16,8 +17,10 @@ void safeMain(int argc, char* argv[]) {
 
 	{
 		auto lib = loadLibrary(libName);
-		auto play = (PlayFunction)lib->getSymbol("play");
-		play(url);
+		auto play = (PlayFunction)lib->getSymbol("sub_play");
+		auto stop = (StopFunction)lib->getSymbol("sub_stop");
+		auto handle = play(url);
+		stop(handle);
 	}
 
 	printf("Input file successfully processed.\n");

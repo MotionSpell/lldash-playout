@@ -1,4 +1,5 @@
 FOO {
-  global: play; # explicitly list symbols to be exported
+  # explicitly list symbols to be exported
+  global: sub_play; sub_stop;
   local: *;     # hide everything else
 };

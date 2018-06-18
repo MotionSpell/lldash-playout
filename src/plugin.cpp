@@ -1,10 +1,11 @@
 ///////////////////////////////////////////////////////////////////////////////
-// interface
+// Signals-unity-bridge (SUB) interface
 
 #define EXPORT __attribute__((visibility("default")))
 
 extern "C" {
-	EXPORT void play(char const* url);
+	EXPORT void* sub_play(char const* url);
+	EXPORT void sub_stop(void* handle);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -29,9 +30,10 @@ bool startsWith(std::string s, std::string prefix) {
 	return s.substr(0, prefix.size()) == prefix;
 }
 
-void play(char const* url) {
+void* sub_play(char const* url) {
 	try {
-		Pipeline pipeline;
+		auto pipelinePtr = make_unique<Pipeline>();
+		auto& pipeline = *pipelinePtr;
 
 		auto createDemuxer = [&](std::string url) {
 			if(startsWith(url, "http://")) {
@@ -58,9 +60,15 @@ void play(char const* url) {
 		}
 
 		pipeline.start();
-		pipeline.waitForEndOfStream();
+		return pipelinePtr.release();
 	} catch(std::runtime_error const& err) {
 		fprintf(stderr, "cannot play: %s\n", err.what());
+		return nullptr;
 	}
 }
 
+void sub_stop(void* handle) {
+	auto pipeline = static_cast<Pipeline*>(handle);
+	pipeline->waitForEndOfStream();
+	delete pipeline;
+}
