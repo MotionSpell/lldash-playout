@@ -24,6 +24,7 @@ struct DynLibGnu : DynLib {
 		if(!func) {
 			string msg = "can't find symbol '";
 			msg += name;
+			msg += "'";
 			throw runtime_error(msg);
 		}
 
