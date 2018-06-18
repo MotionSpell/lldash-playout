@@ -24,9 +24,10 @@ extern "C" {
 using namespace Modules;
 using namespace Pipelines;
 using namespace Demux;
+using namespace std;
 
 static
-bool startsWith(std::string s, std::string prefix) {
+bool startsWith(string s, string prefix) {
 	return s.substr(0, prefix.size()) == prefix;
 }
 
@@ -35,7 +36,7 @@ void* sub_play(char const* url) {
 		auto pipelinePtr = make_unique<Pipeline>();
 		auto& pipeline = *pipelinePtr;
 
-		auto createDemuxer = [&](std::string url) {
+		auto createDemuxer = [&](string url) {
 			if(startsWith(url, "http://")) {
 				return pipeline.addModule<DashDemuxer>(url);
 			} else {
@@ -61,14 +62,20 @@ void* sub_play(char const* url) {
 
 		pipeline.start();
 		return pipelinePtr.release();
-	} catch(std::runtime_error const& err) {
+	} catch(runtime_error const& err) {
 		fprintf(stderr, "cannot play: %s\n", err.what());
 		return nullptr;
 	}
 }
 
 void sub_stop(void* handle) {
-	auto pipeline = static_cast<Pipeline*>(handle);
-	pipeline->waitForEndOfStream();
-	delete pipeline;
+	try {
+		auto pipeline = static_cast<Pipeline*>(handle);
+		if(!pipeline)
+			throw runtime_error("invalid handle");
+		unique_ptr<Pipeline> pipelinePtr(pipeline);
+		pipeline->waitForEndOfStream();
+	} catch(runtime_error const& err) {
+		fprintf(stderr, "cannot stop: %s\n", err.what());
+	}
 }
