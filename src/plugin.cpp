@@ -1,15 +1,4 @@
-///////////////////////////////////////////////////////////////////////////////
-// Signals-unity-bridge (SUB) interface
-
-#define EXPORT __attribute__((visibility("default")))
-
-extern "C" {
-	EXPORT void* sub_play(char const* url);
-	EXPORT void sub_stop(void* handle);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// implementation
+#include "signals_unity_bridge.h"
 
 #include <cstdio>
 #include "lib_pipeline/pipeline.hpp"
