@@ -4,7 +4,6 @@ EXTRA?=signals/sysroot
 
 CFLAGS+=-fPIC
 
-SIGNALS_HAS_X11?=0
 #------------------------------------------------------------------------------
 
 include signals/Makefile
