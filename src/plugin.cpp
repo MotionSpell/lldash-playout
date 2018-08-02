@@ -29,20 +29,20 @@ void* sub_play(char const* url) {
 			if(startsWith(url, "http://")) {
 				return pipeline.addModule<DashDemuxer>(url);
 			} else {
-				return pipeline.addModule<Demux::LibavDemux>(url);
+				return pipeline.addModuleWithHost<Demux::LibavDemux>(url);
 			}
 		};
 
 		auto demuxer = createDemuxer(url);
 
 		for (int k = 0; k < (int)demuxer->getNumOutputs(); ++k) {
-			auto metadata = safe_cast<const MetadataPkt>(demuxer->getOutput(k)->getMetadata());
+			auto metadata = safe_cast<const MetadataPkt>(demuxer->getOutputMetadata(k));
 			if (!metadata || metadata->isSubtitle()/*only render audio and video*/) {
 				Log::msg(Debug, "Ignoring stream #%s", k);
 				continue;
 			}
 
-			auto decode = pipeline.addModule<Decode::Decoder>(metadata->getStreamType());
+			auto decode = pipeline.addModule<Decode::Decoder>(metadata->type);
 			pipeline.connect(demuxer, k, decode, 0);
 
 			auto render = pipeline.addModule<Out::Null>();
