@@ -8,7 +8,6 @@
 #include "lib_media/demux/libav_demux.hpp"
 #include "lib_media/in/mpeg_dash_input.hpp"
 #include "lib_media/out/null.hpp"
-#include "lib_media/decode/decoder.hpp"
 
 using namespace Modules;
 using namespace Pipelines;
@@ -29,24 +28,26 @@ void* sub_play(char const* url) {
 			if(startsWith(url, "http://")) {
 				return pipeline.addModule<DashDemuxer>(url);
 			} else {
-				return pipeline.addModuleWithHost<Demux::LibavDemux>(url);
+				DemuxConfig cfg;
+				cfg.url = url;
+				return pipeline.add("LibavDemux", &cfg);
 			}
 		};
 
 		auto demuxer = createDemuxer(url);
 
 		for (int k = 0; k < (int)demuxer->getNumOutputs(); ++k) {
-			auto metadata = safe_cast<const MetadataPkt>(demuxer->getOutputMetadata(k));
+			auto metadata = demuxer->getOutputMetadata(k);
 			if (!metadata || metadata->isSubtitle()/*only render audio and video*/) {
-				Log::msg(Debug, "Ignoring stream #%s", k);
+				g_Log->log(Debug, format("Ignoring stream #%s", k).c_str());
 				continue;
 			}
 
-			auto decode = pipeline.addModule<Decode::Decoder>(metadata->type);
-			pipeline.connect(demuxer, k, decode, 0);
+			auto decode = pipeline.add("Decoder", metadata->type);
+			pipeline.connect(GetOutputPin(demuxer, k), decode);
 
 			auto render = pipeline.addModule<Out::Null>();
-			pipeline.connect(decode, 0, render, 0);
+			pipeline.connect(decode, render);
 		}
 
 		pipeline.start();
