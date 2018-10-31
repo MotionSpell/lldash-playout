@@ -70,6 +70,7 @@ EXPORT void gub_pipeline_close(GUBPipeline* pipeline);
 EXPORT void gub_pipeline_setup_decoding(GUBPipeline* pipeline, GUBPipelineVars* pipeVars);
 EXPORT void gub_pipeline_setup_decoding_clock(GUBPipeline* pipeline, const char* uri, int video_index, int audio_index, const char* net_clock_addr, int net_clock_port, uint64_t basetime, float crop_left, float crop_top, float crop_right, float crop_bottom, bool isDvbWc);
 
+// Creates a pipeline that encodes to 'filename'
 EXPORT void gub_pipeline_setup_encoding(GUBPipeline* pipeline, const char* filename, int width, int height);
 
 // push a raw frame for encoding (the data is copied)
