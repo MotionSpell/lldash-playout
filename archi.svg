@@ -1,0 +1,615 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1024"
+   height="1024"
+   viewBox="0 0 270.93333 270.93334"
+   version="1.1"
+   id="svg8"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   sodipodi:docname="archi.svg">
+  <defs
+     id="defs2">
+    <marker
+       inkscape:isstock="true"
+       style="overflow:visible;"
+       id="marker4396"
+       refX="0.0"
+       refY="0.0"
+       orient="auto"
+       inkscape:stockid="Arrow1Mend">
+      <path
+         transform="scale(0.4) rotate(180) translate(10,0)"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         id="path4394" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Mend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="marker3376"
+       style="overflow:visible;"
+       inkscape:isstock="true">
+      <path
+         id="path3374"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
+         transform="scale(0.4) rotate(180) translate(10,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Mend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="marker2894"
+       style="overflow:visible;"
+       inkscape:isstock="true"
+       inkscape:collect="always">
+      <path
+         id="path2892"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
+         transform="scale(0.4) rotate(180) translate(10,0)" />
+    </marker>
+    <marker
+       inkscape:isstock="true"
+       style="overflow:visible;"
+       id="marker2198"
+       refX="0.0"
+       refY="0.0"
+       orient="auto"
+       inkscape:stockid="Arrow1Mend"
+       inkscape:collect="always">
+      <path
+         transform="scale(0.4) rotate(180) translate(10,0)"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         id="path2196" />
+    </marker>
+    <marker
+       inkscape:isstock="true"
+       style="overflow:visible;"
+       id="marker1430"
+       refX="0.0"
+       refY="0.0"
+       orient="auto"
+       inkscape:stockid="Arrow1Mend">
+      <path
+         transform="scale(0.4) rotate(180) translate(10,0)"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         id="path1428" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Mend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Mend"
+       style="overflow:visible;"
+       inkscape:isstock="true"
+       inkscape:collect="always">
+      <path
+         id="path1121"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
+         transform="scale(0.4) rotate(180) translate(10,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Lend"
+       style="overflow:visible;"
+       inkscape:isstock="true">
+      <path
+         id="path1115"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;stroke-opacity:1;fill:#000000;fill-opacity:1"
+         transform="scale(0.8) rotate(180) translate(12.5,0)" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.73740006"
+     inkscape:cx="730.56768"
+     inkscape:cy="562.32367"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     units="px"
+     inkscape:pagecheckerboard="false"
+     inkscape:window-width="1918"
+     inkscape:window-height="1178"
+     inkscape:window-x="0"
+     inkscape:window-y="20"
+     inkscape:window-maximized="1"
+     showguides="false"
+     inkscape:measure-start="0,0"
+     inkscape:measure-end="0,0">
+    <inkscape:grid
+       type="xygrid"
+       id="grid4485"
+       spacingx="4.2333334"
+       spacingy="4.2333334"
+       dotted="false"
+       empspacing="8" />
+    <sodipodi:guide
+       position="15.730264,307.75501"
+       orientation="0,1"
+       id="guide940"
+       inkscape:locked="false" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-26.06665)">
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot856"
+       style="fill:black;stroke:none;stroke-opacity:1;stroke-width:1px;stroke-linejoin:miter;stroke-linecap:butt;fill-opacity:1;font-family:Bitstream Vera Sans;font-style:normal;font-weight:normal;font-size:12px;line-height:25px;letter-spacing:0px;word-spacing:0px"><flowRegion
+         id="flowRegion858"><rect
+           id="rect860"
+           width="320"
+           height="960"
+           x="-304"
+           y="95.999985" /></flowRegion><flowPara
+         id="flowPara862"></flowPara></flowRoot>    <g
+       id="g948"
+       transform="translate(169.33334,67.733336)">
+      <rect
+         y="59.933311"
+         x="33.866665"
+         height="29.633335"
+         width="63.500004"
+         id="rect816"
+         style="opacity:1;fill:#c1c1c1;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <flowRoot
+         transform="matrix(0.26458333,0,0,0.26458333,0.05167739,47.244682)"
+         style="font-style:normal;font-weight:normal;font-size:12px;line-height:25px;font-family:'Bitstream Vera Sans';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         id="flowRoot922"
+         xml:space="preserve"><flowRegion
+           id="flowRegion924"><rect
+             y="79.999985"
+             x="144"
+             height="63.828125"
+             width="207.93848"
+             id="rect926" /></flowRegion><flowPara
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans Bold';text-align:center;text-anchor:middle"
+           id="flowPara928">EventProcessor:</flowPara><flowPara
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans Bold';text-align:center;text-anchor:middle"
+           id="flowPara938">MonoBehaviour</flowPara></flowRoot>    </g>
+    <g
+       id="g962"
+       transform="translate(-33.866665,67.733336)"
+       inkscape:connector-avoid="true">
+      <rect
+         style="opacity:1;fill:#f8ff83;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="rect950"
+         width="63.500004"
+         height="29.633335"
+         x="33.866665"
+         y="59.933311" />
+      <flowRoot
+         xml:space="preserve"
+         id="flowRoot960"
+         style="font-style:normal;font-weight:normal;font-size:12px;line-height:25px;font-family:'Bitstream Vera Sans';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         transform="matrix(0.26458333,0,0,0.26458333,0.01627903,50.607009)"><flowRegion
+           id="flowRegion954"><rect
+             id="rect952"
+             width="208"
+             height="48"
+             x="144"
+             y="79.999985" /></flowRegion><flowPara
+           id="flowPara958"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans Bold';text-align:center;text-anchor:middle">GStreamer</flowPara></flowRoot>    </g>
+    <g
+       transform="translate(67.733337,-3.6572917e-6)"
+       id="g976">
+      <rect
+         y="59.933311"
+         x="33.866665"
+         height="29.633335"
+         width="63.500004"
+         id="rect966"
+         style="opacity:1;fill:#c1c1c1;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <flowRoot
+         transform="matrix(0.26458333,0,0,0.26458333,-2.2140758,47.309794)"
+         style="font-style:normal;font-weight:normal;font-size:12px;line-height:25px;font-family:'Bitstream Vera Sans';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         id="flowRoot974"
+         xml:space="preserve"><flowRegion
+           id="flowRegion970"><rect
+             y="79.999985"
+             x="144"
+             height="67.249039"
+             width="223.93849"
+             id="rect968" /></flowRegion><flowPara
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans Bold';text-align:center;text-anchor:middle"
+           id="flowPara972">GstUnityBridgeCapture: MonoBehaviour</flowPara></flowRoot>    </g>
+    <g
+       id="g988"
+       transform="translate(66.858859,67.733336)"
+       inkscape:connector-avoid="true">
+      <rect
+         style="opacity:1;fill:#fffb83;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="rect978"
+         width="63.500004"
+         height="29.633335"
+         x="34.741142"
+         y="59.933311" />
+      <flowRoot
+         xml:space="preserve"
+         id="flowRoot986"
+         style="font-style:normal;font-weight:normal;font-size:12px;line-height:25px;font-family:'Bitstream Vera Sans';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         transform="matrix(0.26458333,0,0,0.26458333,-5.4716452,50.327697)"><flowRegion
+           id="flowRegion982"><rect
+             id="rect980"
+             width="255.93849"
+             height="83.249054"
+             x="144"
+             y="79.999985" /></flowRegion><flowPara
+           id="flowPara984"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans Bold';text-align:center;text-anchor:middle">GstUnityBridgePipeline</flowPara></flowRoot>    </g>
+    <g
+       transform="translate(-33.866668,-3.6572917e-6)"
+       id="g1000">
+      <rect
+         y="59.933311"
+         x="33.866665"
+         height="29.633335"
+         width="63.500004"
+         id="rect990"
+         style="opacity:1;fill:#c1c1c1;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <flowRoot
+         transform="matrix(0.26458333,0,0,0.26458333,-2.2138174,47.309794)"
+         style="font-style:normal;font-weight:normal;font-size:12px;line-height:25px;font-family:'Bitstream Vera Sans';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         id="flowRoot998"
+         xml:space="preserve"><flowRegion
+           id="flowRegion994"><rect
+             y="79.999985"
+             x="144"
+             height="67.249039"
+             width="223.93846"
+             id="rect992" /></flowRegion><flowPara
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans Bold';text-align:center;text-anchor:middle"
+           id="flowPara996">GstUnityBridgeStarter: MonoBehaviour</flowPara></flowRoot>    </g>
+    <g
+       id="g1012"
+       transform="translate(135.46667,203.2)">
+      <rect
+         style="opacity:1;fill:#c1c1c1;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="rect1002"
+         width="63.500004"
+         height="29.633335"
+         x="33.866665"
+         y="59.933311" />
+      <flowRoot
+         xml:space="preserve"
+         id="flowRoot1010"
+         style="font-style:normal;font-weight:normal;font-size:12px;line-height:25px;font-family:'Bitstream Vera Sans';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         transform="matrix(0.26458333,0,0,0.26458333,0.01627903,50.607009)"><flowRegion
+           id="flowRegion1006"><rect
+             id="rect1004"
+             width="208"
+             height="48"
+             x="144"
+             y="79.999985" /></flowRegion><flowPara
+           id="flowPara1008"
+           style="text-align:center;text-anchor:middle">GstUnityBridgeCroppingParams</flowPara></flowRoot>    </g>
+    <g
+       id="g1026"
+       transform="translate(135.46667,169.33334)">
+      <rect
+         style="opacity:1;fill:#c1c1c1;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="rect1014"
+         width="63.500004"
+         height="29.633335"
+         x="33.866665"
+         y="59.933311" />
+      <flowRoot
+         xml:space="preserve"
+         id="flowRoot1024"
+         style="font-style:normal;font-weight:normal;font-size:12px;line-height:25px;font-family:'Bitstream Vera Sans';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         transform="matrix(0.26458333,0,0,0.26458333,0.01627903,47.278788)"><flowRegion
+           id="flowRegion1018"><rect
+             id="rect1016"
+             width="208"
+             height="48"
+             x="144"
+             y="79.999985" /></flowRegion><flowPara
+           id="flowPara1022"
+           style="text-align:center;text-anchor:middle">GstUnityBridgeDebugParams</flowPara></flowRoot>    </g>
+    <g
+       transform="translate(203.20001,169.33334)"
+       id="g1038">
+      <rect
+         y="59.933311"
+         x="33.866665"
+         height="29.633335"
+         width="63.500004"
+         id="rect1028"
+         style="opacity:1;fill:#c1c1c1;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <flowRoot
+         transform="matrix(0.26458333,0,0,0.26458333,0.01627903,50.607009)"
+         style="font-style:normal;font-weight:normal;font-size:12px;line-height:25px;font-family:'Bitstream Vera Sans';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         id="flowRoot1036"
+         xml:space="preserve"><flowRegion
+           id="flowRegion1032"><rect
+             y="79.999985"
+             x="144"
+             height="48"
+             width="208"
+             id="rect1030" /></flowRegion><flowPara
+           style="text-align:center;text-anchor:middle"
+           id="flowPara1034">GstUnityBridgeEventParams</flowPara></flowRoot>    </g>
+    <g
+       id="g1050"
+       transform="translate(203.2,203.2)">
+      <rect
+         style="opacity:1;fill:#c1c1c1;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="rect1040"
+         width="63.500004"
+         height="29.633335"
+         x="33.866665"
+         y="59.933311" />
+      <flowRoot
+         xml:space="preserve"
+         id="flowRoot1048"
+         style="font-style:normal;font-weight:normal;font-size:12px;line-height:25px;font-family:'Bitstream Vera Sans';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         transform="matrix(0.26458333,0,0,0.26458333,0.01627903,50.607009)"><flowRegion
+           id="flowRegion1044"><rect
+             id="rect1042"
+             width="208"
+             height="48"
+             x="144"
+             y="79.999985" /></flowRegion><flowPara
+           id="flowPara1046"
+           style="text-align:center;text-anchor:middle">GstUnityBridgeSynchronizationParams</flowPara></flowRoot>    </g>
+    <g
+       transform="translate(135.46667,1.470931e-6)"
+       id="g1062">
+      <rect
+         y="59.933311"
+         x="33.866665"
+         height="29.633335"
+         width="63.500004"
+         id="rect1052"
+         style="opacity:1;fill:#c1c1c1;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <flowRoot
+         transform="matrix(0.26458333,0,0,0.26458333,-2.2138174,47.309794)"
+         style="font-style:normal;font-weight:normal;font-size:12px;line-height:25px;font-family:'Bitstream Vera Sans';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         id="flowRoot1060"
+         xml:space="preserve"><flowRegion
+           id="flowRegion1056"><rect
+             y="79.999985"
+             x="144"
+             height="67.249039"
+             width="223.93848"
+             id="rect1054" /></flowRegion><flowPara
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans Bold';text-align:center;text-anchor:middle"
+           id="flowPara1058">GstUnityBridgeTexture: MonoBehaviour</flowPara></flowRoot>    </g>
+    <g
+       id="g1074"
+       transform="translate(135.46667,135.46667)">
+      <rect
+         style="opacity:1;fill:#c1c1c1;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+         id="rect1064"
+         width="63.500004"
+         height="29.633335"
+         x="33.866665"
+         y="59.933311" />
+      <flowRoot
+         xml:space="preserve"
+         id="flowRoot1072"
+         style="font-style:normal;font-weight:normal;font-size:12px;line-height:25px;font-family:'Bitstream Vera Sans';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         transform="matrix(0.26458333,0,0,0.26458333,0.01627903,50.607009)"><flowRegion
+           id="flowRegion1068"><rect
+             id="rect1066"
+             width="208"
+             height="48"
+             x="144"
+             y="79.999985" /></flowRegion><flowPara
+           id="flowPara1070"
+           style="text-align:center;text-anchor:middle">QosEvent : UnityEvent</flowPara></flowRoot>    </g>
+    <g
+       transform="translate(203.2,135.46667)"
+       id="g1086">
+      <rect
+         y="59.933311"
+         x="33.866665"
+         height="29.633335"
+         width="63.500004"
+         id="rect1076"
+         style="opacity:1;fill:#c1c1c1;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <flowRoot
+         transform="matrix(0.26458333,0,0,0.26458333,0.01627903,50.607009)"
+         style="font-style:normal;font-weight:normal;font-size:12px;line-height:25px;font-family:'Bitstream Vera Sans';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         id="flowRoot1084"
+         xml:space="preserve"><flowRegion
+           id="flowRegion1080"><rect
+             y="79.999985"
+             x="144"
+             height="48"
+             width="208"
+             id="rect1078" /></flowRegion><flowPara
+           style="text-align:center;text-anchor:middle"
+           id="flowPara1082">StringEvent : UnityEvent</flowPara></flowRoot>    </g>
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot1090"
+       style="fill:black;stroke:none;stroke-opacity:1;stroke-width:1px;stroke-linejoin:miter;stroke-linecap:butt;fill-opacity:1;font-family:Bitstream Vera Sans;font-style:normal;font-weight:normal;font-size:12px;line-height:25px;letter-spacing:0px;word-spacing:0px"><flowRegion
+         id="flowRegion1092"><rect
+           id="rect1094"
+           width="1264"
+           height="992"
+           x="-48"
+           y="127.99998" /></flowRegion><flowPara
+         id="flowPara1096"></flowPara></flowRoot>    <g
+       transform="translate(2.3135248e-6,169.33334)"
+       id="g1108">
+      <rect
+         y="59.933311"
+         x="33.866665"
+         height="29.633335"
+         width="63.500004"
+         id="rect1098"
+         style="opacity:1;fill:#bfe8ff;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
+      <flowRoot
+         transform="matrix(0.26458333,0,0,0.26458333,0.01627903,50.607009)"
+         style="font-style:normal;font-weight:normal;font-size:12px;line-height:25px;font-family:'Bitstream Vera Sans';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         id="flowRoot1106"
+         xml:space="preserve"><flowRegion
+           id="flowRegion1102"><rect
+             y="79.999985"
+             x="144"
+             height="48"
+             width="208"
+             id="rect1100" /></flowRegion><flowPara
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans Bold';text-align:center;text-anchor:middle"
+           id="flowPara1104">GstUnityBridge.so</flowPara></flowRoot>    </g>
+    <path
+       style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Arrow1Mend)"
+       d="m 36.688891,157.29998 23.98889,71.96667"
+       id="path1110"
+       inkscape:connector-type="polyline"
+       inkscape:connector-curvature="0"
+       inkscape:connection-start="#g962"
+       inkscape:connection-end="#g1108" />
+    <path
+       inkscape:connector-curvature="0"
+       inkscape:connector-type="polyline"
+       id="path1426"
+       d="M 123.47222,157.29998 75.494446,229.26665"
+       style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker1430)"
+       sodipodi:nodetypes="cc"
+       inkscape:connection-start="#g988"
+       inkscape:connection-end="#g1108" />
+    <path
+       inkscape:connector-curvature="0"
+       inkscape:connector-type="orthogonal"
+       id="path2194"
+       d="M 133.35,89.566643 V 127.66665"
+       style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker2198)"
+       inkscape:connection-start="#g976"
+       inkscape:connection-end="#g988" />
+    <path
+       inkscape:connection-end="#g988"
+       style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker2894)"
+       d="m 186.26667,89.566648 -38.1,38.100002"
+       id="path2890"
+       inkscape:connector-type="polyline"
+       inkscape:connector-curvature="0"
+       inkscape:connection-start="#g1062" />
+    <path
+       style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker3376)"
+       d="M 31.750002,89.566643 V 127.66665"
+       id="path3372"
+       inkscape:connector-type="orthogonal"
+       inkscape:connector-curvature="0"
+       inkscape:connection-start="#g1000"
+       inkscape:connection-end="#g962" />
+    <path
+       inkscape:connection-start="#g1062"
+       inkscape:connector-curvature="0"
+       inkscape:connector-type="polyline"
+       id="path4392"
+       d="m 208.49167,89.566648 19.05,38.100002"
+       style="display:inline;fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker4396)"
+       inkscape:connection-end="#g948" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot4572"
+       style="font-style:normal;font-weight:normal;font-size:12px;line-height:25px;font-family:'Bitstream Vera Sans';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       transform="matrix(0.26458333,0,0,0.26458333,49.156378,52.977076)"><flowRegion
+         id="flowRegion4574"><rect
+           id="rect4576"
+           width="160"
+           height="112"
+           x="-64"
+           y="480" /></flowRegion><flowPara
+         id="flowPara4578"
+         style="font-size:16px">Ref</flowPara><flowPara
+         id="flowPara4582"
+         style="font-size:16px">Unref</flowPara></flowRoot>    <flowRoot
+       transform="matrix(0.26458333,0,0,0.26458333,104.13261,46.518574)"
+       style="font-style:normal;font-weight:normal;font-size:12px;line-height:25px;font-family:'Bitstream Vera Sans';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="flowRoot4610"
+       xml:space="preserve"><flowRegion
+         id="flowRegion4604"><rect
+           y="480"
+           x="-64"
+           height="122.29131"
+           width="346.21204"
+           id="rect4602" /></flowRegion><flowPara
+         style="font-size:16px"
+         id="flowPara4608">gub_ref</flowPara><flowPara
+         style="font-size:16px"
+         id="flowPara4620">gub_unref</flowPara><flowPara
+         style="font-size:16px"
+         id="flowPara4618">gub_pipeline_blit_image</flowPara></flowRoot>    <flowRoot
+       xml:space="preserve"
+       id="flowRoot4624"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16px;line-height:25px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans Bold';text-align:center;text-anchor:middle;opacity:1;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3.77952766;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       transform="matrix(0.26458333,0,0,0.26458333,-4.3056683,28.937095)"><flowRegion
+         id="flowRegion4626"><rect
+           id="rect4628"
+           width="144.00002"
+           height="79.999992"
+           x="368"
+           y="272" /></flowRegion><flowPara
+         id="flowPara4630">GrabFrame</flowPara><flowPara
+         id="flowPara4652">ConsumeImage</flowPara><flowPara
+         id="flowPara4648">SetupEncoding</flowPara></flowRoot>    <flowRoot
+       transform="matrix(0.26458333,0,0,0.26458333,62.782392,38.085207)"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16px;line-height:25px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans Bold';text-align:center;text-anchor:middle;opacity:1;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3.77952766;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="flowRoot4638"
+       xml:space="preserve"><flowRegion
+         id="flowRegion4634"><rect
+           y="272"
+           x="368"
+           height="79.999992"
+           width="144.00002"
+           id="rect4632" /></flowRegion><flowPara
+         id="flowPara4636">BlitTexture</flowPara><flowPara
+         id="flowPara4650">SetupDecoding</flowPara></flowRoot>    <flowRoot
+       xml:space="preserve"
+       id="flowRoot4646"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:16px;line-height:25px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans Bold';text-align:center;text-anchor:middle;opacity:1;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3.77952766;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       transform="matrix(0.26458333,0,0,0.26458333,138.5665,48.400156)"><flowRegion
+         id="flowRegion4642"><rect
+           id="rect4640"
+           width="144.00002"
+           height="79.999992"
+           x="368"
+           y="272" /></flowRegion><flowPara
+         id="flowPara4644">// executor</flowPara></flowRoot>  </g>
+</svg>
