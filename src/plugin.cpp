@@ -43,7 +43,7 @@ void* sub_play(char const* url) {
 				continue;
 			}
 
-			auto decode = pipeline.add("Decoder", metadata->type);
+			auto decode = pipeline.add("Decoder", (void*)(uintptr_t)metadata->type);
 			pipeline.connect(GetOutputPin(demuxer, k), decode);
 
 			auto render = pipeline.addModule<Out::Null>();
