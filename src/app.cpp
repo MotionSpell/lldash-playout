@@ -33,7 +33,7 @@ void safeMain(int argc, char* argv[]) {
 		auto handle = func_gub_pipeline_create("name", nullptr, &onError, nullptr, nullptr);
 
 		GUBPipelineVars vars {};
-		vars.uri = "http://example.com";
+		vars.uri = "http://livesim.dashif.org/livesim/testpic_2s/Manifest.mpd";
 		func_gub_pipeline_setup_decoding(handle, &vars);
 
 		func_gub_pipeline_play(handle);
