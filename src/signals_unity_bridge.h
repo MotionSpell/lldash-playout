@@ -24,6 +24,26 @@ extern "C" {
 
 typedef struct GUBPipeline_ GUBPipeline;
 
+struct GUBPipelineVars
+{
+	const char *uri;
+	int video_index;
+	int audio_index;
+	char *net_clock_address;
+	int net_clock_port;
+	//TODO: basetime should be removed - use sync_time:
+	// - name is misleading in gstreamer context
+	// - value can be negative
+	unsigned long long basetime;
+	float crop_left;
+	float crop_top;
+	float crop_right;
+	float crop_bottom;
+	bool isDvbWc;
+	int screenWidth;
+	int screenHeight;
+};
+
 using GUBPipelineOnEosPFN = void(*)(GUBPipeline* userData);
 using GUBPipelineOnErrorPFN = void(*)(GUBPipeline* userData, char* message);
 using GUBPipelineOnQosPFN = void(*)(GUBPipeline* userData, int64_t current_jitter, uint64_t current_running_time, uint64_t current_stream_time, uint64_t current_timestamp, double proportion, uint64_t processed, uint64_t dropped);
@@ -47,7 +67,7 @@ EXPORT void gub_pipeline_destroy(GUBPipeline* pipeline);
 EXPORT void gub_pipeline_close(GUBPipeline* pipeline);
 
 // Creates a pipeline that decodes 'uri'.
-EXPORT void gub_pipeline_setup_decoding(GUBPipeline* pipeline, const char* uri, int video_index, int audio_index, const char* net_clock_addr, int net_clock_port, uint64_t basetime, float crop_left, float crop_top, float crop_right, float crop_bottom);
+EXPORT void gub_pipeline_setup_decoding(GUBPipeline* pipeline, GUBPipelineVars* pipeVars);
 EXPORT void gub_pipeline_setup_decoding_clock(GUBPipeline* pipeline, const char* uri, int video_index, int audio_index, const char* net_clock_addr, int net_clock_port, uint64_t basetime, float crop_left, float crop_top, float crop_right, float crop_bottom, bool isDvbWc);
 
 EXPORT void gub_pipeline_setup_encoding(GUBPipeline* pipeline, const char* filename, int width, int height);
