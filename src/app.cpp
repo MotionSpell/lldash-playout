@@ -21,10 +21,14 @@ void safeMain(int argc, char* argv[]) {
 
 	{
 		auto lib = loadLibrary(libName);
+		auto func_gub_ref = IMPORT(gub_ref);
+		auto func_gub_unref = IMPORT(gub_unref);
 		auto func_gub_pipeline_create = IMPORT(gub_pipeline_create);
 		auto func_gub_pipeline_play = IMPORT(gub_pipeline_play);
 		auto func_gub_pipeline_setup_decoding = IMPORT(gub_pipeline_setup_decoding);
 		auto func_gub_pipeline_destroy = IMPORT(gub_pipeline_destroy);
+
+		func_gub_ref("TheApp");
 
 		auto handle = func_gub_pipeline_create("name", nullptr, &onError, nullptr, nullptr);
 
@@ -38,6 +42,8 @@ void safeMain(int argc, char* argv[]) {
 		scanf("%1s", dummy);
 
 		func_gub_pipeline_destroy(handle);
+
+		func_gub_unref();
 	}
 
 	printf("Input file successfully processed.\n");
