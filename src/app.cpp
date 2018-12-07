@@ -1,9 +1,14 @@
 #include <cstdio>
-#include <stdexcept>
+#include <exception>
 #include "dynlib.h"
 #include "signals_unity_bridge.h"
 
 using namespace std;
+
+void onError(GUBPipeline* userData, char* message) {
+	(void)userData;
+	printf("Error: '%s'\n", message);
+}
 
 void safeMain(int argc, char* argv[]) {
 	if(argc != 2) {
@@ -15,8 +20,10 @@ void safeMain(int argc, char* argv[]) {
 	{
 		auto lib = loadLibrary(libName);
 		auto func_gub_pipeline_create = (decltype(gub_pipeline_create)*)lib->getSymbol("gub_pipeline_create");
+		auto func_gub_pipeline_play = (decltype(gub_pipeline_play)*)lib->getSymbol("gub_pipeline_create");
 		auto func_gub_pipeline_destroy = (decltype(gub_pipeline_destroy)*)lib->getSymbol("gub_pipeline_destroy");
-		auto handle = func_gub_pipeline_create("name", nullptr, nullptr, nullptr, nullptr);
+		auto handle = func_gub_pipeline_create("name", nullptr, &onError, nullptr, nullptr);
+		func_gub_pipeline_play(handle);
 		func_gub_pipeline_destroy(handle);
 	}
 
