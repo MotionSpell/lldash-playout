@@ -31,6 +31,8 @@ APP_SRCS:=\
 
 TARGETS+=$(BIN)/app.exe
 $(BIN)/app.exe: $(APP_SRCS:%=$(BIN)/%.o)
+$(BIN)/app.exe: CFLAGS+=$(shell pkg-config sdl2 gl --cflags)
+$(BIN)/app.exe: LDFLAGS+=$(shell pkg-config sdl2 gl --libs)
 
 #------------------------------------------------------------------------------
 # Generic rules
