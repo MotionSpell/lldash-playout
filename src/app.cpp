@@ -1,26 +1,23 @@
 #include <cstdio>
 #include <stdexcept>
 #include "dynlib.h"
+#include "signals_unity_bridge.h"
 
 using namespace std;
 
-typedef void* (*PlayFunction)(char const* url);
-typedef void (*StopFunction)(void*);
-
 void safeMain(int argc, char* argv[]) {
-	if(argc != 3) {
-		throw runtime_error("Usage: app.exe <my_library> <my_url>");
+	if(argc != 2) {
+		throw runtime_error("Usage: app.exe <my_library>");
 	}
 
 	auto libName = argv[1];
-	auto url = argv[2];
 
 	{
 		auto lib = loadLibrary(libName);
-		auto play = (PlayFunction)lib->getSymbol("sub_play");
-		auto stop = (StopFunction)lib->getSymbol("sub_stop");
-		auto handle = play(url);
-		stop(handle);
+		auto func_gub_pipeline_create = (decltype(gub_pipeline_create)*)lib->getSymbol("gub_pipeline_create");
+		auto func_gub_pipeline_destroy = (decltype(gub_pipeline_destroy)*)lib->getSymbol("gub_pipeline_destroy");
+		auto handle = func_gub_pipeline_create("name", nullptr, nullptr, nullptr, nullptr);
+		func_gub_pipeline_destroy(handle);
 	}
 
 	printf("Input file successfully processed.\n");
