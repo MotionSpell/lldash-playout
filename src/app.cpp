@@ -38,8 +38,11 @@ void safeMain(int argc, char* argv[]) {
 
 		func_gub_pipeline_play(handle);
 
-		char dummy[16];
-		scanf("%1s", dummy);
+		{
+			printf("Press return to stop\n");
+			char dummy[16];
+			fgets(dummy, 16, stdin);
+		}
 
 		func_gub_pipeline_destroy(handle);
 
