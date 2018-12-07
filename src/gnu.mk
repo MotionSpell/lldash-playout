@@ -1,1 +1,1 @@
-$(BIN)/loader.exe: LDFLAGS+=-ldl -pthread
+LDFLAGS+=-ldl -pthread
