@@ -98,8 +98,12 @@ EXPORT int32_t gub_is_active();
 // update the "last_frame" buffer with the last decoded frame, and retrieves its size.
 EXPORT int32_t gub_pipeline_grab_frame(GUBPipeline* pipeline, int* width, int* height);
 
+EXPORT double gub_pipeline_get_framerate(GUBPipeline *pipeline);
+
 // blit the "last_frame" buffer to the native texture handle
 EXPORT void gub_pipeline_blit_image(GUBPipeline* pipeline, void* _TextureNativePtr);
+
+EXPORT void gub_pipeline_blit_audio(GUBPipeline *pipeline, void *_AudioNativePtr);
 
 EXPORT double gub_pipeline_get_duration(GUBPipeline* pipeline);
 EXPORT double gub_pipeline_get_position(GUBPipeline* pipeline);

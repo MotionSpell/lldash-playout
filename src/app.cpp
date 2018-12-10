@@ -113,6 +113,8 @@ void safeMain(int argc, char* argv[]) {
 		auto func_gub_pipeline_play = IMPORT(gub_pipeline_play);
 		auto func_gub_pipeline_setup_decoding = IMPORT(gub_pipeline_setup_decoding);
 		auto func_gub_pipeline_destroy = IMPORT(gub_pipeline_destroy);
+		auto func_gub_pipeline_grab_frame = IMPORT(gub_pipeline_grab_frame);
+		auto func_gub_pipeline_get_framerate = IMPORT(gub_pipeline_get_framerate);
 
 		func_gub_ref("TheApp");
 
@@ -133,12 +135,16 @@ void safeMain(int argc, char* argv[]) {
 					break;
 				}
 			}
+
+			int width, height;
+			int ret = func_gub_pipeline_grab_frame(handle, &width, &height);
+			auto fps = func_gub_pipeline_get_framerate(handle);
+			printf("%dx%d @ %.2f Hz (%d)\n", width, height, fps, ret);
 			glClearColor(0, 1, 0, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
-
 			glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices)/sizeof(*vertices));
-
 			SDL_GL_SwapWindow(window);
+
 			SDL_Delay(10);
 		}
 
