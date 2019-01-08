@@ -11,7 +11,6 @@
 
 using namespace Modules;
 using namespace Pipelines;
-using namespace Demux;
 using namespace std;
 
 static
@@ -26,7 +25,9 @@ void* sub_play(char const* url) {
 
 		auto createDemuxer = [&](string url) {
 			if(startsWith(url, "http://")) {
-				return pipeline.addModule<DashDemuxer>(url);
+				DashDemuxConfig cfg;
+				cfg.url = url;
+				return pipeline.add("DashDemuxer", &cfg);
 			} else {
 				DemuxConfig cfg;
 				cfg.url = url;
