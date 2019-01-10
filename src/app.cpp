@@ -115,6 +115,9 @@ void safeMain(int argc, char* argv[]) {
 		auto func_gub_pipeline_destroy = IMPORT(gub_pipeline_destroy);
 		auto func_gub_pipeline_grab_frame = IMPORT(gub_pipeline_grab_frame);
 		auto func_gub_pipeline_get_framerate = IMPORT(gub_pipeline_get_framerate);
+		auto funcUnitySetGraphicsDevice = IMPORT(UnitySetGraphicsDevice);
+
+		funcUnitySetGraphicsDevice(nullptr, 0 /* openGL */, 0);
 
 		func_gub_ref("TheApp");
 
