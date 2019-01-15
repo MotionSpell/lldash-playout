@@ -26,21 +26,6 @@ bool startsWith(string s, string prefix) {
 	return s.substr(0, prefix.size()) == prefix;
 }
 
-void* sub_play(char const* url) {
-	try {
-		auto pipelinePtr = make_unique<Pipeline>();
-
-		(void)url;
-		NOT_IMPLEMENTED;
-
-
-		return pipelinePtr.release();
-	} catch(runtime_error const& err) {
-		fprintf(stderr, "cannot play: %s\n", err.what());
-		return nullptr;
-	}
-}
-
 void sub_stop(void* handle) {
 	try {
 		unique_ptr<Pipeline> pipeline(static_cast<Pipeline*>(handle));
@@ -65,10 +50,10 @@ void UnitySetGraphicsDevice(void* device, int deviceType, int eventType) {
 
 struct GUBPipeline {
 	GUBPipeline() {
-		pipeline = make_unique<Pipeline>();
+		pipe = make_unique<Pipeline>();
 	}
 
-	std::unique_ptr<Pipeline> pipeline;
+	std::unique_ptr<Pipeline> pipe;
 };
 
 // creates a new pipeline.
@@ -100,35 +85,38 @@ void gub_pipeline_close(GUBPipeline* pipeline) {
 
 // Creates a pipeline that decodes 'uri'.
 void gub_pipeline_setup_decoding(GUBPipeline* p, GUBPipelineVars* pipeVars) {
+	try {
+		auto& pipe = *p->pipe;
 
-	auto& pipeline = *p->pipeline;
+		auto createDemuxer = [&](string url) {
+			if(startsWith(url, "http://")) {
+				DashDemuxConfig cfg;
+				cfg.url = url;
+				return pipe.add("DashDemuxer", &cfg);
+			} else {
+				DemuxConfig cfg;
+				cfg.url = url;
+				return pipe.add("LibavDemux", &cfg);
+			}
+		};
 
-	auto createDemuxer = [&](string url) {
-		if(startsWith(url, "http://")) {
-			DashDemuxConfig cfg;
-			cfg.url = url;
-			return pipeline.add("DashDemuxer", &cfg);
-		} else {
-			DemuxConfig cfg;
-			cfg.url = url;
-			return pipeline.add("LibavDemux", &cfg);
+		auto demuxer = createDemuxer(pipeVars->uri);
+
+		for (int k = 0; k < (int)demuxer->getNumOutputs(); ++k) {
+			auto metadata = demuxer->getOutputMetadata(k);
+			if (!metadata || metadata->isSubtitle()/*only render audio and video*/) {
+				g_Log->log(Debug, format("Ignoring stream #%s", k).c_str());
+				continue;
+			}
+
+			auto decode = pipe.add("Decoder", (void*)(uintptr_t)metadata->type);
+			pipe.connect(GetOutputPin(demuxer, k), decode);
+
+			auto render = pipe.addModule<Out::Null>();
+			pipe.connect(decode, render);
 		}
-	};
-
-	auto demuxer = createDemuxer(pipeVars->uri);
-
-	for (int k = 0; k < (int)demuxer->getNumOutputs(); ++k) {
-		auto metadata = demuxer->getOutputMetadata(k);
-		if (!metadata || metadata->isSubtitle()/*only render audio and video*/) {
-			g_Log->log(Debug, format("Ignoring stream #%s", k).c_str());
-			continue;
-		}
-
-		auto decode = pipeline.add("Decoder", (void*)(uintptr_t)metadata->type);
-		pipeline.connect(GetOutputPin(demuxer, k), decode);
-
-		auto render = pipeline.addModule<Out::Null>();
-		pipeline.connect(decode, render);
+	} catch(exception const& err) {
+		fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
 	}
 }
 
@@ -149,7 +137,7 @@ void gub_pipeline_setup_decoding_clock(GUBPipeline* pipeline, const char* uri, i
 }
 
 void gub_pipeline_play(GUBPipeline* pipeline) {
-	pipeline->pipeline->start();
+	pipeline->pipe->start();
 }
 void gub_pipeline_pause(GUBPipeline* pipeline) {
 	(void)pipeline;
