@@ -20,7 +20,7 @@ export DYLD_LIBRARY_PATH=$EXTRA/lib${DYLD_LIBRARY_PATH:+:}${DYLD_LIBRARY_PATH:-}
 
 function main
 {
-  #run_test check_exports
+  run_test check_exports
   run_test load_library
   echo "OK"
 }

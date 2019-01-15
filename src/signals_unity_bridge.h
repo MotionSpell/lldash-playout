@@ -1,8 +1,11 @@
-// Signals-unity-bridge (SUB) interface
+///////////////////////////////////////////////////////////////////////////////
+// GUB interface
+///////////////////////////////////////////////////////////////////////////////
 
 #pragma once
 
 #include <cstdint>
+#include <cstddef> // size_t
 
 #define EXPORT __attribute__((visibility("default")))
 
@@ -14,15 +17,20 @@ extern "C" {
 
   // handle: a handle returned by 'sub_play'
 	EXPORT void sub_stop(void* handle);
-}
 
+struct GUBPipeline;
 
 ///////////////////////////////////////////////////////////////////////////////
-// GUB interface
+// Graphics
 ///////////////////////////////////////////////////////////////////////////////
-extern "C" {
 
-typedef struct GUBPipeline_ GUBPipeline;
+// If exported by a plugin, this function will be called when graphics device is created, destroyed,
+// and before and after it is reset (ie, resolution changed).
+EXPORT void UnitySetGraphicsDevice(void* device, int deviceType, int eventType);
+
+///////////////////////////////////////////////////////////////////////////////
+// Pipeline
+///////////////////////////////////////////////////////////////////////////////
 
 struct GUBPipelineVars
 {
@@ -47,9 +55,7 @@ struct GUBPipelineVars
 using GUBPipelineOnEosPFN = void(*)(GUBPipeline* userData);
 using GUBPipelineOnErrorPFN = void(*)(GUBPipeline* userData, char* message);
 using GUBPipelineOnQosPFN = void(*)(GUBPipeline* userData, int64_t current_jitter, uint64_t current_running_time, uint64_t current_stream_time, uint64_t current_timestamp, double proportion, uint64_t processed, uint64_t dropped);
-using GUBUnityDebugLogPFN = void(*)(int32_t level, const char* message);
-
-EXPORT void UnitySetGraphicsDevice(void* device, int deviceType, int eventType);
+using GUBPipelineDotDataHandlerPFN = void(*)(const char* fileName, const char *data);
 
 // creates a new pipeline.
 // The returned pipeline must be freed using 'gub_pipeline_destroy'.
@@ -70,12 +76,6 @@ EXPORT void gub_pipeline_close(GUBPipeline* pipeline);
 EXPORT void gub_pipeline_setup_decoding(GUBPipeline* pipeline, GUBPipelineVars* pipeVars);
 EXPORT void gub_pipeline_setup_decoding_clock(GUBPipeline* pipeline, const char* uri, int video_index, int audio_index, const char* net_clock_addr, int net_clock_port, uint64_t basetime, float crop_left, float crop_top, float crop_right, float crop_bottom, bool isDvbWc);
 
-// Creates a pipeline that encodes to 'filename'
-EXPORT void gub_pipeline_setup_encoding(GUBPipeline* pipeline, const char* filename, int width, int height);
-
-// push a raw frame for encoding (the data is copied)
-EXPORT void gub_pipeline_consume_image(GUBPipeline* pipeline, uint8_t* rawdata, int size);
-
 EXPORT void gub_pipeline_play(GUBPipeline* pipeline);
 EXPORT void gub_pipeline_pause(GUBPipeline* pipeline);
 EXPORT void gub_pipeline_stop(GUBPipeline* pipeline);
@@ -87,6 +87,12 @@ EXPORT void gub_pipeline_set_adaptive_bitrate_limit(GUBPipeline* pipeline, float
 EXPORT void gub_pipeline_set_basetime(GUBPipeline* pipeline, uint64_t basetime);
 EXPORT void gub_pipeline_set_position(GUBPipeline* pipeline, double position);
 EXPORT void gub_pipeline_set_volume(GUBPipeline* pipeline, double volume);
+
+EXPORT void gub_pipeline_set_camera_rotation(GUBPipeline *pipeline, double pitch, double roll, double yaw);
+EXPORT void gub_pipeline_set_camera_rotation_offset(GUBPipeline *pipeline, double pitch, double roll, double yaw);
+EXPORT void gub_pipeline_qualities(GUBPipeline *pipeline, const char *w, const char *h, const char *qualities);
+EXPORT size_t gub_pipeline_pop_dash_report(GUBPipeline *pipeline, char* out_chunk_address, size_t max_size);
+EXPORT void gub_pipeline_set_dot_data_handler(GUBPipeline *pipeline, GUBPipelineDotDataHandlerPFN pfn);
 
 // increase the plugin user count (used for plugin shared-resources initialization)
 EXPORT void gub_ref(const char* gst_debug_string);
@@ -110,7 +116,23 @@ EXPORT double gub_pipeline_get_position(GUBPipeline* pipeline);
 EXPORT int32_t gub_pipeline_is_loaded(GUBPipeline* pipeline);
 EXPORT int32_t gub_pipeline_is_playing(GUBPipeline* pipeline);
 
+///////////////////////////////////////////////////////////////////////////////
+// Logging
+///////////////////////////////////////////////////////////////////////////////
+
+using GUBUnityDebugLogPFN = void(*)(int32_t level, const char* message);
+using GUBExternalLogPFN = void(*)(const char* category, int32_t level, const char* file, const char* function, int line, const char* object, int64_t elapsed, const char* message);
+
 // redirects the plugin logs to the provided callback 'pfn'
 EXPORT void gub_log_set_unity_handler(GUBUnityDebugLogPFN pfn);
+
+//Forwarding messages to external logger
+EXPORT  int gub_log_switch_cache(char** output);
+EXPORT void gub_log_set_external_handler(GUBExternalLogPFN pfn);
+EXPORT void gub_log_set_console(int set);
+EXPORT void gub_log_set_file(const char * file);
+EXPORT void gub_log_set_cache(const char * dir);
+EXPORT void gub_log_set_cache_clock(const char* net_clock_address, int net_clock_port);
+EXPORT void gub_log_init(const char *gst_debug_string);
 
 }

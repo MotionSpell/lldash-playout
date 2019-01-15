@@ -2,10 +2,13 @@
 #include <stdexcept>
 #include "dynlib.h"
 
+// API entry points. We don't call these directly,
+// as the implemtations live inside the dynamic library.
+#include "signals_unity_bridge.h"
+
 using namespace std;
 
-typedef void* (*PlayFunction)(char const* url);
-typedef void (*StopFunction)(void*);
+#define IMPORT(name) ((decltype(name)*)lib->getSymbol(#name))
 
 void safeMain(int argc, char* argv[]) {
 	if(argc != 3) {
@@ -17,13 +20,19 @@ void safeMain(int argc, char* argv[]) {
 
 	{
 		auto lib = loadLibrary(libName);
-		auto play = (PlayFunction)lib->getSymbol("sub_play");
-		auto stop = (StopFunction)lib->getSymbol("sub_stop");
-		auto handle = play(url);
-		stop(handle);
-	}
+		auto func_gub_pipeline_create = IMPORT(gub_pipeline_create);
+		auto func_gub_pipeline_destroy = IMPORT(gub_pipeline_destroy);
+		auto func_gub_pipeline_setup_decoding = IMPORT(gub_pipeline_setup_decoding);
+		auto func_gub_pipeline_play = IMPORT(gub_pipeline_play);
 
-	printf("Input file successfully processed.\n");
+		GUBPipelineVars vars {};
+		vars.uri = url;
+
+		auto pipeline = func_gub_pipeline_create("myPipeline", nullptr, nullptr, nullptr, nullptr);
+		func_gub_pipeline_setup_decoding(pipeline, &vars);
+		func_gub_pipeline_play(pipeline);
+		func_gub_pipeline_destroy(pipeline);
+	}
 }
 
 int main(int argc, char* argv[]) {
