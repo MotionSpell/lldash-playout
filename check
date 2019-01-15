@@ -8,7 +8,7 @@ export BIN=bin
 make -j`nproc`
 
 readonly t1=$(date +%s)
-scripts/run_tests.sh
+./tests/run.sh
 readonly t2=$(date +%s)
 echo "$((t2-t1))s"
 

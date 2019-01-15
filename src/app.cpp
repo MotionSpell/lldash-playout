@@ -14,18 +14,21 @@ using namespace std;
 static const char* vertex_shader =
     "#version 130\n"
     "in vec2 pos;\n"
-    "out vec4 v_color;\n"
+    "out vec2 UV;\n"
+    "\n"
     "void main() {\n"
-    "    v_color = vec4(pos, 1.0 - pos.x, 0);\n"
-    "    gl_Position = vec4( pos, 0.0, 1.0 );\n"
+    "    UV = vec2(pos.x, pos.y);\n"
+    "    gl_Position = vec4( pos * 0.5, 0.0, 1.0 );\n"
     "}\n";
 
 static const char* fragment_shader =
     "#version 130\n"
-    "in vec4 v_color;\n"
-    "out vec4 o_color;\n"
+    "in vec2 UV;\n"
+    "out vec4 color;\n"
+    "uniform sampler2D mySampler;\n"
+    "\n"
     "void main() {\n"
-    "    o_color = v_color;\n"
+    "    color = texture(mySampler, UV);\n"
     "}\n";
 
 enum { attrib_position };
@@ -94,7 +97,7 @@ void safeMain(int argc, char* argv[]) {
 	const Vertex vertices[] = {
 		{ -1, -1 },
 		{ -1, +1 },
-		{ +1, -1 },
+		{ +1, +1 },
 
 		{ -1, -1 },
 		{ +1, +1 },
@@ -102,6 +105,9 @@ void safeMain(int argc, char* argv[]) {
 	};
 
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
+	GLuint texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
 
 	auto libName = argv[1];
 
@@ -113,8 +119,8 @@ void safeMain(int argc, char* argv[]) {
 		auto func_gub_pipeline_play = IMPORT(gub_pipeline_play);
 		auto func_gub_pipeline_setup_decoding = IMPORT(gub_pipeline_setup_decoding);
 		auto func_gub_pipeline_destroy = IMPORT(gub_pipeline_destroy);
+		auto func_gub_pipeline_blit_image = IMPORT(gub_pipeline_blit_image);
 		auto func_gub_pipeline_grab_frame = IMPORT(gub_pipeline_grab_frame);
-		auto func_gub_pipeline_get_framerate = IMPORT(gub_pipeline_get_framerate);
 		auto funcUnitySetGraphicsDevice = IMPORT(UnitySetGraphicsDevice);
 
 		funcUnitySetGraphicsDevice(nullptr, 0 /* openGL */, 0);
@@ -141,10 +147,12 @@ void safeMain(int argc, char* argv[]) {
 
 			int width, height;
 			int ret = func_gub_pipeline_grab_frame(handle, &width, &height);
-			auto fps = func_gub_pipeline_get_framerate(handle);
-			printf("%dx%d @ %.2f Hz (%d)\n", width, height, fps, ret);
+			printf("%dx%d (%d)\n", width, height, ret);
 			glClearColor(0, 1, 0, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
+
+			func_gub_pipeline_blit_image(handle, (void*)(uintptr_t)texture);
+
 			glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices)/sizeof(*vertices));
 			SDL_GL_SwapWindow(window);
 
