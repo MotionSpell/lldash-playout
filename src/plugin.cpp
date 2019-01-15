@@ -49,10 +49,6 @@ void UnitySetGraphicsDevice(void* device, int deviceType, int eventType) {
 ///////////////////////////////////////////////////////////////////////////////
 
 struct GUBPipeline {
-	GUBPipeline() {
-		pipe = make_unique<Pipeline>();
-	}
-
 	std::unique_ptr<Pipeline> pipe;
 };
 
@@ -68,12 +64,22 @@ GUBPipeline* gub_pipeline_create(const char* name,
 	(void)error_handler;
 	(void)qos_handler;
 	(void)userData;
-	return new GUBPipeline;
+
+	try {
+		return new GUBPipeline;
+	} catch(exception const& err) {
+		fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
+		return nullptr;
+	}
 }
 
 // Closes and frees a pipeline.
 void gub_pipeline_destroy(GUBPipeline* pipeline) {
-	delete pipeline;
+	try {
+		delete pipeline;
+	} catch(exception const& err) {
+		fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
+	}
 }
 
 // Closes a pipeline. This frees all the resources associated with the pipeline, but not the pipeline object itself.
@@ -86,6 +92,8 @@ void gub_pipeline_close(GUBPipeline* pipeline) {
 // Creates a pipeline that decodes 'uri'.
 void gub_pipeline_setup_decoding(GUBPipeline* p, GUBPipelineVars* pipeVars) {
 	try {
+		p->pipe = make_unique<Pipeline>();
+
 		auto& pipe = *p->pipe;
 
 		auto createDemuxer = [&](string url) {
