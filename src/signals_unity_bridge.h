@@ -101,8 +101,18 @@ EXPORT void gub_unref();
 // returns true if the plugin user count is non-zero
 EXPORT int32_t gub_is_active();
 
+struct GUBPFrameInfo
+{
+  int width;
+  int height;
+  uint64_t pts;
+  int fps_n;
+  int fps_d;
+};
+
 // update the "last_frame" buffer with the last decoded frame, and retrieves its size.
 EXPORT int32_t gub_pipeline_grab_frame(GUBPipeline* pipeline, int* width, int* height);
+EXPORT int32_t gub_pipeline_grab_frame_with_info(GUBPipeline *pipeline, GUBPFrameInfo* info);
 
 EXPORT double gub_pipeline_get_framerate(GUBPipeline *pipeline);
 

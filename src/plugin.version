@@ -20,6 +20,7 @@ FOO {
     gub_pipeline_get_framerate;
     gub_pipeline_get_position;
     gub_pipeline_grab_frame;
+    gub_pipeline_grab_frame_with_info;
     gub_pipeline_is_loaded;
     gub_pipeline_is_playing;
     gub_pipeline_pause;

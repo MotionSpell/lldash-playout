@@ -209,6 +209,12 @@ int32_t gub_pipeline_grab_frame(GUBPipeline* pipeline, int* width, int* height) 
 	NOT_IMPLEMENTED;
 }
 
+int32_t gub_pipeline_grab_frame_with_info(GUBPipeline *pipeline, GUBPFrameInfo* info) {
+	(void)pipeline;
+	(void)info;
+	NOT_IMPLEMENTED;
+}
+
 double gub_pipeline_get_framerate(GUBPipeline *pipeline) {
 	(void)pipeline;
 	NOT_IMPLEMENTED;
