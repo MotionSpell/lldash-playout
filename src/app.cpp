@@ -120,7 +120,7 @@ void safeMain(int argc, char* argv[]) {
 		auto func_gub_pipeline_setup_decoding = IMPORT(gub_pipeline_setup_decoding);
 		auto func_gub_pipeline_destroy = IMPORT(gub_pipeline_destroy);
 		auto func_gub_pipeline_blit_image = IMPORT(gub_pipeline_blit_image);
-		auto func_gub_pipeline_grab_frame = IMPORT(gub_pipeline_grab_frame);
+		auto func_gub_pipeline_grab_frame_with_info = IMPORT(gub_pipeline_grab_frame_with_info);
 		auto funcUnitySetGraphicsDevice = IMPORT(UnitySetGraphicsDevice);
 
 		funcUnitySetGraphicsDevice(nullptr, 0 /* openGL */, 0);
@@ -145,9 +145,9 @@ void safeMain(int argc, char* argv[]) {
 				}
 			}
 
-			int width, height;
-			int ret = func_gub_pipeline_grab_frame(handle, &width, &height);
-			printf("%dx%d (%d)\n", width, height, ret);
+			GUBPFrameInfo info {};
+			int ret = func_gub_pipeline_grab_frame_with_info(handle, &info);
+			printf("%dx%d (%d)\n", info.width, info.height, ret);
 			glClearColor(0, 1, 0, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
 
