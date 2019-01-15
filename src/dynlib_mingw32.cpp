@@ -6,36 +6,44 @@
 
 using namespace std;
 
-struct DynLibGnu : DynLib {
-	DynLibGnu(const char* name) : handle(LoadLibrary(name)) {
-		if(!handle) {
-			string msg = "can't load '";
-			msg += name;
-			msg += "'";
-			throw runtime_error(msg);
-		}
-	}
+struct DynLibGnu : DynLib
+{
+  DynLibGnu(const char* name) : handle(LoadLibrary(name))
+  {
+    if(!handle)
+    {
+      string msg = "can't load '";
+      msg += name;
+      msg += "'";
+      throw runtime_error(msg);
+    }
+  }
 
-	~DynLibGnu() {
-		FreeLibrary(handle);
-	}
+  ~DynLibGnu()
+  {
+    FreeLibrary(handle);
+  }
 
-	virtual void* getSymbol(const char* name) {
-		auto func = GetProcAddress(handle, name);
-		if(!func) {
-			string msg = "can't find symbol '";
-			msg += name;
-			msg += "'";
-			throw runtime_error(msg);
-		}
+  virtual void* getSymbol(const char* name)
+  {
+    auto func = GetProcAddress(handle, name);
 
-		return (void*)func;
-	}
+    if(!func)
+    {
+      string msg = "can't find symbol '";
+      msg += name;
+      msg += "'";
+      throw runtime_error(msg);
+    }
 
-	HMODULE const handle;
+    return (void*)func;
+  }
+
+  HMODULE const handle;
 };
 
-unique_ptr<DynLib> loadLibrary(const char* name) {
-	return make_unique<DynLibGnu>(name);
+unique_ptr<DynLib> loadLibrary(const char* name)
+{
+  return make_unique<DynLibGnu>(name);
 }
 

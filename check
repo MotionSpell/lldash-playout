@@ -3,7 +3,9 @@ set -eu
 
 export BIN=bin
 
-./signals/scripts/reformat.sh
+find src -name "*.cpp" -or -name "*.h" | while read f; do
+  uncrustify -q -c scripts/uncrustify.cfg --no-backup "$f"
+done
 
 make -j`nproc`
 
