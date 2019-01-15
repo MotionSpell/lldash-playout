@@ -187,18 +187,20 @@ void gub_pipeline_set_volume(GUBPipeline* pipeline, double volume) {
 }
 
 // increase the plugin user count (used for plugin shared-resources initialization)
+static std::atomic<int> g_refCount;
+
 void gub_ref(const char* gst_debug_string) {
 	(void)gst_debug_string;
-	NOT_IMPLEMENTED;
+	++g_refCount;
 }
 
 void gub_unref() {
-	NOT_IMPLEMENTED;
+	--g_refCount;
 }
 
 // returns true if the plugin user count is non-zero
 int32_t gub_is_active() {
-	NOT_IMPLEMENTED;
+	return g_refCount > 0;
 }
 
 // update the "last_frame" buffer with the last decoded frame, and retrieves its size.
