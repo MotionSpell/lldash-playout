@@ -1,14 +1,14 @@
 // Interactive standalone application, for signals-unity-bridge.so testing.
+//
+// Don't introduce direct dependencies to signals here, keep this program standalone,
+// as it serves as an example on how to use the DLL.
 #include <cstdio>
 #include <exception>
 #include "dynlib.h"
 #include "signals_unity_bridge.h"
 
-#define GL_GLEXT_PROTOTYPES
-
 #include <SDL.h>
 #include <epoxy/gl.h>
-#include <cassert>
 
 using namespace std;
 
@@ -44,7 +44,10 @@ int createShader(int type, const char* code)
 
   GLint status;
   glGetShaderiv(vs, GL_COMPILE_STATUS, &status);
-  assert(status);
+
+  if(!status)
+    throw runtime_error("Shader compilation failed");
+
   return vs;
 }
 
