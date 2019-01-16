@@ -13,25 +13,28 @@
 using namespace std;
 
 static const char* vertex_shader =
-  "#version 130\n"
-  "in vec2 pos;\n"
-  "in vec2 uv;\n"
-  "out vec2 UV;\n"
-  "\n"
-  "void main() {\n"
-  "    UV = uv;\n"
-  "    gl_Position = vec4( pos, 0.0, 1.0 );\n"
-  "}\n";
+  R"(#version 130
+in vec2 pos;
+in vec2 uv;
+out vec2 UV;
+
+void main()
+{
+    UV = uv;
+    gl_Position = vec4( pos, 0.0, 1.0 );
+}
+)";
 
 static const char* fragment_shader =
-  "#version 130\n"
-  "in vec2 UV;\n"
-  "out vec4 color;\n"
-  "uniform sampler2D mySampler;\n"
-  "\n"
-  "void main() {\n"
-  "    color = texture(mySampler, UV);\n"
-  "}\n";
+  R"(#version 130
+in vec2 UV;
+out vec4 color;
+uniform sampler2D mySampler;
+
+void main() {
+    color = texture(mySampler, UV);
+}
+)";
 
 enum { attrib_position, attrib_uv };
 
