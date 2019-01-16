@@ -82,6 +82,7 @@ void UnitySetGraphicsDevice(void* device, int deviceType, int eventType)
     return;
 
   fprintf(stderr, "Unsupported graphic device: %d\n", deviceType);
+  fprintf(stderr, "At the moment, only OpenGL is supported\n");
 }
 
 struct sub_handle
