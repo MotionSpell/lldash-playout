@@ -84,7 +84,7 @@ void safeMain(int argc, char* argv[])
   // Enable vsync
   SDL_GL_SetSwapInterval(1);
 
-  auto window = SDL_CreateWindow("App", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 256, 256, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+  auto window = SDL_CreateWindow("App", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 512, 512, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
   auto context = SDL_GL_CreateContext(window);
 
   GLuint vao;
