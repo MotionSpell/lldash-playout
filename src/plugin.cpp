@@ -7,6 +7,7 @@
 #include "lib_media/demux/dash_demux.hpp"
 #include "lib_media/demux/libav_demux.hpp"
 #include "lib_media/in/mpeg_dash_input.hpp"
+#include "lib_media/in/video_generator.hpp"
 #include "lib_media/out/null.hpp"
 
 [[noreturn]] void NotImplemented(const char* file, int line, const char* func)
@@ -50,7 +51,6 @@ void UnitySetGraphicsDevice(void* device, int deviceType, int eventType)
   (void)device;
   (void)deviceType;
   (void)eventType;
-  NOT_IMPLEMENTED;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -113,12 +113,16 @@ void gub_pipeline_setup_decoding(GUBPipeline* p, GUBPipelineVars* pipeVars)
 
     auto& pipe = *p->pipe;
 
-    auto createDemuxer = [&] (string url) {
+    auto createSource = [&] (string url) {
         if(startsWith(url, "http://"))
         {
           DashDemuxConfig cfg;
           cfg.url = url;
           return pipe.add("DashDemuxer", &cfg);
+        }
+        else if(startsWith(url, "videogen://"))
+        {
+          return pipe.addModule<In::VideoGenerator>();
         }
         else
         {
@@ -128,11 +132,12 @@ void gub_pipeline_setup_decoding(GUBPipeline* p, GUBPipelineVars* pipeVars)
         }
       };
 
-    auto demuxer = createDemuxer(pipeVars->uri);
+    auto source = createSource(pipeVars->uri);
 
-    for(int k = 0; k < (int)demuxer->getNumOutputs(); ++k)
+    for(int k = 0; k < (int)source->getNumOutputs(); ++k)
     {
-      auto metadata = demuxer->getOutputMetadata(k);
+      auto flow = GetOutputPin(source, k);
+      auto metadata = source->getOutputMetadata(k);
 
       if(!metadata || metadata->isSubtitle() /*only render audio and video*/)
       {
@@ -140,11 +145,15 @@ void gub_pipeline_setup_decoding(GUBPipeline* p, GUBPipelineVars* pipeVars)
         continue;
       }
 
-      auto decode = pipe.add("Decoder", (void*)(uintptr_t)metadata->type);
-      pipe.connect(GetOutputPin(demuxer, k), decode);
+      if(metadata->type != VIDEO_RAW)
+      {
+        auto decode = pipe.add("Decoder", (void*)(uintptr_t)metadata->type);
+        pipe.connect(flow, decode);
+        flow = decode;
+      }
 
       auto render = pipe.addModule<Out::Null>();
-      pipe.connect(decode, render);
+      pipe.connect(flow, render);
     }
   }
   catch(exception const& err)
@@ -255,7 +264,7 @@ int32_t gub_pipeline_grab_frame_with_info(GUBPipeline* pipeline, GUBPFrameInfo* 
 {
   (void)pipeline;
   (void)info;
-  NOT_IMPLEMENTED;
+  return 0;
 }
 
 double gub_pipeline_get_framerate(GUBPipeline* pipeline)
@@ -269,7 +278,7 @@ void gub_pipeline_blit_image(GUBPipeline* pipeline, void* _TextureNativePtr)
 {
   (void)_TextureNativePtr;
   (void)pipeline;
-  NOT_IMPLEMENTED;
+  printf("gub_pipeline_blit_image: implement me!\n");
 }
 
 void gub_pipeline_blit_audio(GUBPipeline* pipeline, void* _AudioNativePtr)

@@ -56,9 +56,9 @@ void onError(GUBPipeline* userData, char* message)
 
 void safeMain(int argc, char* argv[])
 {
-  if(argc != 2)
+  if(argc != 2 && argc != 3)
   {
-    throw runtime_error("Usage: app.exe <my_library>");
+    throw runtime_error("Usage: app.exe <my_library> [url]");
   }
 
   SDL_Init(SDL_INIT_VIDEO);
@@ -116,6 +116,10 @@ void safeMain(int argc, char* argv[])
   glBindTexture(GL_TEXTURE_2D, texture);
 
   auto libName = argv[1];
+  string uri = "http://livesim.dashif.org/livesim/testpic_2s/Manifest.mpd";
+
+  if(argc > 2)
+    uri = argv[2];
 
   {
     auto lib = loadLibrary(libName);
@@ -136,7 +140,7 @@ void safeMain(int argc, char* argv[])
     auto handle = func_gub_pipeline_create("name", nullptr, &onError, nullptr, nullptr);
 
     GUBPipelineVars vars {};
-    vars.uri = "http://livesim.dashif.org/livesim/testpic_2s/Manifest.mpd";
+    vars.uri = uri.c_str();
     func_gub_pipeline_setup_decoding(handle, &vars);
 
     func_gub_pipeline_play(handle);
