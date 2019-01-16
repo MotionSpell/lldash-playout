@@ -125,7 +125,8 @@ bool sub_play(sub_handle* h, const char* uri)
 {
   auto onFrame = [h] (Data data)
     {
-      h->lastPic = safe_cast<const DataPicture>(data);
+      if(auto pic = dynamic_pointer_cast<const DataPicture>(data))
+        h->lastPic = pic;
     };
 
   try
