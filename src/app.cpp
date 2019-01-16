@@ -81,6 +81,9 @@ void safeMain(int argc, char* argv[])
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
+  // Enable vsync
+  SDL_GL_SetSwapInterval(1);
+
   auto window = SDL_CreateWindow("App", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 256, 256, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
   auto context = SDL_GL_CreateContext(window);
 
