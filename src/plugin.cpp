@@ -211,7 +211,7 @@ void sub_copy_video(sub_handle* h, void* dstTextureNativeHandle)
     {
       int val = pic->getPlane(0)[row * pic->getStride(0) + col];
       int offset = (fmt.res.height - 1 - row) * fmt.res.width + col;
-      img[offset * 3 + 0] = 255;
+      img[offset * 3 + 0] = val;
       img[offset * 3 + 1] = val;
       img[offset * 3 + 2] = val;
     }
