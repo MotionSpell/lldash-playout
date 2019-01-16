@@ -30,15 +30,11 @@ APP_SRCS:=\
 	$(MYDIR)/app.cpp\
 	$(MYDIR)/dynlib_$(HOST).cpp\
 
-# For the moment, don't build interactive test app in release builds:
-# we can't link a proper Windows executable, as we're not using any GL loader.
-ifeq ($(VERSION),)
 TARGETS+=$(BIN)/app.exe
-endif
 
 $(BIN)/app.exe: $(APP_SRCS:%=$(BIN)/%.o)
-$(BIN)/app.exe: CFLAGS+=$(shell pkg-config sdl2 gl --cflags)
-$(BIN)/app.exe: LDFLAGS+=$(shell pkg-config sdl2 gl --libs)
+$(BIN)/app.exe: CFLAGS+=$(shell pkg-config sdl2 epoxy --cflags)
+$(BIN)/app.exe: LDFLAGS+=$(shell pkg-config sdl2 epoxy --libs)
 
 #------------------------------------------------------------------------------
 # Generic rules

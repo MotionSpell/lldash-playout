@@ -7,7 +7,7 @@
 #define GL_GLEXT_PROTOTYPES
 
 #include <SDL.h>
-#include <SDL_opengl.h>
+#include <epoxy/gl.h>
 #include <cassert>
 
 using namespace std;
