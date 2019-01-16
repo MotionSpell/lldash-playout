@@ -140,13 +140,13 @@ void safeMain(int argc, char* argv[])
 
   {
     auto lib = loadLibrary(libName);
-    auto funcUnitySetGraphicsDevice = IMPORT(UnitySetGraphicsDevice);
+    auto func_UnitySetGraphicsDevice = IMPORT(UnitySetGraphicsDevice);
     auto func_sub_create = IMPORT(sub_create);
     auto func_sub_play = IMPORT(sub_play);
     auto func_sub_destroy = IMPORT(sub_destroy);
     auto func_sub_copy_video = IMPORT(sub_copy_video);
 
-    funcUnitySetGraphicsDevice(nullptr, 0 /* openGL */, 0);
+    func_UnitySetGraphicsDevice(nullptr, 0 /* openGL */, 0);
 
     auto handle = func_sub_create("DecodePipeline");
 
