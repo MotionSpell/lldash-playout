@@ -148,6 +148,8 @@ void sub_get_video_info(sub_handle* h, sub_video_info* info)
 {
   (void)h;
   *info = {};
+  info->width = 128;
+  info->height = 128;
 }
 
 #include "GL/gl.h"
@@ -156,13 +158,16 @@ void sub_copy_video(sub_handle* h, void* dstTextureNativeHandle)
 {
   (void)h;
 
-  std::vector<uint8_t> img(128 * 128 * 4);
+  sub_video_info info;
+  sub_get_video_info(h, &info);
+
+  std::vector<uint8_t> img(info.width* info.height * 4);
 
   for(int i = 0; i < (int)img.size(); ++i)
     img[i] = i * 7;
 
   glBindTexture(GL_TEXTURE_2D, (GLuint)(uintptr_t)dstTextureNativeHandle);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 128, 128, 0, GL_RGBA, GL_UNSIGNED_BYTE, img.data());
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, info.width, info.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, img.data());
 }
 
 size_t sub_copy_audio(sub_handle* h, uint8_t* dst, size_t dstLen)
