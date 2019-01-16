@@ -133,7 +133,7 @@ void safeMain(int argc, char* argv[])
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
   auto libName = argv[1];
-  string uri = "http://livesim.dashif.org/livesim/testpic_2s/Manifest.mpd";
+  string uri = "videogen://";
 
   if(argc > 2)
     uri = argv[2];
