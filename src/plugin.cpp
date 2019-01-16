@@ -201,6 +201,9 @@ void sub_copy_video(sub_handle* h, void* dstTextureNativeHandle)
 {
   auto pic = h->lastPic;
 
+  if(!pic)
+    return;
+
   auto fmt = pic->getFormat();
 
   std::vector<uint8_t> img(fmt.res.width* fmt.res.height * 3);
