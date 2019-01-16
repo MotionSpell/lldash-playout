@@ -202,29 +202,36 @@ bool sub_play(sub_handle* h, const char* uri)
 
 void sub_copy_video(sub_handle* h, void* dstTextureNativeHandle)
 {
-  auto pic = h->lastPic;
-
-  if(!pic)
-    return;
-
-  auto fmt = pic->getFormat();
-
-  std::vector<uint8_t> img(fmt.res.width* fmt.res.height * 3);
-
-  for(int row = 0; row < fmt.res.height; ++row)
+  try
   {
-    for(int col = 0; col < fmt.res.width; ++col)
-    {
-      int val = pic->getPlane(0)[row * pic->getStride(0) + col];
-      int offset = (fmt.res.height - 1 - row) * fmt.res.width + col;
-      img[offset * 3 + 0] = val;
-      img[offset * 3 + 1] = val;
-      img[offset * 3 + 2] = val;
-    }
-  }
+    auto pic = h->lastPic;
 
-  glBindTexture(GL_TEXTURE_2D, (GLuint)(uintptr_t)dstTextureNativeHandle);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, fmt.res.width, fmt.res.height, 0, GL_RGB, GL_UNSIGNED_BYTE, img.data());
+    if(!pic)
+      return;
+
+    auto fmt = pic->getFormat();
+
+    std::vector<uint8_t> img(fmt.res.width* fmt.res.height * 3);
+
+    for(int row = 0; row < fmt.res.height; ++row)
+    {
+      for(int col = 0; col < fmt.res.width; ++col)
+      {
+        int val = pic->getPlane(0)[row * pic->getStride(0) + col];
+        int offset = (fmt.res.height - 1 - row) * fmt.res.width + col;
+        img[offset * 3 + 0] = val;
+        img[offset * 3 + 1] = val;
+        img[offset * 3 + 2] = val;
+      }
+    }
+
+    glBindTexture(GL_TEXTURE_2D, (GLuint)(uintptr_t)dstTextureNativeHandle);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, fmt.res.width, fmt.res.height, 0, GL_RGB, GL_UNSIGNED_BYTE, img.data());
+  }
+  catch(exception const& err)
+  {
+    fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
+  }
 }
 
 size_t sub_copy_audio(sub_handle* h, uint8_t* dst, size_t dstLen)
