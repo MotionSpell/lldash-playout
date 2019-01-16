@@ -22,18 +22,13 @@ void safeMain(int argc, char* argv[])
 
   {
     auto lib = loadLibrary(libName);
-    auto func_gub_pipeline_create = IMPORT(gub_pipeline_create);
-    auto func_gub_pipeline_destroy = IMPORT(gub_pipeline_destroy);
-    auto func_gub_pipeline_setup_decoding = IMPORT(gub_pipeline_setup_decoding);
-    auto func_gub_pipeline_play = IMPORT(gub_pipeline_play);
+    auto func_sub_create = IMPORT(sub_create);
+    auto func_sub_destroy = IMPORT(sub_destroy);
+    auto func_sub_play = IMPORT(sub_play);
 
-    GUBPipelineVars vars {};
-    vars.uri = url;
-
-    auto pipeline = func_gub_pipeline_create("myPipeline", nullptr, nullptr, nullptr, nullptr);
-    func_gub_pipeline_setup_decoding(pipeline, &vars);
-    func_gub_pipeline_play(pipeline);
-    func_gub_pipeline_destroy(pipeline);
+    auto pipeline = func_sub_create();
+    func_sub_play(pipeline, url);
+    func_sub_destroy(pipeline);
   }
 }
 

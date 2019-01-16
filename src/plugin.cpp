@@ -1,6 +1,8 @@
 #include "signals_unity_bridge.h"
 
 #include <cstdio>
+#include <cstring> // memcpy
+
 #include "lib_pipeline/pipeline.hpp"
 
 // modules
@@ -32,32 +34,31 @@ bool startsWith(string s, string prefix)
 void UnitySetGraphicsDevice(void* device, int deviceType, int eventType)
 {
   (void)device;
-  (void)deviceType;
   (void)eventType;
+
+  if(deviceType == 0) // OpenGL
+    return;
+
+  if(deviceType == -1) // dummy (non-interactive, used for tests)
+    return;
+
+  fprintf(stderr, "Unsupported graphic device: %d\n", deviceType);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Pipeline
 ///////////////////////////////////////////////////////////////////////////////
 
-struct GUBPipeline
+struct sub_handle
 {
   std::unique_ptr<Pipeline> pipe;
 };
 
-// creates a new pipeline.
-// The returned pipeline must be freed using 'gub_pipeline_destroy'.
-GUBPipeline* gub_pipeline_create(const char* name, GUBPipelineOnEosPFN eos_handler, GUBPipelineOnErrorPFN error_handler, GUBPipelineOnQosPFN qos_handler, void* userData)
+sub_handle* sub_create()
 {
-  (void)name;
-  (void)eos_handler;
-  (void)error_handler;
-  (void)qos_handler;
-  (void)userData;
-
   try
   {
-    return new GUBPipeline;
+    return new sub_handle;
   }
   catch(exception const& err)
   {
@@ -66,12 +67,11 @@ GUBPipeline* gub_pipeline_create(const char* name, GUBPipelineOnEosPFN eos_handl
   }
 }
 
-// Closes and frees a pipeline.
-void gub_pipeline_destroy(GUBPipeline* pipeline)
+void sub_destroy(sub_handle* h)
 {
   try
   {
-    delete pipeline;
+    delete h;
   }
   catch(exception const& err)
   {
@@ -79,22 +79,13 @@ void gub_pipeline_destroy(GUBPipeline* pipeline)
   }
 }
 
-// Closes a pipeline. This frees all the resources associated with the pipeline, but not the pipeline object itself.
-// The pipeline is left in an invalid state, where the only valid operation is 'gub_pipeline_destroy'.
-void gub_pipeline_close(GUBPipeline* pipeline)
-{
-  (void)pipeline;
-  NOT_IMPLEMENTED;
-}
-
-// Creates a pipeline that decodes 'uri'.
-void gub_pipeline_setup_decoding(GUBPipeline* p, GUBPipelineVars* pipeVars)
+bool sub_play(sub_handle* h, const char* uri)
 {
   try
   {
-    p->pipe = make_unique<Pipeline>();
+    h->pipe = make_unique<Pipeline>();
 
-    auto& pipe = *p->pipe;
+    auto& pipe = *h->pipe;
 
     auto createSource = [&] (string url) {
         if(startsWith(url, "http://"))
@@ -115,7 +106,7 @@ void gub_pipeline_setup_decoding(GUBPipeline* p, GUBPipelineVars* pipeVars)
         }
       };
 
-    auto source = createSource(pipeVars->uri);
+    auto source = createSource(uri);
 
     for(int k = 0; k < (int)source->getNumOutputs(); ++k)
     {
@@ -138,257 +129,33 @@ void gub_pipeline_setup_decoding(GUBPipeline* p, GUBPipelineVars* pipeVars)
       auto render = pipe.addModule<Out::Null>();
       pipe.connect(flow, render);
     }
+
+    pipe.start();
+    return true;
   }
   catch(exception const& err)
   {
     fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
+    return false;
   }
 }
 
-void gub_pipeline_setup_decoding_clock(GUBPipeline* pipeline, const char* uri, int video_index, int audio_index, const char* net_clock_addr, int net_clock_port, uint64_t basetime, float crop_left, float crop_top, float crop_right, float crop_bottom, bool isDvbWc)
+void sub_get_video_info(sub_handle* h, sub_video_info* info)
 {
-  (void)pipeline;
-  (void)uri;
-  (void)video_index;
-  (void)audio_index;
-  (void)net_clock_addr;
-  (void)net_clock_port;
-  (void)basetime;
-  (void)crop_left;
-  (void)crop_top;
-  (void)crop_right;
-  (void)crop_bottom;
-  (void)isDvbWc;
-  NOT_IMPLEMENTED;
-}
-
-void gub_pipeline_play(GUBPipeline* pipeline)
-{
-  pipeline->pipe->start();
-}
-
-void gub_pipeline_pause(GUBPipeline* pipeline)
-{
-  (void)pipeline;
-  NOT_IMPLEMENTED;
-}
-
-void gub_pipeline_stop(GUBPipeline* pipeline)
-{
-  (void)pipeline;
-  NOT_IMPLEMENTED;
-}
-
-// injects an 'end-of-stream' at source level
-void gub_pipeline_stop_encoding(GUBPipeline* pipeline)
-{
-  (void)pipeline;
-  NOT_IMPLEMENTED;
-}
-
-void gub_pipeline_set_adaptive_bitrate_limit(GUBPipeline* pipeline, float bitrate_limit)
-{
-  (void)pipeline;
-  (void)bitrate_limit;
-  NOT_IMPLEMENTED;
-}
-
-void gub_pipeline_set_basetime(GUBPipeline* pipeline, uint64_t basetime)
-{
-  (void)pipeline;
-  (void)basetime;
-  NOT_IMPLEMENTED;
-}
-
-void gub_pipeline_set_position(GUBPipeline* pipeline, double position)
-{
-  (void)pipeline;
-  (void)position;
-  NOT_IMPLEMENTED;
-}
-
-void gub_pipeline_set_volume(GUBPipeline* pipeline, double volume)
-{
-  (void)pipeline;
-  (void)volume;
-  NOT_IMPLEMENTED;
-}
-
-// increase the plugin user count (used for plugin shared-resources initialization)
-static std::atomic<int> g_refCount;
-
-void gub_ref(const char* gst_debug_string)
-{
-  (void)gst_debug_string;
-  ++g_refCount;
-}
-
-void gub_unref()
-{
-  --g_refCount;
-}
-
-// returns true if the plugin user count is non-zero
-int32_t gub_is_active()
-{
-  return g_refCount > 0;
-}
-
-// update the "last_frame" buffer with the last decoded frame, and retrieves its size.
-int32_t gub_pipeline_grab_frame(GUBPipeline* pipeline, int* width, int* height)
-{
-  (void)pipeline;
-  (void)width;
-  (void)height;
-  NOT_IMPLEMENTED;
-}
-
-int32_t gub_pipeline_grab_frame_with_info(GUBPipeline* pipeline, GUBPFrameInfo* info)
-{
-  (void)pipeline;
-  (void)info;
-  return 0;
-}
-
-double gub_pipeline_get_framerate(GUBPipeline* pipeline)
-{
-  (void)pipeline;
-  NOT_IMPLEMENTED;
-}
-
-// blit the "last_frame" buffer to the native texture handle
-void gub_pipeline_blit_image(GUBPipeline* pipeline, void* _TextureNativePtr)
-{
-  (void)_TextureNativePtr;
-  (void)pipeline;
-  printf("gub_pipeline_blit_image: implement me!\n");
-}
-
-void gub_pipeline_blit_audio(GUBPipeline* pipeline, void* _AudioNativePtr)
-{
-  (void)_AudioNativePtr;
-  (void)pipeline;
-  NOT_IMPLEMENTED;
-}
-
-double gub_pipeline_get_duration(GUBPipeline* pipeline)
-{
-  (void)pipeline;
-  NOT_IMPLEMENTED;
-}
-
-double gub_pipeline_get_position(GUBPipeline* pipeline)
-{
-  (void)pipeline;
-  NOT_IMPLEMENTED;
-}
-
-int32_t gub_pipeline_is_loaded(GUBPipeline* pipeline)
-{
-  (void)pipeline;
-  NOT_IMPLEMENTED;
-}
-
-int32_t gub_pipeline_is_playing(GUBPipeline* pipeline)
-{
-  (void)pipeline;
-  NOT_IMPLEMENTED;
-}
-
-void gub_pipeline_set_camera_rotation(GUBPipeline* pipeline, double pitch, double roll, double yaw)
-{
-  (void)pipeline;
-  (void)pitch;
-  (void)roll;
-  (void)yaw;
-  NOT_IMPLEMENTED;
-}
-
-void gub_pipeline_set_camera_rotation_offset(GUBPipeline* pipeline, double pitch, double roll, double yaw)
-{
-  (void)pipeline;
-  (void)pitch;
-  (void)roll;
-  (void)yaw;
-  NOT_IMPLEMENTED;
-}
-
-void gub_pipeline_qualities(GUBPipeline* pipeline, const char* w, const char* h, const char* qualities)
-{
-  (void)pipeline;
-  (void)w;
   (void)h;
-  (void)qualities;
-  NOT_IMPLEMENTED;
+  *info = {};
 }
 
-size_t gub_pipeline_pop_dash_report(GUBPipeline* pipeline, char* out_chunk_address, size_t max_size)
+void sub_copy_video(sub_handle* h, void* dstTextureNativeHandle)
 {
-  (void)pipeline;
-  (void)out_chunk_address;
-  (void)max_size;
-  NOT_IMPLEMENTED;
+  (void)h;
+  (void)dstTextureNativeHandle;
 }
 
-void gub_pipeline_set_dot_data_handler(GUBPipeline* pipeline, GUBPipelineDotDataHandlerPFN pfn)
+size_t sub_copy_audio(sub_handle* h, uint8_t* dst, size_t dstLen)
 {
-  (void)pipeline;
-  (void)pfn;
-  NOT_IMPLEMENTED;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// Logging
-///////////////////////////////////////////////////////////////////////////////
-
-// redirects the plugin logs to the provided callback 'pfn'
-void gub_log_set_unity_handler(GUBUnityDebugLogPFN pfn)
-{
-  (void)pfn;
-  NOT_IMPLEMENTED;
-}
-
-// Forwarding messages to external logger
-void gub_log_set_external_handler(GUBExternalLogPFN pfn)
-{
-  (void)pfn;
-  NOT_IMPLEMENTED;
-}
-
-void gub_log_set_console(int set)
-{
-  (void)set;
-  NOT_IMPLEMENTED;
-}
-
-void gub_log_set_file(const char* file)
-{
-  (void)file;
-  NOT_IMPLEMENTED;
-}
-
-void gub_log_init(const char* gst_debug_string)
-{
-  (void)gst_debug_string;
-  NOT_IMPLEMENTED;
-}
-
-void gub_log_set_cache(const char* dir)
-{
-  (void)dir;
-  NOT_IMPLEMENTED;
-}
-
-void gub_log_set_cache_clock(const char* net_clock_address, int net_clock_port)
-{
-  (void)net_clock_address;
-  (void)net_clock_port;
-  NOT_IMPLEMENTED;
-}
-
-int gub_log_switch_cache(char** output)
-{
-  (void)output;
-  NOT_IMPLEMENTED;
+  (void)h;
+  memset(dst, 0, dstLen);
+  return 0;
 }
 

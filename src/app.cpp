@@ -46,12 +46,6 @@ int createShader(int type, const char* code)
   return vs;
 }
 
-void onError(GUBPipeline* userData, char* message)
-{
-  (void)userData;
-  printf("Error: '%s'\n", message);
-}
-
 #define IMPORT(name) ((decltype(name)*)lib->getSymbol(# name))
 
 void safeMain(int argc, char* argv[])
@@ -123,27 +117,18 @@ void safeMain(int argc, char* argv[])
 
   {
     auto lib = loadLibrary(libName);
-    auto func_gub_ref = IMPORT(gub_ref);
-    auto func_gub_unref = IMPORT(gub_unref);
-    auto func_gub_pipeline_create = IMPORT(gub_pipeline_create);
-    auto func_gub_pipeline_play = IMPORT(gub_pipeline_play);
-    auto func_gub_pipeline_setup_decoding = IMPORT(gub_pipeline_setup_decoding);
-    auto func_gub_pipeline_destroy = IMPORT(gub_pipeline_destroy);
-    auto func_gub_pipeline_blit_image = IMPORT(gub_pipeline_blit_image);
-    auto func_gub_pipeline_grab_frame_with_info = IMPORT(gub_pipeline_grab_frame_with_info);
     auto funcUnitySetGraphicsDevice = IMPORT(UnitySetGraphicsDevice);
+    auto func_sub_create = IMPORT(sub_create);
+    auto func_sub_play = IMPORT(sub_play);
+    auto func_sub_destroy = IMPORT(sub_destroy);
+    auto func_sub_copy_video = IMPORT(sub_copy_video);
+    auto func_sub_get_video_info = IMPORT(sub_get_video_info);
 
     funcUnitySetGraphicsDevice(nullptr, 0 /* openGL */, 0);
 
-    func_gub_ref("TheApp");
+    auto handle = func_sub_create();
 
-    auto handle = func_gub_pipeline_create("name", nullptr, &onError, nullptr, nullptr);
-
-    GUBPipelineVars vars {};
-    vars.uri = uri.c_str();
-    func_gub_pipeline_setup_decoding(handle, &vars);
-
-    func_gub_pipeline_play(handle);
+    func_sub_play(handle, uri.c_str());
 
     bool keepGoing = true;
 
@@ -160,13 +145,14 @@ void safeMain(int argc, char* argv[])
         }
       }
 
-      GUBPFrameInfo info {};
-      int ret = func_gub_pipeline_grab_frame_with_info(handle, &info);
-      printf("%dx%d (%d)\n", info.width, info.height, ret);
+      sub_video_info info {};
+      func_sub_get_video_info(handle, &info);
+      printf("%dx%d\n", info.width, info.height);
+
       glClearColor(0, 1, 0, 1);
       glClear(GL_COLOR_BUFFER_BIT);
 
-      func_gub_pipeline_blit_image(handle, (void*)(uintptr_t)texture);
+      func_sub_copy_video(handle, (void*)(uintptr_t)texture);
 
       glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / sizeof(*vertices));
       SDL_GL_SwapWindow(window);
@@ -174,9 +160,7 @@ void safeMain(int argc, char* argv[])
       SDL_Delay(10);
     }
 
-    func_gub_pipeline_destroy(handle);
-
-    func_gub_unref();
+    func_sub_destroy(handle);
   }
 
   SDL_GL_DeleteContext(context);
