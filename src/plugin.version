@@ -40,5 +40,7 @@ FOO {
     gub_is_active;
     gub_ref;
     gub_unref;
-  local: *;     # hide everything else
+
+  # hide everything else
+  local: *;
 };

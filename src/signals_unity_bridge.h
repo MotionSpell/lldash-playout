@@ -10,7 +10,6 @@
 #define EXPORT __attribute__((visibility("default")))
 
 extern "C" {
-
 struct GUBPipeline;
 
 ///////////////////////////////////////////////////////////////////////////////
