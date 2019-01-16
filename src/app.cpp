@@ -173,13 +173,17 @@ void safeMain(int argc, char* argv[])
         }
       }
 
+      // transfer current picture from pipeline to the OpenGL texture
+      func_sub_copy_video(handle, (void*)(uintptr_t)texture);
+
+      // do the actual drawing
       glClearColor(0, 1, 0, 1);
       glClear(GL_COLOR_BUFFER_BIT);
 
-      func_sub_copy_video(handle, (void*)(uintptr_t)texture);
-
       glBindTexture(GL_TEXTURE_2D, texture);
       glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / sizeof(*vertices));
+
+      // flush
       SDL_GL_SwapWindow(window);
 
       SDL_Delay(10);
