@@ -13,11 +13,6 @@ extern "C" {
 // opaque handle to a signals pipeline
 struct sub_handle;
 
-struct sub_video_info
-{
-  int width, height;
-};
-
 // If exported by a plugin, this function will be called when graphics device is created, destroyed,
 // and before and after it is reset (ie, resolution changed).
 EXPORT void UnitySetGraphicsDevice(void* device, int deviceType, int eventType);
@@ -32,9 +27,6 @@ EXPORT void sub_destroy(sub_handle* h);
 
 // Plays a given URL.
 EXPORT bool sub_play(sub_handle* h, const char* URL);
-
-// Get info about the last decoded video frame.
-EXPORT void sub_get_video_info(sub_handle* h, sub_video_info* info);
 
 // Copy the last decoded video frame to a native texture.
 EXPORT void sub_copy_video(sub_handle* h, void* dstTextureNativeHandle);
