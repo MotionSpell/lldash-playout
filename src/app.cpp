@@ -14,22 +14,6 @@ using namespace std;
 
 enum { attrib_position, attrib_uv };
 
-int createShader(int type, const char* code)
-{
-  auto vs = glCreateShader(type);
-
-  glShaderSource(vs, 1, &code, nullptr);
-  glCompileShader(vs);
-
-  GLint status;
-  glGetShaderiv(vs, GL_COMPILE_STATUS, &status);
-
-  if(!status)
-    throw runtime_error("Shader compilation failed");
-
-  return vs;
-}
-
 struct Vertex
 {
   float x, y;
@@ -47,7 +31,25 @@ const Vertex vertices[] =
   { /* xy */ +1, -1, /* uv */ 1, 0 },
 };
 
-GLuint createShaders()
+static
+GLuint createShader(int type, const char* code)
+{
+  auto vs = glCreateShader(type);
+
+  glShaderSource(vs, 1, &code, nullptr);
+  glCompileShader(vs);
+
+  GLint status;
+  glGetShaderiv(vs, GL_COMPILE_STATUS, &status);
+
+  if(!status)
+    throw runtime_error("Shader compilation failed");
+
+  return vs;
+}
+
+static
+GLuint createProgram()
 {
   static const char* vertex_shader = R"(#version 130
 in vec2 pos;
@@ -111,15 +113,14 @@ void safeMain(int argc, char* argv[])
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
 
-  auto program = createShaders();
-
+  auto program = createProgram();
   glUseProgram(program);
 
-  glActiveTexture(GL_TEXTURE0);
-
-  GLuint vbo;
-  glGenBuffers(1, &vbo);
-  glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  {
+    GLuint vbo;
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+  }
 
   glEnableVertexAttribArray(attrib_position);
   glVertexAttribPointer(attrib_position, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void*)(0 * sizeof(float)));
