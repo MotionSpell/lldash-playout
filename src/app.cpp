@@ -166,7 +166,7 @@ void safeMain(int argc, char* argv[])
 
       while(SDL_PollEvent(&evt))
       {
-        if(evt.type == SDL_QUIT)
+        if(evt.type == SDL_QUIT || (evt.type == SDL_KEYDOWN && evt.key.keysym.sym == SDLK_ESCAPE))
         {
           keepGoing = false;
           break;
