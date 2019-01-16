@@ -12,6 +12,14 @@
 #include "lib_media/in/video_generator.hpp"
 #include "lib_media/out/null.hpp"
 
+using namespace Modules;
+using namespace Pipelines;
+using namespace std;
+
+///////////////////////////////////////////////////////////////////////////////
+// Helpers
+///////////////////////////////////////////////////////////////////////////////
+
 [[noreturn]] void NotImplemented(const char* file, int line, const char* func)
 {
   fprintf(stderr, "Not implemented: %s (%s:%d)\n", func, file, line);
@@ -21,15 +29,15 @@
 #define NOT_IMPLEMENTED \
   NotImplemented(__FILE__, __LINE__, __func__)
 
-using namespace Modules;
-using namespace Pipelines;
-using namespace std;
-
 static
 bool startsWith(string s, string prefix)
 {
   return s.substr(0, prefix.size()) == prefix;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+// API
+///////////////////////////////////////////////////////////////////////////////
 
 void UnitySetGraphicsDevice(void* device, int deviceType, int eventType)
 {
@@ -44,10 +52,6 @@ void UnitySetGraphicsDevice(void* device, int deviceType, int eventType)
 
   fprintf(stderr, "Unsupported graphic device: %d\n", deviceType);
 }
-
-///////////////////////////////////////////////////////////////////////////////
-// Pipeline
-///////////////////////////////////////////////////////////////////////////////
 
 struct sub_handle
 {
