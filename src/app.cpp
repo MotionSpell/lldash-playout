@@ -92,7 +92,7 @@ void main() {
 void safeMain(int argc, char* argv[])
 {
   if(argc != 2 && argc != 3)
-    throw runtime_error("Usage: app.exe <my_library> [url]");
+    throw runtime_error("Usage: app.exe <signals-unity-bridge.dll> [media url]");
 
   SDL_Init(SDL_INIT_VIDEO);
 
