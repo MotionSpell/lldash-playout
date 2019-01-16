@@ -12,30 +12,6 @@
 
 using namespace std;
 
-static const char* vertex_shader =
-  R"(#version 130
-in vec2 pos;
-in vec2 uv;
-out vec2 UV;
-
-void main()
-{
-    UV = uv;
-    gl_Position = vec4( pos, 0.0, 1.0 );
-}
-)";
-
-static const char* fragment_shader =
-  R"(#version 130
-in vec2 UV;
-out vec4 color;
-uniform sampler2D mySampler;
-
-void main() {
-    color = texture(mySampler, UV);
-}
-)";
-
 enum { attrib_position, attrib_uv };
 
 int createShader(int type, const char* code)
@@ -71,6 +47,44 @@ const Vertex vertices[] =
   { /* xy */ +1, -1, /* uv */ 1, 0 },
 };
 
+GLuint createShaders()
+{
+  static const char* vertex_shader = R"(#version 130
+in vec2 pos;
+in vec2 uv;
+out vec2 UV;
+
+void main()
+{
+    UV = uv;
+    gl_Position = vec4( pos, 0.0, 1.0 );
+}
+)";
+
+  static const char* fragment_shader = R"(#version 130
+in vec2 UV;
+out vec4 color;
+uniform sampler2D mySampler;
+
+void main() {
+    color = texture(mySampler, UV);
+}
+)";
+
+  auto vs = createShader(GL_VERTEX_SHADER, vertex_shader);
+  auto fs = createShader(GL_FRAGMENT_SHADER, fragment_shader);
+
+  auto program = glCreateProgram();
+  glAttachShader(program, vs);
+  glAttachShader(program, fs);
+
+  glBindAttribLocation(program, attrib_position, "pos");
+  glBindAttribLocation(program, attrib_uv, "uv");
+  glLinkProgram(program);
+
+  return program;
+}
+
 #define IMPORT(name) ((decltype(name)*)lib->getSymbol(# name))
 
 void safeMain(int argc, char* argv[])
@@ -97,16 +111,7 @@ void safeMain(int argc, char* argv[])
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
 
-  auto vs = createShader(GL_VERTEX_SHADER, vertex_shader);
-  auto fs = createShader(GL_FRAGMENT_SHADER, fragment_shader);
-
-  auto program = glCreateProgram();
-  glAttachShader(program, vs);
-  glAttachShader(program, fs);
-
-  glBindAttribLocation(program, attrib_position, "pos");
-  glBindAttribLocation(program, attrib_uv, "uv");
-  glLinkProgram(program);
+  auto program = createShaders();
 
   glUseProgram(program);
 
