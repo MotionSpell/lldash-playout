@@ -20,7 +20,7 @@ static const char* vertex_shader =
   "\n"
   "void main() {\n"
   "    UV = uv;\n"
-  "    gl_Position = vec4( pos * 0.5, 0.0, 1.0 );\n"
+  "    gl_Position = vec4( pos, 0.0, 1.0 );\n"
   "}\n";
 
 static const char* fragment_shader =
@@ -81,7 +81,7 @@ void safeMain(int argc, char* argv[])
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
-  auto window = SDL_CreateWindow("App", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+  auto window = SDL_CreateWindow("App", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 256, 256, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
   auto context = SDL_GL_CreateContext(window);
 
   GLuint vao;
