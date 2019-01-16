@@ -29,23 +29,6 @@ bool startsWith(string s, string prefix)
   return s.substr(0, prefix.size()) == prefix;
 }
 
-void sub_stop(void* handle)
-{
-  try
-  {
-    unique_ptr<Pipeline> pipeline(static_cast<Pipeline*>(handle));
-
-    if(!pipeline)
-      throw runtime_error("invalid handle");
-
-    pipeline->waitForEndOfStream();
-  }
-  catch(runtime_error const& err)
-  {
-    fprintf(stderr, "cannot stop: %s\n", err.what());
-  }
-}
-
 void UnitySetGraphicsDevice(void* device, int deviceType, int eventType)
 {
   (void)device;
