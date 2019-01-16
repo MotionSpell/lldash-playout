@@ -4,6 +4,7 @@
 #include <cstring> // memcpy
 
 #include "lib_pipeline/pipeline.hpp"
+#include "lib_utils/system_clock.hpp" // for regulation
 
 // modules
 #include "lib_media/demux/dash_demux.hpp"
@@ -11,6 +12,7 @@
 #include "lib_media/in/mpeg_dash_input.hpp"
 #include "lib_media/in/video_generator.hpp"
 #include "lib_media/out/null.hpp"
+#include "lib_media/utils/regulator.hpp"
 
 using namespace Modules;
 using namespace Pipelines;
@@ -34,6 +36,21 @@ bool startsWith(string s, string prefix)
 {
   return s.substr(0, prefix.size()) == prefix;
 }
+
+struct OutStub : ModuleS
+{
+  OutStub(KHost*, std::function<void(Data)> onFrame_) : onFrame(onFrame_)
+  {
+    addInput(this);
+  }
+
+  void process(Data data) override
+  {
+    onFrame(data);
+  }
+
+  std::function<void(Data)> const onFrame;
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // API
@@ -85,11 +102,23 @@ void sub_destroy(sub_handle* h)
 
 bool sub_play(sub_handle* h, const char* uri)
 {
+  auto onFrame = [h] (Data data)
+    {
+      auto pic = safe_cast<const DataPicture>(data.get());
+      printf("Got one frame: %p\n", pic);
+    };
+
   try
   {
     h->pipe = make_unique<Pipeline>();
 
     auto& pipe = *h->pipe;
+
+    auto regulate = [&] (OutputPin source) {
+        auto regulator = pipe.addModule<Regulator>(g_SystemClock);
+        pipe.connect(source, regulator);
+        return regulator;
+      };
 
     auto createSource = [&] (string url) {
         if(startsWith(url, "http://"))
@@ -100,7 +129,12 @@ bool sub_play(sub_handle* h, const char* uri)
         }
         else if(startsWith(url, "videogen://"))
         {
-          return pipe.addModule<In::VideoGenerator>();
+          auto m = pipe.addModule<In::VideoGenerator>();
+
+          if(0)
+            m = regulate(m);
+
+          return m;
         }
         else
         {
@@ -130,7 +164,7 @@ bool sub_play(sub_handle* h, const char* uri)
         flow = decode;
       }
 
-      auto render = pipe.addModule<Out::Null>();
+      auto render = pipe.addModule<OutStub>(onFrame);
       pipe.connect(flow, render);
     }
 
