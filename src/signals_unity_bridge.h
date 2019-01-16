@@ -23,8 +23,9 @@ struct sub_video_info
 EXPORT void UnitySetGraphicsDevice(void* device, int deviceType, int eventType);
 
 // Creates a new pipeline.
+// name: a display name for log messages. Can be NULL.
 // The returned pipeline must be freed using 'sub_destroy'.
-EXPORT sub_handle* sub_create();
+EXPORT sub_handle* sub_create(const char* name);
 
 // Destroys a pipeline. This frees all the resources.
 EXPORT void sub_destroy(sub_handle* h);

@@ -52,6 +52,17 @@ struct OutStub : ModuleS
   std::function<void(Data)> const onFrame;
 };
 
+struct Logger : LogSink
+{
+  void log(Level, const char* msg) override
+  {
+    fprintf(stderr, "[%s] %s\n", name.c_str(), msg);
+    fflush(stderr);
+  }
+
+  std::string name;
+};
+
 ///////////////////////////////////////////////////////////////////////////////
 // API
 ///////////////////////////////////////////////////////////////////////////////
@@ -73,13 +84,19 @@ void UnitySetGraphicsDevice(void* device, int deviceType, int eventType)
 struct sub_handle
 {
   std::unique_ptr<Pipeline> pipe;
+  Logger logger;
 };
 
-sub_handle* sub_create()
+sub_handle* sub_create(const char* name)
 {
   try
   {
-    return new sub_handle;
+    if(!name)
+      name = "pipeline";
+
+    auto h = make_unique<sub_handle>();
+    h->logger.name = name;
+    return h.release();
   }
   catch(exception const& err)
   {
@@ -110,7 +127,7 @@ bool sub_play(sub_handle* h, const char* uri)
 
   try
   {
-    h->pipe = make_unique<Pipeline>();
+    h->pipe = make_unique<Pipeline>(&h->logger);
 
     auto& pipe = *h->pipe;
 
@@ -129,12 +146,7 @@ bool sub_play(sub_handle* h, const char* uri)
         }
         else if(startsWith(url, "videogen://"))
         {
-          auto m = pipe.addModule<In::VideoGenerator>();
-
-          if(0)
-            m = regulate(m);
-
-          return m;
+          return pipe.addModule<In::VideoGenerator>();
         }
         else
         {
@@ -153,7 +165,7 @@ bool sub_play(sub_handle* h, const char* uri)
 
       if(!metadata || metadata->isSubtitle() /*only render audio and video*/)
       {
-        g_Log->log(Debug, format("Ignoring stream #%s", k).c_str());
+        h->logger.log(Debug, format("Ignoring stream #%s", k).c_str());
         continue;
       }
 
@@ -163,6 +175,8 @@ bool sub_play(sub_handle* h, const char* uri)
         pipe.connect(flow, decode);
         flow = decode;
       }
+
+      flow = regulate(flow);
 
       auto render = pipe.addModule<OutStub>(onFrame);
       pipe.connect(flow, render);

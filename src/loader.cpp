@@ -28,7 +28,7 @@ void safeMain(int argc, char* argv[])
     auto func_sub_destroy = IMPORT(sub_destroy);
     auto func_sub_play = IMPORT(sub_play);
 
-    auto pipeline = func_sub_create();
+    auto pipeline = func_sub_create(nullptr);
     func_sub_play(pipeline, url);
     func_sub_destroy(pipeline);
   }
