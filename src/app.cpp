@@ -1,3 +1,4 @@
+// Interactive standalone application, for signals-unity-bridge.so testing.
 #include <cstdio>
 #include <exception>
 #include "dynlib.h"
@@ -14,10 +15,11 @@ using namespace std;
 static const char* vertex_shader =
   "#version 130\n"
   "in vec2 pos;\n"
+  "in vec2 uv;\n"
   "out vec2 UV;\n"
   "\n"
   "void main() {\n"
-  "    UV = vec2(pos.x, pos.y);\n"
+  "    UV = uv;\n"
   "    gl_Position = vec4( pos * 0.5, 0.0, 1.0 );\n"
   "}\n";
 
@@ -31,7 +33,7 @@ static const char* fragment_shader =
   "    color = texture(mySampler, UV);\n"
   "}\n";
 
-enum { attrib_position };
+enum { attrib_position, attrib_uv };
 
 int createShader(int type, const char* code)
 {
@@ -45,6 +47,23 @@ int createShader(int type, const char* code)
   assert(status);
   return vs;
 }
+
+struct Vertex
+{
+  float x, y;
+  float u, v;
+};
+
+const Vertex vertices[] =
+{
+  { /* xy */ -1, -1, /* uv */ 0, 0 },
+  { /* xy */ -1, +1, /* uv */ 0, 1 },
+  { /* xy */ +1, +1, /* uv */ 1, 1 },
+
+  { /* xy */ -1, -1, /* uv */ 0, 0 },
+  { /* xy */ +1, +1, /* uv */ 1, 1 },
+  { /* xy */ +1, -1, /* uv */ 1, 0 },
+};
 
 #define IMPORT(name) ((decltype(name)*)lib->getSymbol(# name))
 
@@ -77,37 +96,32 @@ void safeMain(int argc, char* argv[])
   glAttachShader(program, fs);
 
   glBindAttribLocation(program, attrib_position, "pos");
+  glBindAttribLocation(program, attrib_uv, "uv");
   glLinkProgram(program);
 
   glUseProgram(program);
+
+  glActiveTexture(GL_TEXTURE0);
 
   GLuint vbo;
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
   glEnableVertexAttribArray(attrib_position);
-  glVertexAttribPointer(attrib_position, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (void*)(0 * sizeof(float)));
+  glVertexAttribPointer(attrib_position, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void*)(0 * sizeof(float)));
 
-  struct Vertex
-  {
-    float x, y;
-  };
-
-  const Vertex vertices[] =
-  {
-    { -1, -1 },
-    { -1, +1 },
-    { +1, +1 },
-
-    { -1, -1 },
-    { +1, +1 },
-    { +1, -1 },
-  };
+  glEnableVertexAttribArray(attrib_uv);
+  glVertexAttribPointer(attrib_uv, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void*)(2 * sizeof(float)));
 
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
   GLuint texture;
   glGenTextures(1, &texture);
+
   glBindTexture(GL_TEXTURE_2D, texture);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
   auto libName = argv[1];
   string uri = "http://livesim.dashif.org/livesim/testpic_2s/Manifest.mpd";
@@ -154,6 +168,7 @@ void safeMain(int argc, char* argv[])
 
       func_sub_copy_video(handle, (void*)(uintptr_t)texture);
 
+      glBindTexture(GL_TEXTURE_2D, texture);
       glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / sizeof(*vertices));
       SDL_GL_SwapWindow(window);
 

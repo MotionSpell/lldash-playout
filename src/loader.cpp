@@ -1,3 +1,5 @@
+// Non-interactive loader for signals-unity-bridge.so.
+// Used for automated testing.
 #include <cstdio>
 #include <stdexcept>
 #include "dynlib.h"
