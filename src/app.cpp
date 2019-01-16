@@ -122,11 +122,14 @@ void safeMain(int argc, char* argv[])
 
   glUseProgram(program);
 
+#define OFFSET(a) \
+  ((GLvoid*)(&((Vertex*)nullptr)->a))
+
   glEnableVertexAttribArray(attrib_position);
-  glVertexAttribPointer(attrib_position, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void*)(0 * sizeof(float)));
+  glVertexAttribPointer(attrib_position, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), OFFSET(x));
 
   glEnableVertexAttribArray(attrib_uv);
-  glVertexAttribPointer(attrib_uv, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void*)(2 * sizeof(float)));
+  glVertexAttribPointer(attrib_uv, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), OFFSET(u));
 
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), &vertices, GL_STATIC_DRAW);
   GLuint texture;
