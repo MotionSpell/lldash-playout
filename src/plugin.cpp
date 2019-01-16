@@ -144,6 +144,7 @@ bool sub_play(sub_handle* h, const char* uri)
     auto createSource = [&] (string url) {
         if(startsWith(url, "http://"))
         {
+          throw runtime_error("MPEG DASH input isn't implemented at the moment, please use dummy input ('videogen://') or file input ('test.mp4')");
           DashDemuxConfig cfg;
           cfg.url = url;
           return pipe.add("DashDemuxer", &cfg);
