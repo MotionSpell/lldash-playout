@@ -136,7 +136,6 @@ void safeMain(int argc, char* argv[])
     auto func_sub_play = IMPORT(sub_play);
     auto func_sub_destroy = IMPORT(sub_destroy);
     auto func_sub_copy_video = IMPORT(sub_copy_video);
-    auto func_sub_get_video_info = IMPORT(sub_get_video_info);
 
     funcUnitySetGraphicsDevice(nullptr, 0 /* openGL */, 0);
 
@@ -158,10 +157,6 @@ void safeMain(int argc, char* argv[])
           break;
         }
       }
-
-      sub_video_info info {};
-      func_sub_get_video_info(handle, &info);
-      printf("%dx%d\n", info.width, info.height);
 
       glClearColor(0, 1, 0, 1);
       glClear(GL_COLOR_BUFFER_BIT);
