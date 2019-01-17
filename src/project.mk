@@ -27,11 +27,7 @@ $(BIN)/loader.exe: $(LOADER_SRCS:%=$(BIN)/%.o)
 
 #------------------------------------------------------------------------------
 # Keep this one dead-easy to build, even without the makefile:
-APP_SRCS:=\
-	$(MYDIR)/app.cpp\
-
 TARGETS+=$(BIN)/app.exe
-
 $(BIN)/app.exe: $(MYDIR)/app.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) -o "$@" $^ $(shell pkg-config sdl2 epoxy --cflags --libs)
