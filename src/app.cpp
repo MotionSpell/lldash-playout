@@ -10,8 +10,8 @@
 // This is a test program that shows how to use the signals-unity-bridge DLL.
 //
 // Usage example:
-//   g++ app.cpp `pkg-config sdl2 epoxy --cflags --libs` -o dissidence_player
-//   ./dissidence_player signals-unity-bridge.dll [media url]
+// $ g++ app.cpp `pkg-config sdl2 epoxy --cflags --libs` -o dissidence_player
+// $ ./dissidence_player signals-unity-bridge.dll [media url]
 //
 // Don't introduce direct dependencies to signals here.
 // Keep this program standalone, as it's meant to be distributed as example.
@@ -121,7 +121,7 @@ void safeMain(int argc, char* argv[])
   if(argc != 2 && argc != 3)
     throw runtime_error("Usage: app.exe <signals-unity-bridge.dll> [media url]");
 
-  if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO))
+  if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO))
     throw runtime_error(string("Unable to initialize SDL: ") + SDL_GetError());
 
   SDL_AudioSpec wanted {};
