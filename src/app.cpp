@@ -89,12 +89,36 @@ void main() {
 
 #define IMPORT(name) ((decltype(name)*)lib->getSymbol(# name))
 
+sub_handle* g_subHandle;
+decltype(sub_copy_audio) * func_sub_copy_audio;
+
+void audioCallback(void*, uint8_t* dst, int size)
+{
+  memset(dst, 0, size);
+
+  // transfer current audio from pipeline
+  if(func_sub_copy_audio && g_subHandle)
+    func_sub_copy_audio(g_subHandle, dst, size);
+}
+
 void safeMain(int argc, char* argv[])
 {
   if(argc != 2 && argc != 3)
     throw runtime_error("Usage: app.exe <signals-unity-bridge.dll> [media url]");
 
-  SDL_Init(SDL_INIT_VIDEO);
+  SDL_Init(SDL_INIT_EVERYTHING);
+
+  SDL_AudioSpec wanted {};
+  wanted.freq = 48000;
+  wanted.channels = 2;
+  wanted.samples = 2048;
+  wanted.format = AUDIO_S16;
+  wanted.callback = &audioCallback;
+
+  SDL_AudioSpec actual {};
+
+  if(SDL_OpenAudio(&wanted, &actual) < 0)
+    throw runtime_error("Couldn't open SDL audio");
 
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE | SDL_GL_CONTEXT_PROFILE_ES);
@@ -154,10 +178,14 @@ void safeMain(int argc, char* argv[])
     auto func_sub_play = IMPORT(sub_play);
     auto func_sub_destroy = IMPORT(sub_destroy);
     auto func_sub_copy_video = IMPORT(sub_copy_video);
+    func_sub_copy_audio = IMPORT(sub_copy_audio);
+
+    SDL_PauseAudio(0);
 
     func_UnitySetGraphicsDevice(nullptr, 0 /* openGL */, 0);
 
     auto handle = func_sub_create("DecodePipeline");
+    g_subHandle = handle;
 
     func_sub_play(handle, uri.c_str());
 
@@ -192,8 +220,11 @@ void safeMain(int argc, char* argv[])
       SDL_Delay(10);
     }
 
+    SDL_PauseAudio(1);
     func_sub_destroy(handle);
   }
+
+  SDL_CloseAudio();
 
   SDL_GL_DeleteContext(context);
   SDL_DestroyWindow(window);

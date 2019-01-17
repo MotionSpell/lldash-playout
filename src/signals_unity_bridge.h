@@ -34,6 +34,10 @@ EXPORT void sub_copy_video(sub_handle* h, void* dstTextureNativeHandle);
 // Copy the last decoded audio frame to a native texture.
 // Returns: the size of audio data actually copied.
 // Might be less than 'dstLen' if no enought audio was available.
+// At the moment, the PCM format is fixed to:
+// - 48kHz
+// - 16 bit signed integer
+// - interleaved stereo.
 EXPORT size_t sub_copy_audio(sub_handle* h, uint8_t* dst, size_t dstLen);
 }
 

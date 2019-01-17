@@ -1,6 +1,7 @@
 #include "signals_unity_bridge.h"
 
 #include <cstdio>
+#include <mutex>
 #include <cstring> // memcpy
 
 #include "lib_pipeline/pipeline.hpp"
@@ -11,7 +12,9 @@
 #include "lib_media/demux/libav_demux.hpp"
 #include "lib_media/in/mpeg_dash_input.hpp"
 #include "lib_media/in/video_generator.hpp"
+#include "lib_media/in/sound_generator.hpp"
 #include "lib_media/out/null.hpp"
+#include "lib_media/transform/audio_convert.hpp"
 #include "lib_media/utils/regulator.hpp"
 
 using namespace Modules;
@@ -85,11 +88,40 @@ void UnitySetGraphicsDevice(void* device, int deviceType, int eventType)
   fprintf(stderr, "At the moment, only OpenGL is supported\n");
 }
 
+// non-blocking, overwriting fifo
+struct Fifo
+{
+  uint8_t data[8192] {};
+  int writePos = 0;
+  int readPos = 0;
+
+  void write(const uint8_t* buf, int len)
+  {
+    for(int i = 0; i < len; ++i)
+    {
+      data[writePos] = buf[i];
+      writePos = (writePos + 1) % (sizeof data);
+    }
+  }
+
+  void read(uint8_t* buf, int len)
+  {
+    for(int i = 0; i < len; ++i)
+    {
+      buf[i] = data[readPos];
+      readPos = (readPos + 1) % (sizeof data);
+    }
+  }
+};
+
 struct sub_handle
 {
   Logger logger;
-  std::shared_ptr<const DataPicture> lastPic;
   std::unique_ptr<Pipeline> pipe;
+
+  std::mutex transferMutex; // protects both below members
+  Fifo audioFifo;
+  std::shared_ptr<const DataPicture> lastPic;
 };
 
 sub_handle* sub_create(const char* name)
@@ -126,8 +158,12 @@ bool sub_play(sub_handle* h, const char* uri)
 {
   auto onFrame = [h] (Data data)
     {
+      std::unique_lock<std::mutex> lock(h->transferMutex);
+
       if(auto pic = dynamic_pointer_cast<const DataPicture>(data))
         h->lastPic = pic;
+      else if(auto pcm = dynamic_pointer_cast<const DataPcm>(data))
+        h->audioFifo.write(pcm->data().ptr, pcm->data().len);
     };
 
   try
@@ -154,6 +190,10 @@ bool sub_play(sub_handle* h, const char* uri)
         {
           return pipe.addModule<In::VideoGenerator>();
         }
+        else if(startsWith(url, "audiogen://"))
+        {
+          return pipe.addModule<In::SoundGenerator>();
+        }
         else
         {
           DemuxConfig cfg;
@@ -175,11 +215,21 @@ bool sub_play(sub_handle* h, const char* uri)
         continue;
       }
 
-      if(metadata->type != VIDEO_RAW)
+      if(metadata->type == VIDEO_PKT || metadata->type == AUDIO_PKT)
       {
         auto decode = pipe.add("Decoder", (void*)(uintptr_t)metadata->type);
         pipe.connect(flow, decode);
         flow = decode;
+      }
+
+      if(metadata->isAudio())
+      {
+        AudioConvertConfig cfg {
+          { 0 }, PcmFormat(48000, 2, Stereo, S16, Interleaved), 256
+        };
+        auto convert = pipe.add("AudioConvert", &cfg);
+        pipe.connect(flow, convert);
+        flow = convert;
       }
 
       flow = regulate(flow);
@@ -204,6 +254,7 @@ void sub_copy_video(sub_handle* h, void* dstTextureNativeHandle)
 {
   try
   {
+    std::unique_lock<std::mutex> lock(h->transferMutex);
     auto pic = h->lastPic;
 
     if(!pic)
@@ -236,8 +287,16 @@ void sub_copy_video(sub_handle* h, void* dstTextureNativeHandle)
 
 size_t sub_copy_audio(sub_handle* h, uint8_t* dst, size_t dstLen)
 {
-  (void)h;
-  memset(dst, 0, dstLen);
-  return 0;
+  try
+  {
+    std::unique_lock<std::mutex> lock(h->transferMutex);
+    h->audioFifo.read(dst, dstLen);
+    return dstLen;
+  }
+  catch(exception const& err)
+  {
+    fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
+    return 0;
+  }
 }
 
