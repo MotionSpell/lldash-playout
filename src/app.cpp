@@ -207,6 +207,7 @@ void safeMain(int argc, char* argv[])
 
     while(keepGoing)
     {
+      // process input events
       SDL_Event evt;
 
       while(SDL_PollEvent(&evt))
@@ -222,9 +223,6 @@ void safeMain(int argc, char* argv[])
       func_sub_copy_video(handle, (void*)(uintptr_t)texture);
 
       // do the actual drawing
-      glClearColor(0, 1, 0, 1);
-      glClear(GL_COLOR_BUFFER_BIT);
-
       glBindTexture(GL_TEXTURE_2D, texture);
       glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / sizeof(*vertices));
 
