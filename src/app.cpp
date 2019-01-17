@@ -1,7 +1,21 @@
-// Interactive standalone application, for signals-unity-bridge.so testing.
+// Copyright (C) 2019 Motion Spell
 //
-// Don't introduce direct dependencies to signals here, keep this program standalone,
-// as it serves as an example on how to use the DLL.
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+// Interactive standalone application, for signals-unity-bridge.so testing.
+
+//
+// This is a test program that shows how to use the signals-unity-bridge DLL.
+//
+// Usage example:
+//   g++ app.cpp `pkg-config sdl2 epoxy --cflags --libs` -o dissidence_player
+//   ./dissidence_player signals-unity-bridge.dll [media url]
+//
+// Don't introduce direct dependencies to signals here.
+// Keep this program standalone, as it's meant to be distributed as example.
+//
 #include <cstdio>
 #include <exception>
 #include <stdexcept>
