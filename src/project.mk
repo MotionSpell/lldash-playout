@@ -28,7 +28,6 @@ $(BIN)/loader.exe: $(LOADER_SRCS:%=$(BIN)/%.o)
 #------------------------------------------------------------------------------
 APP_SRCS:=\
 	$(MYDIR)/app.cpp\
-	$(MYDIR)/dynlib_$(HOST).cpp\
 
 TARGETS+=$(BIN)/app.exe
 

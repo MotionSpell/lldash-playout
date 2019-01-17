@@ -4,7 +4,7 @@
 // as it serves as an example on how to use the DLL.
 #include <cstdio>
 #include <exception>
-#include "dynlib.h"
+#include <stdexcept>
 #include "signals_unity_bridge.h"
 
 #include <SDL.h>
@@ -87,7 +87,7 @@ void main() {
   return program;
 }
 
-#define IMPORT(name) ((decltype(name)*)lib->getSymbol(# name))
+#define IMPORT(name) ((decltype(name)*)SDL_LoadFunction(lib, # name))
 
 sub_handle* g_subHandle;
 decltype(sub_copy_audio) * func_sub_copy_audio;
@@ -172,7 +172,7 @@ void safeMain(int argc, char* argv[])
     uri = argv[2];
 
   {
-    auto lib = loadLibrary(libName);
+    auto lib = SDL_LoadObject(libName);
     auto func_UnitySetGraphicsDevice = IMPORT(UnitySetGraphicsDevice);
     auto func_sub_create = IMPORT(sub_create);
     auto func_sub_play = IMPORT(sub_play);
