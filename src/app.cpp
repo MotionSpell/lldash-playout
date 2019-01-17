@@ -4,10 +4,9 @@
 // it under the terms of the GNU Affero General Public License as
 // published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
-// Interactive standalone application, for signals-unity-bridge.so testing.
 
-//
-// This is a test program that shows how to use the signals-unity-bridge DLL.
+// Interactive standalone application, for signals-unity-bridge.so testing.
+// This shows how to use the signals-unity-bridge DLL.
 //
 // Usage example:
 // $ g++ app.cpp `pkg-config sdl2 epoxy --cflags --libs` -o dissidence_player
