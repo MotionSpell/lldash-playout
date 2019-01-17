@@ -111,8 +111,7 @@ void audioCallback(void*, uint8_t* dst, int size)
   memset(dst, 0, size);
 
   // transfer current audio from pipeline
-  if(func_sub_copy_audio && g_subHandle)
-    func_sub_copy_audio(g_subHandle, dst, size);
+  func_sub_copy_audio(g_subHandle, dst, size);
 }
 
 void safeMain(int argc, char* argv[])
@@ -195,14 +194,14 @@ void safeMain(int argc, char* argv[])
     auto func_sub_copy_video = IMPORT(sub_copy_video);
     func_sub_copy_audio = IMPORT(sub_copy_audio);
 
-    SDL_PauseAudio(0);
-
     func_UnitySetGraphicsDevice(nullptr, 0 /* openGL */, 0);
 
     auto handle = func_sub_create("DecodePipeline");
     g_subHandle = handle;
 
     func_sub_play(handle, uri.c_str());
+
+    SDL_PauseAudio(0);
 
     bool keepGoing = true;
 
