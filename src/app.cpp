@@ -58,8 +58,8 @@ out vec2 UV;
 
 void main()
 {
-    UV = uv;
-    gl_Position = vec4( pos, 0.0, 1.0 );
+  UV = uv;
+  gl_Position = vec4( pos, 0.0, 1.0 );
 }
 )";
 
@@ -68,8 +68,9 @@ in vec2 UV;
 out vec4 color;
 uniform sampler2D mySampler;
 
-void main() {
-    color = texture(mySampler, UV);
+void main()
+{
+  color = texture(mySampler, UV);
 }
 )";
 
@@ -106,7 +107,8 @@ void safeMain(int argc, char* argv[])
   if(argc != 2 && argc != 3)
     throw runtime_error("Usage: app.exe <signals-unity-bridge.dll> [media url]");
 
-  SDL_Init(SDL_INIT_EVERYTHING);
+  if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO))
+    throw runtime_error(string("Unable to initialize SDL: ") + SDL_GetError());
 
   SDL_AudioSpec wanted {};
   wanted.freq = 48000;
