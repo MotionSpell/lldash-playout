@@ -231,6 +231,13 @@ bool sub_play(sub_handle* h, const char* uri)
         pipe.connect(flow, convert);
         flow = convert;
       }
+      else if(metadata->isVideo())
+      {
+        auto fmt = PictureFormat({ 720, 576 }, PixelFormat::RGB24);
+        auto convert = pipe.add("VideoConvert", &fmt);
+        pipe.connect(flow, convert);
+        flow = convert;
+      }
 
       flow = regulate(flow);
 
@@ -264,16 +271,14 @@ void sub_copy_video(sub_handle* h, void* dstTextureNativeHandle)
 
     std::vector<uint8_t> img(fmt.res.width* fmt.res.height * 3);
 
+    const uint8_t* src = pic->getPlane(0);
+    uint8_t* dst = img.data();
+
     for(int row = 0; row < fmt.res.height; ++row)
     {
-      for(int col = 0; col < fmt.res.width; ++col)
-      {
-        int val = pic->getPlane(0)[row * pic->getStride(0) + col];
-        int offset = (fmt.res.height - 1 - row) * fmt.res.width + col;
-        img[offset * 3 + 0] = val;
-        img[offset * 3 + 1] = val;
-        img[offset * 3 + 2] = val;
-      }
+      memcpy(dst, src, 3 * fmt.res.width);
+      src += pic->getStride(0);
+      dst += 3 * fmt.res.width;
     }
 
     glBindTexture(GL_TEXTURE_2D, (GLuint)(uintptr_t)dstTextureNativeHandle);
