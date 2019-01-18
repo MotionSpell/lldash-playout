@@ -183,7 +183,7 @@ bool sub_play(sub_handle* h, const char* uri)
         }
         else if(startsWith(url, "videogen://"))
         {
-          return pipe.addModule<In::VideoGenerator>();
+          return pipe.addModule<In::VideoGenerator>(url.c_str());
         }
         else if(startsWith(url, "audiogen://"))
         {
