@@ -146,6 +146,10 @@ void sub_destroy(sub_handle* h)
 {
   try
   {
+    {
+      std::unique_lock<std::mutex> lock(h->transferMutex);
+      h->lastPic = nullptr;
+    }
     delete h;
   }
   catch(exception const& err)
