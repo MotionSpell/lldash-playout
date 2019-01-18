@@ -179,14 +179,11 @@ void safeMain(int argc, char* argv[])
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-  auto libName = argv[1];
-  string uri = "videogen://";
-
-  if(argc > 2)
-    uri = argv[2];
+  const string libraryPath = argv[1];
+  const string mediaUrl = argc > 2 ? argv[2] : "videogen://";
 
   {
-    auto lib = SDL_LoadObject(libName);
+    auto lib = SDL_LoadObject(libraryPath.c_str());
     auto func_UnitySetGraphicsDevice = IMPORT(UnitySetGraphicsDevice);
     auto func_sub_create = IMPORT(sub_create);
     auto func_sub_play = IMPORT(sub_play);
@@ -199,7 +196,7 @@ void safeMain(int argc, char* argv[])
     auto handle = func_sub_create("DecodePipeline");
     g_subHandle = handle;
 
-    func_sub_play(handle, uri.c_str());
+    func_sub_play(handle, mediaUrl.c_str());
 
     SDL_PauseAudio(0);
 
