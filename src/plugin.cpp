@@ -25,15 +25,6 @@ using namespace std;
 // Helpers
 ///////////////////////////////////////////////////////////////////////////////
 
-[[noreturn]] void NotImplemented(const char* file, int line, const char* func)
-{
-  fprintf(stderr, "Not implemented: %s (%s:%d)\n", func, file, line);
-  exit(1);
-}
-
-#define NOT_IMPLEMENTED \
-  NotImplemented(__FILE__, __LINE__, __func__)
-
 static
 bool startsWith(string s, string prefix)
 {
