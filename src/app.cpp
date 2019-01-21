@@ -17,6 +17,7 @@
 //
 #include <cstdio>
 #include <exception>
+#include <functional>
 #include <stdexcept>
 #include "signals_unity_bridge.h"
 
@@ -103,16 +104,41 @@ void main()
 
 #define IMPORT(name) ((decltype(name)*)SDL_LoadFunction(lib, # name))
 
-sub_handle* g_subHandle;
-decltype(sub_copy_audio) * func_sub_copy_audio;
-
-void audioCallback(void*, uint8_t* dst, int size)
+struct SdlAudioOutput
 {
-  memset(dst, 0, size);
+  SdlAudioOutput(std::function<void(uint8_t*, int)> callback) : userCallback(callback)
+  {
+    SDL_AudioSpec wanted {};
+    wanted.freq = 48000;
+    wanted.channels = 2;
+    wanted.samples = 2048;
+    wanted.format = AUDIO_S16;
+    wanted.callback = &audioCallback;
+    wanted.userdata = this;
 
-  // transfer current audio from pipeline
-  func_sub_copy_audio(g_subHandle, dst, size);
-}
+    SDL_AudioSpec actual {};
+
+    if(SDL_OpenAudio(&wanted, &actual) < 0)
+      throw runtime_error("Couldn't open SDL audio");
+
+    SDL_PauseAudio(0);
+  }
+
+  ~SdlAudioOutput()
+  {
+    SDL_PauseAudio(1);
+    SDL_CloseAudio();
+  }
+
+private:
+  static void audioCallback(void* userParam, uint8_t* dst, int size)
+  {
+    auto pThis = reinterpret_cast<SdlAudioOutput*>(userParam);
+    pThis->userCallback(dst, size);
+  }
+
+  std::function<void(uint8_t*, int)> const userCallback;
+};
 
 void safeMain(int argc, char* argv[])
 {
@@ -121,18 +147,6 @@ void safeMain(int argc, char* argv[])
 
   if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO))
     throw runtime_error(string("Unable to initialize SDL: ") + SDL_GetError());
-
-  SDL_AudioSpec wanted {};
-  wanted.freq = 48000;
-  wanted.channels = 2;
-  wanted.samples = 2048;
-  wanted.format = AUDIO_S16;
-  wanted.callback = &audioCallback;
-
-  SDL_AudioSpec actual {};
-
-  if(SDL_OpenAudio(&wanted, &actual) < 0)
-    throw runtime_error("Couldn't open SDL audio");
 
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE | SDL_GL_CONTEXT_PROFILE_ES);
@@ -189,51 +203,51 @@ void safeMain(int argc, char* argv[])
     auto func_sub_play = IMPORT(sub_play);
     auto func_sub_destroy = IMPORT(sub_destroy);
     auto func_sub_copy_video = IMPORT(sub_copy_video);
-    func_sub_copy_audio = IMPORT(sub_copy_audio);
+    auto func_sub_copy_audio = IMPORT(sub_copy_audio);
 
     func_UnitySetGraphicsDevice(nullptr, 0 /* openGL */, 0);
 
     auto handle = func_sub_create("MyMediaPipeline");
-    g_subHandle = handle;
 
     func_sub_play(handle, mediaUrl.c_str());
 
-    SDL_PauseAudio(0);
-
-    bool keepGoing = true;
-
-    while(keepGoing)
     {
-      // process input events
-      SDL_Event evt;
+      auto audio = SdlAudioOutput([&] (uint8_t* dst, int size) {
+        func_sub_copy_audio(handle, dst, size);
+      });
 
-      while(SDL_PollEvent(&evt))
+      bool keepGoing = true;
+
+      while(keepGoing)
       {
-        if(evt.type == SDL_QUIT || (evt.type == SDL_KEYDOWN && evt.key.keysym.sym == SDLK_ESCAPE))
+        // process input events
+        SDL_Event evt;
+
+        while(SDL_PollEvent(&evt))
         {
-          keepGoing = false;
-          break;
+          if(evt.type == SDL_QUIT || (evt.type == SDL_KEYDOWN && evt.key.keysym.sym == SDLK_ESCAPE))
+          {
+            keepGoing = false;
+            break;
+          }
         }
+
+        // transfer current picture from pipeline to the OpenGL texture
+        func_sub_copy_video(handle, (void*)(uintptr_t)texture);
+
+        // do the actual drawing
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / sizeof(*vertices));
+
+        // flush
+        SDL_GL_SwapWindow(window);
+
+        SDL_Delay(10);
       }
-
-      // transfer current picture from pipeline to the OpenGL texture
-      func_sub_copy_video(handle, (void*)(uintptr_t)texture);
-
-      // do the actual drawing
-      glBindTexture(GL_TEXTURE_2D, texture);
-      glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / sizeof(*vertices));
-
-      // flush
-      SDL_GL_SwapWindow(window);
-
-      SDL_Delay(10);
     }
 
-    SDL_PauseAudio(1);
     func_sub_destroy(handle);
   }
-
-  SDL_CloseAudio();
 
   SDL_GL_DeleteContext(context);
   SDL_DestroyWindow(window);
