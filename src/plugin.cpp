@@ -172,7 +172,10 @@ bool sub_play(sub_handle* h, const char* url)
 
     auto regulate = [&] (OutputPin source)
       {
-        auto regulator = pipe.addNamedModule<Regulator>("Regulator", g_SystemClock);
+        static int i;
+        auto metadata = source.mod->getOutputMetadata(source.index);
+        auto name = format("Regulator[%s]", i++);
+        auto regulator = pipe.addNamedModule<Regulator>(name.c_str(), g_SystemClock);
         pipe.connect(source, regulator);
         return regulator;
       };
@@ -214,12 +217,12 @@ bool sub_play(sub_handle* h, const char* url)
     }
     else if(startsWith(url, "videogen://"))
     {
-      videoPin = pipe.addModule<In::VideoGenerator>(url);
-      audioPin = pipe.addModule<In::SoundGenerator>();
+      videoPin = pipe.addNamedModule<In::VideoGenerator>("VideoGenerator", url);
+      audioPin = pipe.addNamedModule<In::SoundGenerator>("AudioGenerator");
     }
     else if(startsWith(url, "audiogen://"))
     {
-      audioPin = pipe.addModule<In::SoundGenerator>();
+      audioPin = pipe.addNamedModule<In::SoundGenerator>("AudioGenerator");
     }
     else
     {
@@ -250,7 +253,7 @@ bool sub_play(sub_handle* h, const char* url)
 
       flow = regulate(flow);
 
-      auto render = pipe.addModule<OutStub>(onFrame);
+      auto render = pipe.addNamedModule<OutStub>("VideoSink", onFrame);
       pipe.connect(flow, render);
     }
 
@@ -276,7 +279,7 @@ bool sub_play(sub_handle* h, const char* url)
 
       flow = regulate(flow);
 
-      auto render = pipe.addModule<OutStub>(onFrame);
+      auto render = pipe.addNamedModule<OutStub>("AudioSink", onFrame);
       pipe.connect(flow, render);
     }
 
