@@ -82,7 +82,7 @@ void UnitySetGraphicsDevice(void* device, int deviceType, int eventType)
 // non-blocking, overwriting fifo
 struct Fifo
 {
-  uint8_t data[8192] {};
+  uint8_t data[1024 * 1024] {};
   int writePos = 0;
   int readPos = 0;
 
@@ -100,7 +100,10 @@ struct Fifo
     for(int i = 0; i < len; ++i)
     {
       buf[i] = data[readPos];
-      readPos = (readPos + 1) % (sizeof data);
+
+      // don't go below the write position
+      if(readPos != writePos)
+        readPos = (readPos + 1) % (sizeof data);
     }
   }
 };
@@ -176,7 +179,6 @@ bool sub_play(sub_handle* h, const char* uri)
     auto createSource = [&] (string url) {
         if(startsWith(url, "http://"))
         {
-          throw runtime_error("MPEG DASH input isn't implemented at the moment, please use dummy input ('videogen://') or file input ('test.mp4')");
           DashDemuxConfig cfg;
           cfg.url = url;
           return pipe.add("DashDemuxer", &cfg);
