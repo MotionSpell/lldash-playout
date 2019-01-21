@@ -172,7 +172,7 @@ bool sub_play(sub_handle* h, const char* url)
 
     auto regulate = [&] (OutputPin source)
       {
-        auto regulator = pipe.addModule<Regulator>(g_SystemClock);
+        auto regulator = pipe.addNamedModule<Regulator>("Regulator", g_SystemClock);
         pipe.connect(source, regulator);
         return regulator;
       };
