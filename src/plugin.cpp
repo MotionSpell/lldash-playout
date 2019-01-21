@@ -208,6 +208,9 @@ bool sub_play(sub_handle* h, const char* url)
       auto demux = pipe.add("DashDemuxer", &cfg);
       videoPin = getFirstPin(demux, VIDEO_PKT);
       audioPin = getFirstPin(demux, AUDIO_PKT);
+
+      h->logger.log(Warning, "MPEG DASH audio not supported yet");
+      audioPin = OutputPin(nullptr);
     }
     else if(startsWith(url, "videogen://"))
     {
