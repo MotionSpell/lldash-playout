@@ -4,7 +4,6 @@ EXTRA?=signals/sysroot
 
 CFLAGS+=-fPIC
 
-PKGS+=sdl2
 #------------------------------------------------------------------------------
 
 include signals/Makefile
