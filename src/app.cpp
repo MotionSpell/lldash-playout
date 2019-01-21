@@ -193,7 +193,7 @@ void safeMain(int argc, char* argv[])
 
     func_UnitySetGraphicsDevice(nullptr, 0 /* openGL */, 0);
 
-    auto handle = func_sub_create("DecodePipeline");
+    auto handle = func_sub_create("MyMediaPipeline");
     g_subHandle = handle;
 
     func_sub_play(handle, mediaUrl.c_str());
