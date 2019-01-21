@@ -152,7 +152,7 @@ void sub_destroy(sub_handle* h)
   }
 }
 
-bool sub_play(sub_handle* h, const char* uri)
+bool sub_play(sub_handle* h, const char* url)
 {
   auto onFrame = [h] (Data data)
     {
@@ -170,68 +170,103 @@ bool sub_play(sub_handle* h, const char* uri)
 
     auto& pipe = *h->pipe;
 
-    auto regulate = [&] (OutputPin source) {
+    auto regulate = [&] (OutputPin source)
+      {
         auto regulator = pipe.addModule<Regulator>(g_SystemClock);
         pipe.connect(source, regulator);
         return regulator;
       };
 
-    auto createSource = [&] (string url) {
-        if(startsWith(url, "http://"))
-        {
-          DashDemuxConfig cfg;
-          cfg.url = url;
-          return pipe.add("DashDemuxer", &cfg);
-        }
-        else if(startsWith(url, "videogen://"))
-        {
-          return pipe.addModule<In::VideoGenerator>(url.c_str());
-        }
-        else if(startsWith(url, "audiogen://"))
-        {
-          return pipe.addModule<In::SoundGenerator>();
-        }
-        else
-        {
-          DemuxConfig cfg;
-          cfg.url = url;
-          return pipe.add("LibavDemux", &cfg);
-        }
-      };
-
-    auto source = createSource(uri);
-
-    for(int k = 0; k < (int)source->getNumOutputs(); ++k)
-    {
-      auto flow = GetOutputPin(source, k);
-      auto metadata = source->getOutputMetadata(k);
-
-      if(!metadata || metadata->isSubtitle() /*only render audio and video*/)
+    auto decode = [&] (OutputPin flow)
       {
-        h->logger.log(Warning, format("Ignoring stream #%s", k).c_str());
-        continue;
-      }
-
-      if(metadata->type == VIDEO_PKT || metadata->type == AUDIO_PKT)
-      {
+        auto metadata = flow.mod->getOutputMetadata(flow.index);
         auto decode = pipe.add("Decoder", (void*)(uintptr_t)metadata->type);
         pipe.connect(flow, decode);
-        flow = decode;
+        return decode;
+      };
+
+    auto getFirstPin = [] (IFilter* source, int type)
+      {
+        for(int k = 0; k < (int)source->getNumOutputs(); ++k)
+        {
+          auto metadata = source->getOutputMetadata(k);
+
+          if(metadata && metadata->type == type)
+            return GetOutputPin(source, k);
+        }
+
+        return OutputPin(nullptr);
+      };
+
+    auto videoPin = OutputPin(nullptr);
+    auto audioPin = OutputPin(nullptr);
+
+    if(startsWith(url, "http://"))
+    {
+      DashDemuxConfig cfg;
+      cfg.url = url;
+      auto demux = pipe.add("DashDemuxer", &cfg);
+      videoPin = getFirstPin(demux, VIDEO_PKT);
+      audioPin = getFirstPin(demux, AUDIO_PKT);
+    }
+    else if(startsWith(url, "videogen://"))
+    {
+      videoPin = pipe.addModule<In::VideoGenerator>(url);
+      audioPin = pipe.addModule<In::SoundGenerator>();
+    }
+    else if(startsWith(url, "audiogen://"))
+    {
+      audioPin = pipe.addModule<In::SoundGenerator>();
+    }
+    else
+    {
+      DemuxConfig cfg;
+      cfg.url = url;
+      auto demux = pipe.add("LibavDemux", &cfg);
+      videoPin = getFirstPin(demux, VIDEO_PKT);
+      audioPin = getFirstPin(demux, AUDIO_PKT);
+    }
+
+    if(videoPin.mod)
+    {
+      auto flow = videoPin;
+
+      {
+        auto metadata = flow.mod->getOutputMetadata(flow.index);
+
+        if(metadata->type == VIDEO_PKT)
+          flow = decode(flow);
       }
 
-      if(metadata->isAudio())
+      {
+        auto fmt = PictureFormat({ 720, 576 }, PixelFormat::RGB24);
+        auto convert = pipe.add("VideoConvert", &fmt);
+        pipe.connect(flow, convert);
+        flow = convert;
+      }
+
+      flow = regulate(flow);
+
+      auto render = pipe.addModule<OutStub>(onFrame);
+      pipe.connect(flow, render);
+    }
+
+    if(audioPin.mod)
+    {
+      auto flow = audioPin;
+
+      {
+        auto metadata = flow.mod->getOutputMetadata(flow.index);
+
+        if(metadata->type == AUDIO_PKT)
+          flow = decode(flow);
+      }
+
       {
         AudioConvertConfig cfg {
           { 0 }, PcmFormat(48000, 2, Stereo, S16, Interleaved), 256
         };
         auto convert = pipe.add("AudioConvert", &cfg);
-        pipe.connect(flow, convert);
-        flow = convert;
-      }
-      else if(metadata->isVideo())
-      {
-        auto fmt = PictureFormat({ 720, 576 }, PixelFormat::RGB24);
-        auto convert = pipe.add("VideoConvert", &fmt);
         pipe.connect(flow, convert);
         flow = convert;
       }
