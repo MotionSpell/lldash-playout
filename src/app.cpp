@@ -247,6 +247,7 @@ void safeMain(int argc, char* argv[])
     }
 
     func_sub_destroy(handle);
+    SDL_UnloadObject(lib);
   }
 
   SDL_GL_DeleteContext(context);
