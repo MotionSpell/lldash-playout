@@ -152,6 +152,19 @@ void sub_destroy(sub_handle* h)
   }
 }
 
+// introduce a 3s latency
+struct DelayedClock : IClock
+{
+  DelayedClock(IClock* outer_, int delayInSeconds_) : outer(outer_), delayInSeconds(delayInSeconds_) {}
+
+  Fraction now() const override { return outer->now() - delayInSeconds; }
+
+  IClock* const outer;
+  const int delayInSeconds;
+};
+
+auto g_DelayedClock = std::make_shared<DelayedClock>(g_SystemClock.get(), 0);
+
 bool sub_play(sub_handle* h, const char* url)
 {
   auto onFrame = [h] (Data data)
@@ -175,7 +188,7 @@ bool sub_play(sub_handle* h, const char* url)
         static int i;
         auto metadata = source.mod->getOutputMetadata(source.index);
         auto name = format("Regulator[%s]", i++);
-        auto regulator = pipe.addNamedModule<Regulator>(name.c_str(), g_SystemClock);
+        auto regulator = pipe.addNamedModule<Regulator>(name.c_str(), g_DelayedClock);
         pipe.connect(source, regulator);
         return regulator;
       };
@@ -212,8 +225,8 @@ bool sub_play(sub_handle* h, const char* url)
       videoPin = getFirstPin(demux, VIDEO_PKT);
       audioPin = getFirstPin(demux, AUDIO_PKT);
 
-      h->logger.log(Warning, "MPEG DASH audio not supported yet");
-      audioPin = OutputPin(nullptr);
+      // introduce a 3s latency
+      g_DelayedClock = std::make_shared<DelayedClock>(g_SystemClock.get(), 3);
     }
     else if(startsWith(url, "videogen://"))
     {
