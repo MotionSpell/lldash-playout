@@ -163,10 +163,10 @@ struct DelayedClock : IClock
   const int delayInSeconds;
 };
 
-auto g_DelayedClock = std::make_shared<DelayedClock>(g_SystemClock.get(), 0);
-
 bool sub_play(sub_handle* h, const char* url)
 {
+  auto delayedClock = std::make_shared<DelayedClock>(g_SystemClock.get(), 0);
+
   auto onFrame = [h] (Data data)
     {
       std::unique_lock<std::mutex> lock(h->transferMutex);
@@ -188,7 +188,7 @@ bool sub_play(sub_handle* h, const char* url)
         static int i;
         auto metadata = source.mod->getOutputMetadata(source.index);
         auto name = format("Regulator[%s]", i++);
-        auto regulator = pipe.addNamedModule<Regulator>(name.c_str(), g_DelayedClock);
+        auto regulator = pipe.addNamedModule<Regulator>(name.c_str(), delayedClock);
         pipe.connect(source, regulator);
         return regulator;
       };
@@ -226,7 +226,7 @@ bool sub_play(sub_handle* h, const char* url)
       audioPin = getFirstPin(demux, AUDIO_PKT);
 
       // introduce a 3s latency
-      g_DelayedClock = std::make_shared<DelayedClock>(g_SystemClock.get(), 3);
+      delayedClock = std::make_shared<DelayedClock>(g_SystemClock.get(), 3);
     }
     else if(startsWith(url, "videogen://"))
     {
