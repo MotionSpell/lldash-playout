@@ -77,6 +77,7 @@ void UnitySetGraphicsDevice(void* device, int deviceType, int eventType)
 
   fprintf(stderr, "Unsupported graphic device: %d\n", deviceType);
   fprintf(stderr, "At the moment, only OpenGL is supported\n");
+  fflush(stderr);
 }
 
 // non-blocking, overwriting fifo
@@ -132,6 +133,7 @@ sub_handle* sub_create(const char* name)
   catch(exception const& err)
   {
     fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
+    fflush(stderr);
     return nullptr;
   }
 }
@@ -149,6 +151,7 @@ void sub_destroy(sub_handle* h)
   catch(exception const& err)
   {
     fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
+    fflush(stderr);
   }
 }
 
@@ -302,6 +305,7 @@ bool sub_play(sub_handle* h, const char* url)
   catch(exception const& err)
   {
     fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
+    fflush(stderr);
     return false;
   }
 }
@@ -338,6 +342,7 @@ void sub_copy_video(sub_handle* h, void* dstTextureNativeHandle)
   catch(exception const& err)
   {
     fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
+    fflush(stderr);
   }
 }
 
@@ -352,6 +357,7 @@ size_t sub_copy_audio(sub_handle* h, uint8_t* dst, size_t dstLen)
   catch(exception const& err)
   {
     fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
+    fflush(stderr);
     return 0;
   }
 }
