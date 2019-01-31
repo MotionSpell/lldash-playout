@@ -75,9 +75,10 @@ void UnitySetGraphicsDevice(void* device, int deviceType, int eventType)
   if(deviceType == -1) // dummy (non-interactive, used for tests)
     return;
 
-  fprintf(stderr, "Unsupported graphic device: %d\n", deviceType);
+  fprintf(stderr, "ERROR: Unsupported graphic device: %d\n", deviceType);
   fprintf(stderr, "At the moment, only OpenGL is supported\n");
   fflush(stderr);
+  exit(1);
 }
 
 // non-blocking, overwriting fifo
