@@ -35,7 +35,6 @@ struct OutStub : ModuleS
 {
   OutStub(KHost*, std::function<void(Data)> onFrame_) : onFrame(onFrame_)
   {
-    addInput();
   }
 
   void processOne(Data data) override
