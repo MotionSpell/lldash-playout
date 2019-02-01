@@ -253,7 +253,7 @@ void safeMain(int argc, char* argv[])
   auto func_sub_copy_video = IMPORT(sub_copy_video);
   auto func_sub_copy_audio = IMPORT(sub_copy_audio);
 
-  func_UnitySetGraphicsDevice(nullptr, 0 /* openGL */, 0);
+  func_UnitySetGraphicsDevice(nullptr, 17 /* OpenGL Core */, 0);
 
   auto handle = func_sub_create("MyMediaPipeline");
 
