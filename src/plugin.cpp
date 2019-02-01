@@ -342,6 +342,25 @@ bool sub_play(sub_handle* h, const char* url)
 
 #include "GL/gl.h"
 
+static
+void ensureGl(char const* expr, int line)
+{
+  auto const errorCode = glGetError();
+
+  if(errorCode == GL_NO_ERROR)
+    return;
+
+  string msg;
+  msg += "OpenGL error\n";
+  msg += "Expr: " + string(expr) + "\n";
+  msg += "Line: " + to_string(line) + "\n";
+  msg += "Code: " + to_string(errorCode) + "\n";
+  throw runtime_error(msg);
+}
+
+#define SAFE_GL(a) \
+  do { a; ensureGl(# a, __LINE__); } while(0)
+
 void sub_copy_video(sub_handle* h, void* dstTextureNativeHandle)
 {
   try
@@ -366,8 +385,8 @@ void sub_copy_video(sub_handle* h, void* dstTextureNativeHandle)
       dst += 3 * fmt.res.width;
     }
 
-    glBindTexture(GL_TEXTURE_2D, (GLuint)(uintptr_t)dstTextureNativeHandle);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, fmt.res.width, fmt.res.height, 0, GL_RGB, GL_UNSIGNED_BYTE, img.data());
+    SAFE_GL(glBindTexture(GL_TEXTURE_2D, (GLuint)(uintptr_t)dstTextureNativeHandle));
+    SAFE_GL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, fmt.res.width, fmt.res.height, 0, GL_RGB, GL_UNSIGNED_BYTE, img.data()));
   }
   catch(exception const& err)
   {
