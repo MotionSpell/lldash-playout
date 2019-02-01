@@ -34,7 +34,7 @@ function run_test
 
 function get_exports
 {
-  nm -D $1 | grep " T " | sed 's/.* T //' | sort
+  nm -D $1 | grep " T " | sed 's/.* T //' | sort -f
 }
 
 function check_exports
