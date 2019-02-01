@@ -63,15 +63,37 @@ struct Logger : LogSink
 // API
 ///////////////////////////////////////////////////////////////////////////////
 
+enum UnityGfxRenderer
+{
+  kUnityGfxRendererOpenGL = 0, // Legacy OpenGL
+  kUnityGfxRendererD3D9 = 1, // Direct3D 9
+  kUnityGfxRendererD3D11 = 2, // Direct3D 11
+  kUnityGfxRendererGCM = 3, // PlayStation 3
+  kUnityGfxRendererNull = 4, // "null" device (used in batch mode)
+  kUnityGfxRendererOpenGLES20 = 8, // OpenGL ES 2.0
+  kUnityGfxRendererOpenGLES30 = 11, // OpenGL ES 3.0
+  kUnityGfxRendererGXM = 12, // PlayStation Vita
+  kUnityGfxRendererPS4 = 13, // PlayStation 4
+  kUnityGfxRendererXboxOne = 14, // Xbox One
+  kUnityGfxRendererMetal = 16, // iOS Metal
+  kUnityGfxRendererOpenGLCore = 17, // OpenGL core
+  kUnityGfxRendererD3D12 = 18, // Direct3D 12
+  kUnityGfxRendererVulkan = 21, // Vulkan
+  kUnityGfxRendererNvn = 22, // Nintendo Switch NVN API
+  kUnityGfxRendererXboxOneD3D12 = 23 // MS XboxOne Direct3D 12
+};
+
 void UnitySetGraphicsDevice(void* device, int deviceType, int eventType)
 {
   (void)device;
-  (void)eventType;
 
-  if(deviceType == 0) // OpenGL
+  if(eventType != 0 /* kUnityGfxDeviceEventInitialize */)
     return;
 
-  if(deviceType == -1) // dummy (non-interactive, used for tests)
+  if(deviceType == kUnityGfxRendererOpenGL) // OpenGL
+    return;
+
+  if(deviceType == -1 || deviceType == kUnityGfxRendererNull) // dummy (non-interactive, used for tests)
     return;
 
   fprintf(stderr, "ERROR: Unsupported graphic device: %d\n", deviceType);

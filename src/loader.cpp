@@ -24,9 +24,12 @@ void safeMain(int argc, char* argv[])
 
   {
     auto lib = loadLibrary(libName);
+    auto func_UnitySetGraphicsDevice = IMPORT(UnitySetGraphicsDevice);
     auto func_sub_create = IMPORT(sub_create);
     auto func_sub_destroy = IMPORT(sub_destroy);
     auto func_sub_play = IMPORT(sub_play);
+
+    func_UnitySetGraphicsDevice(nullptr, 4 /* 'null' device */, 0);
 
     auto pipeline = func_sub_create(nullptr);
     func_sub_play(pipeline, url);
