@@ -102,7 +102,8 @@ void UnitySetGraphicsDevice(void* device, int deviceType, int eventType)
 
   default:
     fprintf(stderr, "ERROR: Unsupported graphic device: %d\n", deviceType);
-    fprintf(stderr, "At the moment, only kUnityGfxRendererOpenGLCore is supported\n");
+    fprintf(stderr, "At the moment, only OpenGL core (17) is supported. Please configure Unity to 'OpenGL 4.5'.\n");
+    fprintf(stderr, "Aborting program.\n");
     fflush(stderr);
     exit(1);
     break;
