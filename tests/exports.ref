@@ -3,4 +3,4 @@ sub_copy_video
 sub_create
 sub_destroy
 sub_play
-UnitySetGraphicsDevice
+UnityPluginLoad

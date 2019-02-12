@@ -1,3 +1,4 @@
+#define BUILDING_DLL
 #include "signals_unity_bridge.h"
 
 #include <cstdio>
@@ -62,53 +63,6 @@ struct Logger : LogSink
 ///////////////////////////////////////////////////////////////////////////////
 // API
 ///////////////////////////////////////////////////////////////////////////////
-
-enum UnityGfxRenderer
-{
-  kUnityGfxRendererOpenGL = 0, // Legacy OpenGL
-  kUnityGfxRendererD3D9 = 1, // Direct3D 9
-  kUnityGfxRendererD3D11 = 2, // Direct3D 11
-  kUnityGfxRendererGCM = 3, // PlayStation 3
-  kUnityGfxRendererNull = 4, // "null" device (used in batch mode)
-  kUnityGfxRendererOpenGLES20 = 8, // OpenGL ES 2.0
-  kUnityGfxRendererOpenGLES30 = 11, // OpenGL ES 3.0
-  kUnityGfxRendererGXM = 12, // PlayStation Vita
-  kUnityGfxRendererPS4 = 13, // PlayStation 4
-  kUnityGfxRendererXboxOne = 14, // Xbox One
-  kUnityGfxRendererMetal = 16, // iOS Metal
-  kUnityGfxRendererOpenGLCore = 17, // OpenGL core
-  kUnityGfxRendererD3D12 = 18, // Direct3D 12
-  kUnityGfxRendererVulkan = 21, // Vulkan
-  kUnityGfxRendererNvn = 22, // Nintendo Switch NVN API
-  kUnityGfxRendererXboxOneD3D12 = 23 // MS XboxOne Direct3D 12
-};
-
-void UnitySetGraphicsDevice(void* device, int deviceType, int eventType)
-{
-  (void)device;
-
-  if(eventType != 0 /* kUnityGfxDeviceEventInitialize */)
-    return;
-  switch(deviceType)
-  {
-  case kUnityGfxRendererOpenGLCore:
-    // OK, Nothing to do
-    break;
-
-  // dummy (non-interactive, used for tests)
-  case -1:
-  case kUnityGfxRendererNull:
-    return;
-
-  default:
-    fprintf(stderr, "ERROR: Unsupported graphic device: %d\n", deviceType);
-    fprintf(stderr, "At the moment, only OpenGL core (17) is supported. Please configure Unity to 'OpenGL 4.5'.\n");
-    fprintf(stderr, "Aborting program.\n");
-    fflush(stderr);
-    exit(1);
-    break;
-  }
-}
 
 // non-blocking, overwriting fifo
 struct Fifo
@@ -409,5 +363,41 @@ size_t sub_copy_audio(sub_handle* h, uint8_t* dst, size_t dstLen)
     fflush(stderr);
     return 0;
   }
+}
+
+#include "IUnityInterface.h"
+#include "IUnityGraphics.h"
+#include <cassert>
+
+// Unity plugin load event
+extern "C"
+{
+SUB_EXPORT void UNITY_INTERFACE_API UnityPluginLoad(IUnityInterfaces* unityInterfaces)
+{
+  IUnityGraphics* graphics = unityInterfaces->Get<IUnityGraphics>();
+  assert(graphics);
+
+  auto rendererType = graphics->GetRenderer();
+  fprintf(stderr, "UnityPluginLoad: rendererType: %d\n", rendererType);
+  fflush(stderr);
+  switch(rendererType)
+  {
+  case kUnityGfxRendererOpenGLCore:
+    // OK, Nothing to do
+    break;
+
+  // dummy (non-interactive, used for tests)
+  case kUnityGfxRendererNull:
+    return;
+
+  default:
+    fprintf(stderr, "ERROR: Unsupported renderer type: %d\n", rendererType);
+    fprintf(stderr, "At the moment, only OpenGL core (17) is supported. Please configure Unity to 'OpenGL 4.5'.\n");
+    fprintf(stderr, "Aborting program.\n");
+    fflush(stderr);
+    exit(1);
+    break;
+  }
+}
 }
 

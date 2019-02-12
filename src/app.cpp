@@ -234,8 +234,30 @@ private:
   SDL_Window* window;
 };
 
+#include "IUnityInterface.h"
+#include "IUnityGraphics.h"
+void UNITY_INTERFACE_API UnityPluginLoad(IUnityInterfaces* unityInterfaces);
+
+struct Host : IUnityInterfaces, IUnityGraphics {};
+
+static Host g_host;
+
+static IUnityInterface* UNITY_INTERFACE_API GetInterfaceImpl(UnityInterfaceGUID guid)
+{
+  (void)guid;
+  return &g_host;
+}
+
+static UnityGfxRenderer UNITY_INTERFACE_API GetRendererImpl()
+{
+  return kUnityGfxRendererOpenGLCore;
+}
+
 void safeMain(int argc, char* argv[])
 {
+  g_host.GetInterface = &GetInterfaceImpl;
+  g_host.GetRenderer = &GetRendererImpl;
+
   if(argc != 2 && argc != 3)
     throw runtime_error("Usage: app.exe <signals-unity-bridge.dll> [media url]");
 
@@ -246,14 +268,14 @@ void safeMain(int argc, char* argv[])
   const string mediaUrl = argc > 2 ? argv[2] : "videogen://";
 
   auto lib = SDL_LoadObject(libraryPath.c_str());
-  auto func_UnitySetGraphicsDevice = IMPORT(UnitySetGraphicsDevice);
+  auto func_UnityPluginLoad = IMPORT(UnityPluginLoad);
   auto func_sub_create = IMPORT(sub_create);
   auto func_sub_play = IMPORT(sub_play);
   auto func_sub_destroy = IMPORT(sub_destroy);
   auto func_sub_copy_video = IMPORT(sub_copy_video);
   auto func_sub_copy_audio = IMPORT(sub_copy_audio);
 
-  func_UnitySetGraphicsDevice(nullptr, 17 /* OpenGL Core */, 0);
+  func_UnityPluginLoad(&g_host);
 
   auto handle = func_sub_create("MyMediaPipeline");
 
