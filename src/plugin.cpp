@@ -383,6 +383,8 @@ SUB_EXPORT void UNITY_INTERFACE_API UnityPluginLoad(IUnityInterfaces* unityInter
   switch(rendererType)
   {
   case kUnityGfxRendererOpenGLCore:
+  case kUnityGfxRendererOpenGLES20:
+  case kUnityGfxRendererOpenGLES30:
     // OK, Nothing to do
     break;
 
@@ -392,7 +394,7 @@ SUB_EXPORT void UNITY_INTERFACE_API UnityPluginLoad(IUnityInterfaces* unityInter
 
   default:
     fprintf(stderr, "ERROR: Unsupported renderer type: %d\n", rendererType);
-    fprintf(stderr, "At the moment, only OpenGL core (17) is supported. Please configure Unity to 'OpenGL 4.5'.\n");
+    fprintf(stderr, "At the moment, only OpenGL core (17) is supported. Please configure Unity's renderer accordingly.\n");
     fprintf(stderr, "Aborting program.\n");
     fflush(stderr);
     exit(1);
