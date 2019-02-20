@@ -187,7 +187,12 @@ size_t sub_grab_frame(sub_handle* h, int streamIndex, uint8_t* dst, size_t dstLe
       throw runtime_error("Buffer too small");
 
     memcpy(dst, s->data().ptr, N);
-    (void)info;
+
+    if(info)
+    {
+      *info = {};
+      info->timestamp = s->getMediaTime() / (IClock::Rate / 1000LL);
+    }
 
     return N;
   }
