@@ -34,14 +34,9 @@ bool startsWith(string s, string prefix)
 
 struct OutStub : ModuleS
 {
-  OutStub(KHost*, std::function<void(Data)> onFrame_) : onFrame(onFrame_)
-  {
-  }
+  OutStub(KHost*, std::function<void(Data)> onFrame_) : onFrame(onFrame_) {}
 
-  void processOne(Data data) override
-  {
-    onFrame(data);
-  }
+  void processOne(Data data) override { onFrame(data); }
 
   std::function<void(Data)> const onFrame;
 };
