@@ -30,7 +30,7 @@ $(BIN)/loader.exe: $(LOADER_SRCS:%=$(BIN)/%.o)
 TARGETS+=$(BIN)/app.exe
 $(BIN)/app.exe: $(MYDIR)/app.cpp
 	@mkdir -p $(dir $@)
-	$(CXX) -o "$@" $^ $(shell pkg-config sdl2 epoxy --cflags --libs)
+	$(CXX) -o "$@" $^ $(shell pkg-config sdl2 --cflags --libs)
 
 #------------------------------------------------------------------------------
 # Generic rules

@@ -1,6 +1,4 @@
-sub_copy_audio
-sub_copy_video
 sub_create
 sub_destroy
+sub_grab_frame
 sub_play
-UnityPluginLoad

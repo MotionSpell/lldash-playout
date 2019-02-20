@@ -1,15 +1,12 @@
 FOO {
   # explicitly list symbols to be exported
   global:
-    UnityPluginLoad;
 
     sub_create;
     sub_destroy;
     sub_play;
 
-    sub_get_video_info;
-    sub_copy_video;
-    sub_copy_audio;
+    sub_grab_frame;
 
   # hide everything else
   local: *;

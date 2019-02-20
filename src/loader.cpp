@@ -2,6 +2,8 @@
 // Used for automated testing.
 #include <cstdio>
 #include <stdexcept>
+#include <thread>
+#include <chrono>
 #include "dynlib.h"
 
 // API entry points. We don't call these directly,
@@ -12,51 +14,32 @@ using namespace std;
 
 #define IMPORT(name) ((decltype(name)*)lib->getSymbol(# name))
 
-#include "IUnityInterface.h"
-#include "IUnityGraphics.h"
-void UNITY_INTERFACE_API UnityPluginLoad(IUnityInterfaces* unityInterfaces);
-
-struct Host : IUnityInterfaces, IUnityGraphics {};
-
-static Host g_host;
-
-static IUnityInterface* UNITY_INTERFACE_API GetInterfaceImpl(UnityInterfaceGUID guid)
-{
-  (void)guid;
-  return &g_host;
-}
-
-static UnityGfxRenderer UNITY_INTERFACE_API GetRendererImpl()
-{
-  return kUnityGfxRendererNull;
-}
-
 void safeMain(int argc, char* argv[])
 {
-  g_host.GetInterface = &GetInterfaceImpl;
-  g_host.GetRenderer = &GetRendererImpl;
-
   if(argc != 3)
-  {
     throw runtime_error("Usage: loader.exe <my_library> <my_url>");
-  }
 
   auto libName = argv[1];
   auto url = argv[2];
 
+  auto lib = loadLibrary(libName);
+  auto func_sub_create = IMPORT(sub_create);
+  auto func_sub_destroy = IMPORT(sub_destroy);
+  auto func_sub_play = IMPORT(sub_play);
+  auto func_sub_grab_frame = IMPORT(sub_grab_frame);
+
+  auto pipeline = func_sub_create(nullptr);
+  func_sub_play(pipeline, url);
+
+  for(int i = 0; i < 100; ++i)
   {
-    auto lib = loadLibrary(libName);
-    auto func_UnityPluginLoad = IMPORT(UnityPluginLoad);
-    auto func_sub_create = IMPORT(sub_create);
-    auto func_sub_destroy = IMPORT(sub_destroy);
-    auto func_sub_play = IMPORT(sub_play);
-
-    func_UnityPluginLoad(&g_host);
-
-    auto pipeline = func_sub_create(nullptr);
-    func_sub_play(pipeline, url);
-    func_sub_destroy(pipeline);
+    uint8_t buffer[1024];
+    FrameInfo info {};
+    func_sub_grab_frame(pipeline, 0, buffer, sizeof buffer, &info);
+    std::this_thread::sleep_for(10ms);
   }
+
+  func_sub_destroy(pipeline);
 }
 
 int main(int argc, char* argv[])
