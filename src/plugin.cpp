@@ -105,6 +105,23 @@ void sub_destroy(sub_handle* h)
   }
 }
 
+int sub_get_stream_count(sub_handle* h)
+{
+  try
+  {
+    if(!h->pipe)
+      throw runtime_error("Can only get stream count when the pipeline is playing");
+
+    return (int)h->streams.size();
+  }
+  catch(exception const& err)
+  {
+    fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
+    fflush(stderr);
+    return 0;
+  }
+}
+
 bool sub_play(sub_handle* h, const char* url)
 {
   try

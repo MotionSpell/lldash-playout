@@ -26,10 +26,13 @@ void safeMain(int argc, char* argv[])
   auto func_sub_create = IMPORT(sub_create);
   auto func_sub_destroy = IMPORT(sub_destroy);
   auto func_sub_play = IMPORT(sub_play);
+  auto func_sub_get_stream_count = IMPORT(sub_get_stream_count);
   auto func_sub_grab_frame = IMPORT(sub_grab_frame);
 
   auto pipeline = func_sub_create(nullptr);
   func_sub_play(pipeline, url);
+
+  printf("%d stream(s)\n", func_sub_get_stream_count(pipeline));
 
   for(int i = 0; i < 100; ++i)
   {

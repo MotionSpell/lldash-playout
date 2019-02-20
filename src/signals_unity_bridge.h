@@ -34,6 +34,9 @@ SUB_EXPORT sub_handle* sub_create(const char* name);
 // Destroys a pipeline. This frees all the resources.
 SUB_EXPORT void sub_destroy(sub_handle* h);
 
+// Returns the number of compressed streams.
+SUB_EXPORT int sub_get_stream_count(sub_handle* h);
+
 // Plays a given URL.
 SUB_EXPORT bool sub_play(sub_handle* h, const char* URL);
 
