@@ -19,6 +19,7 @@
 
 struct FrameInfo
 {
+  // presentation timestamp, in milliseconds units.
   int64_t timestamp;
 };
 
