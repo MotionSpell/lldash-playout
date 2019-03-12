@@ -196,9 +196,12 @@ size_t sub_grab_frame(sub_handle* h, int streamIndex, uint8_t* dst, size_t dstLe
       return 0;
 
     auto s = stream.fifo.front();
-    stream.fifo.pop();
-
     auto const N = s->data().len;
+
+    if(!dst)
+      return N;
+
+    stream.fifo.pop();
 
     if(N > dstLen)
       throw runtime_error("Buffer too small");

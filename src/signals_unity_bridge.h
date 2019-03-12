@@ -44,6 +44,7 @@ SUB_EXPORT bool sub_play(sub_handle* h, const char* URL);
 // Copy the next received compressed frame to a buffer.
 // Returns: the size of compressed data actually copied,
 // or zero, if no frame was available for this stream.
+// If 'dst' is null, the frame will not be dequeued, but its size will be returned.
 SUB_EXPORT size_t sub_grab_frame(sub_handle* h, int streamIndex, uint8_t* dst, size_t dstLen, FrameInfo* info);
 }
 
