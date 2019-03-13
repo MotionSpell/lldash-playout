@@ -11,10 +11,8 @@
 
 // modules
 #include "lib_media/demux/dash_demux.hpp"
-#include "lib_media/demux/libav_demux.hpp"
+#include "lib_media/demux/gpac_demux_mp4_simple.hpp"
 #include "lib_media/in/mpeg_dash_input.hpp"
-#include "lib_media/in/video_generator.hpp"
-#include "lib_media/in/sound_generator.hpp"
 #include "lib_media/out/null.hpp"
 #include "lib_media/transform/audio_convert.hpp"
 
@@ -162,9 +160,9 @@ bool sub_play(sub_handle* h, const char* url)
     }
     else
     {
-      DemuxConfig cfg;
-      cfg.url = url;
-      auto demux = pipe.add("LibavDemux", &cfg);
+      Mp4DemuxConfig cfg;
+      cfg.path = url;
+      auto demux = pipe.add("GPACDemuxMP4Simple", &cfg);
 
       for(int k = 0; k < demux->getNumOutputs(); ++k)
         addStream(GetOutputPin(demux, k));

@@ -1,5 +1,6 @@
 // Non-interactive loader for signals-unity-bridge.so.
 // Used for automated testing.
+#include <cassert>
 #include <cstdio>
 #include <stdexcept>
 #include <thread>
@@ -30,13 +31,14 @@ void safeMain(int argc, char* argv[])
   auto func_sub_grab_frame = IMPORT(sub_grab_frame);
 
   auto pipeline = func_sub_create(nullptr);
-  func_sub_play(pipeline, url);
+  auto ret = func_sub_play(pipeline, url);
+  assert(ret);
 
   printf("%d stream(s)\n", func_sub_get_stream_count(pipeline));
 
   for(int i = 0; i < 100; ++i)
   {
-    uint8_t buffer[1024];
+    uint8_t buffer[10 * 1024];
     FrameInfo info {};
     func_sub_grab_frame(pipeline, 0, buffer, sizeof buffer, &info);
     std::this_thread::sleep_for(10ms);

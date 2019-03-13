@@ -45,7 +45,7 @@ function check_exports
 
 function load_library
 {
-  $BIN/loader.exe $BIN/signals-unity-bridge.so signals/data/sine.mp3
+  $BIN/loader.exe $BIN/signals-unity-bridge.so "data/test.mp4"
 }
 
 main "$@"
