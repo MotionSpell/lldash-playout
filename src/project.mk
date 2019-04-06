@@ -30,13 +30,13 @@ $(BIN)/loader.exe: $(LOADER_SRCS:%=$(BIN)/%.o)
 TARGETS+=$(BIN)/app.exe
 $(BIN)/app.exe: $(MYDIR)/app.cpp
 	@mkdir -p $(dir $@)
-	$(CXX) -o "$@" $^ $(shell pkg-config sdl2 --cflags --libs)
+	$(CXX) $(CFLAGS) -o "$@" $^ $(LDFLAGS) $(shell pkg-config sdl2 --cflags --libs)
 
 #------------------------------------------------------------------------------
 # Generic rules
 #
 $(BIN)/%.so:
-	$(CXX) -static-libstdc++ -shared -o "$@" $^ \
+	$(CXX) $(CFLAGS) -static-libstdc++ -shared -o "$@" $^ \
 		-Wl,--no-undefined \
 		-Wl,--version-script=$(MYDIR)/plugin.version \
 		$(LDFLAGS)
