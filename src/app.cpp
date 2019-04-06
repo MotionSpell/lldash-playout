@@ -23,6 +23,8 @@
 
 #include <SDL.h>
 
+#undef main
+
 using namespace std;
 
 #define IMPORT(name) ((decltype(name)*)SDL_LoadFunction(lib, # name))
@@ -63,7 +65,7 @@ private:
   std::function<void(uint8_t*, int)> const userCallback;
 };
 
-void safeMain(int argc, char* argv[])
+void safeMain(int argc, char const* argv[])
 {
   if(argc != 2 && argc != 3)
     throw runtime_error("Usage: app.exe <signals-unity-bridge.dll> [media url]");
@@ -92,7 +94,7 @@ void safeMain(int argc, char* argv[])
   SDL_Quit();
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char const* argv[])
 {
   try
   {
