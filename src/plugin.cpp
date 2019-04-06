@@ -133,7 +133,7 @@ bool sub_play(sub_handle* h, const char* url)
 
         auto onFrame = [idx, h] (Data data)
           {
-            if(dynamic_cast<const DataBaseRef*>(data.get()))
+            if (isDeclaration(data))
               return;
 
             std::unique_lock<std::mutex> lock(h->transferMutex);
