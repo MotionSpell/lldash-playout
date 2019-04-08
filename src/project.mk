@@ -15,7 +15,6 @@ SUB_SRCS:=\
 
 $(BIN)/signals-unity-bridge.so: $(SUB_SRCS:%=$(BIN)/%.o)
 TARGETS+=$(BIN)/signals-unity-bridge.so
-$(BIN)/signals-unity-bridge.so: LDFLAGS+=$(shell pkg-config gl --libs)
 
 #------------------------------------------------------------------------------
 LOADER_SRCS:=\
