@@ -26,8 +26,8 @@ $(BIN)/loader.exe: $(LOADER_SRCS:%=$(BIN)/%.o)
 
 #------------------------------------------------------------------------------
 # Keep this one dead-easy to build, even without the makefile:
-TARGETS+=$(BIN)/app.exe
-$(BIN)/app.exe: $(MYDIR)/app.cpp
+TARGETS+=$(BIN)/example.exe
+$(BIN)/example.exe: $(MYDIR)/example.cpp
 	@mkdir -p $(dir $@)
 	$(CXX) $(CFLAGS) -o "$@" $^ $(LDFLAGS) $(shell pkg-config sdl2 --cflags --libs)
 
