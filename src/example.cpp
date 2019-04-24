@@ -16,6 +16,7 @@
 // Keep this program standalone, as it's meant to be distributed as example.
 //
 #include <cstdio>
+#include <string>
 #include <exception>
 #include <functional>
 #include <stdexcept>
