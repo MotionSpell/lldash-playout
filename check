@@ -3,9 +3,14 @@ set -eu
 
 export BIN=bin
 
-find src -name "*.cpp" -or -name "*.h" | while read f; do
+ver=$(uncrustify --version)
+if [ ! "$ver" = "uncrustify 0.64" ] ; then
+  echo "Bad version of uncrustify, skipping formatting"
+else
+  find src -name "*.cpp" -or -name "*.h" | while read f; do
   uncrustify -q -c scripts/uncrustify.cfg --no-backup "$f"
 done
+fi
 
 make -j`nproc`
 
