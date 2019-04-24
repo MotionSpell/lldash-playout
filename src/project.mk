@@ -1,7 +1,7 @@
 MYDIR=$(call get-my-dir)
 
 # Never compare the value of this variable to anything!
-HOST:=$(shell $(CXX) -dumpmachine | sed "s/.*-//")
+HOST:=$(shell $(CXX) -dumpmachine | sed "s/.*-\([a-zA-Z]*\)[0-9.]*/\1/")
 
 include $(MYDIR)/$(HOST).mk
 
