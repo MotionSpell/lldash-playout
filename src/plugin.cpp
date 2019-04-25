@@ -58,7 +58,6 @@ struct Logger : LogSink
 struct sub_handle
 {
   Logger logger;
-  std::unique_ptr<Pipeline> pipe;
 
   struct Stream
   {
@@ -67,6 +66,7 @@ struct sub_handle
 
   std::mutex transferMutex; // protects below members
   std::vector<Stream> streams;
+  std::unique_ptr<Pipeline> pipe;
 };
 
 sub_handle* sub_create(const char* name)
