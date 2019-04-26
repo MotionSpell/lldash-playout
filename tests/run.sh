@@ -39,6 +39,14 @@ function get_exports
 
 function check_exports
 {
+  case $(nm --version | head -n 1) in
+    *GNU*)
+      ;;
+    *)
+      echo "non-GNU nm detected: skipping export checking" >&2
+      return 0
+  esac
+
   get_exports "$BIN/signals-unity-bridge.so" > $tmpDir/exports.new
   diff -Naur $scriptDir/exports.ref $tmpDir/exports.new
 }
