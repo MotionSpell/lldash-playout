@@ -175,7 +175,7 @@ bool sub_play(sub_handle* h, const char* url)
         fprintf(stderr, "Added: %s\n", name.c_str());
       };
 
-    if(startsWith(url, "http://"))
+    if(startsWith(url, "http://") || startsWith(url, "https://"))
     {
       DashDemuxConfig cfg;
       cfg.url = url;
