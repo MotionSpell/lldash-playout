@@ -12,7 +12,13 @@ else
 done
 fi
 
-make -j`nproc`
+if [ $(uname -s) == "Darwin" ]; then
+  CORES=$(sysctl -n hw.logicalcpu)
+else
+  CORES=$(nproc)
+fi
+
+make -j$CORES
 
 readonly t1=$(date +%s)
 ./tests/run.sh
