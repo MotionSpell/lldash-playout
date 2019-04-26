@@ -2,6 +2,7 @@
 #include "signals_unity_bridge.h"
 
 #include <cstdio>
+#include <atomic>
 #include <mutex>
 #include <queue>
 #include <cstring> // memcpy
@@ -57,6 +58,29 @@ struct Logger : LogSink
 
 struct sub_handle
 {
+  sub_handle()
+  {
+    dropEverything = false;
+  }
+
+  ~sub_handle()
+  {
+    // prevent queuing further data buffers
+    dropEverything = true;
+
+    // release all data buffers (= unblock potential calls to 'alloc' inside the pipeline)
+    {
+      std::unique_lock<std::mutex> lock(transferMutex);
+
+      for(auto& s : streams)
+        while(!s.fifo.empty())
+          s.fifo.pop();
+    }
+
+    // destroy the pipeline
+    pipe.reset();
+  }
+
   Logger logger;
 
   struct Stream
@@ -64,6 +88,7 @@ struct sub_handle
     std::queue<Data> fifo;
   };
 
+  std::atomic<bool> dropEverything;
   std::mutex transferMutex; // protects below members
   std::vector<Stream> streams;
   std::unique_ptr<Pipeline> pipe;
@@ -133,6 +158,9 @@ bool sub_play(sub_handle* h, const char* url)
 
         auto onFrame = [idx, h] (Data data)
           {
+            if(h->dropEverything)
+              return;
+
             if(isDeclaration(data))
               return;
 
