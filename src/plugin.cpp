@@ -10,6 +10,7 @@
 #include "lib_pipeline/pipeline.hpp"
 
 // modules
+#include "lib_media/common/attributes.hpp"
 #include "lib_media/demux/dash_demux.hpp"
 #include "lib_media/demux/gpac_demux_mp4_simple.hpp"
 #include "lib_media/in/mpeg_dash_input.hpp"
@@ -235,7 +236,7 @@ size_t sub_grab_frame(sub_handle* h, int streamIndex, uint8_t* dst, size_t dstLe
     if(info)
     {
       *info = {};
-      info->timestamp = s->getMediaTime() / (IClock::Rate / 1000LL);
+      info->timestamp = s->get<PresentationTime>().time / (IClock::Rate / 1000LL);
     }
 
     return N;
