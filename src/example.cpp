@@ -30,49 +30,10 @@ using namespace std;
 
 #define IMPORT(name) ((decltype(name)*)SDL_LoadFunction(lib, # name))
 
-struct SdlAudioOutput
-{
-  SdlAudioOutput(std::function<void(uint8_t*, int)> callback) : userCallback(callback)
-  {
-    SDL_AudioSpec wanted {};
-    wanted.freq = 48000;
-    wanted.channels = 2;
-    wanted.samples = 2048;
-    wanted.format = AUDIO_S16;
-    wanted.callback = &audioCallback;
-    wanted.userdata = this;
-
-    SDL_AudioSpec actual {};
-
-    if(SDL_OpenAudio(&wanted, &actual) < 0)
-      throw runtime_error("Couldn't open SDL audio");
-
-    SDL_PauseAudio(0);
-  }
-
-  ~SdlAudioOutput()
-  {
-    SDL_PauseAudio(1);
-    SDL_CloseAudio();
-  }
-
-private:
-  static void audioCallback(void* userParam, uint8_t* dst, int size)
-  {
-    auto pThis = reinterpret_cast<SdlAudioOutput*>(userParam);
-    pThis->userCallback(dst, size);
-  }
-
-  std::function<void(uint8_t*, int)> const userCallback;
-};
-
 void safeMain(int argc, char const* argv[])
 {
   if(argc != 3)
     throw runtime_error("Usage: app.exe <signals-unity-bridge.dll> [media url]");
-
-  if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO))
-    throw runtime_error(string("Unable to initialize SDL: ") + SDL_GetError());
 
   const string libraryPath = argv[1];
   const string mediaUrl = argv[2];
@@ -91,8 +52,6 @@ void safeMain(int argc, char const* argv[])
 
   func_sub_destroy(handle);
   SDL_UnloadObject(lib);
-
-  SDL_Quit();
 }
 
 int main(int argc, char const* argv[])
