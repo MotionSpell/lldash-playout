@@ -68,14 +68,14 @@ private:
 
 void safeMain(int argc, char const* argv[])
 {
-  if(argc != 2 && argc != 3)
+  if(argc != 3)
     throw runtime_error("Usage: app.exe <signals-unity-bridge.dll> [media url]");
 
   if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO))
     throw runtime_error(string("Unable to initialize SDL: ") + SDL_GetError());
 
   const string libraryPath = argv[1];
-  const string mediaUrl = argc > 2 ? argv[2] : "videogen://";
+  const string mediaUrl = argv[2];
 
   auto lib = SDL_LoadObject(libraryPath.c_str());
   auto func_sub_create = IMPORT(sub_create);
