@@ -44,10 +44,14 @@ void safeMain(int argc, char const* argv[])
   auto func_sub_play = IMPORT(sub_play);
   auto func_sub_destroy = IMPORT(sub_destroy);
   auto func_sub_grab_frame = IMPORT(sub_grab_frame);
+  auto func_sub_get_stream_count = IMPORT(sub_get_stream_count);
 
   auto handle = func_sub_create("MyMediaPipeline");
 
   func_sub_play(handle, mediaUrl.c_str());
+
+  if(func_sub_get_stream_count(handle) == 0)
+    throw runtime_error("No streams found");
 
   vector<uint8_t> buffer;
 
