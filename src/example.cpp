@@ -18,6 +18,7 @@
 #include <cstdio>
 #include <string>
 #include <exception>
+#include <vector>
 #include <functional>
 #include <stdexcept>
 #include "signals_unity_bridge.h"
@@ -48,7 +49,35 @@ void safeMain(int argc, char const* argv[])
 
   func_sub_play(handle, mediaUrl.c_str());
 
-  (void)func_sub_grab_frame;
+  vector<uint8_t> buffer;
+
+  for(int i = 0; i < 100; ++i)
+  {
+    FrameInfo info {};
+    buffer.resize(1024 * 1024 * 10);
+    auto size = func_sub_grab_frame(handle, 1, buffer.data(), buffer.size(), &info);
+    buffer.resize(size);
+
+    if(size == 0)
+      SDL_Delay(100);
+    else
+    {
+      printf("Frame: % 5d bytes, t=%.3f [", (int)size, info.timestamp / 1000.0);
+
+      for(int k = 0; k < (int)buffer.size(); ++k)
+      {
+        if(k == 8)
+        {
+          printf(" ...");
+          break;
+        }
+
+        printf(" %.2X", buffer[k]);
+      }
+
+      printf(" ]\n");
+    }
+  }
 
   func_sub_destroy(handle);
   SDL_UnloadObject(lib);
