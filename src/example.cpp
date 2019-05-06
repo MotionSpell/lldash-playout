@@ -29,7 +29,17 @@
 
 using namespace std;
 
-#define IMPORT(name) ((decltype(name)*)SDL_LoadFunction(lib, # name))
+void* safeImport(void* lib, const char* name)
+{
+  auto r = SDL_LoadFunction(lib, name);
+
+  if(!r)
+    throw runtime_error("Symbol not found: " + string(name));
+
+  return r;
+}
+
+#define IMPORT(name) ((decltype(name)*)safeImport(lib, # name))
 
 void safeMain(int argc, char const* argv[])
 {
