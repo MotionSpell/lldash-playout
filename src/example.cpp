@@ -55,7 +55,7 @@ void safeMain(int argc, char const* argv[])
   {
     FrameInfo info {};
     buffer.resize(1024 * 1024 * 10);
-    auto size = func_sub_grab_frame(handle, 1, buffer.data(), buffer.size(), &info);
+    auto size = func_sub_grab_frame(handle, 0, buffer.data(), buffer.size(), &info);
     buffer.resize(size);
 
     if(size == 0)
