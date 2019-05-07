@@ -50,6 +50,10 @@ void safeMain(int argc, char const* argv[])
   const string mediaUrl = argv[2];
 
   auto lib = SDL_LoadObject(libraryPath.c_str());
+
+  if(!lib)
+    throw runtime_error("Can't load '" + libraryPath + "': " + SDL_GetError());
+
   auto func_sub_create = IMPORT(sub_create);
   auto func_sub_play = IMPORT(sub_play);
   auto func_sub_destroy = IMPORT(sub_destroy);
