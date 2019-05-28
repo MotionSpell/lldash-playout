@@ -22,6 +22,7 @@ function main
 {
   run_test check_exports
   run_test load_library
+  run_test api_tests
   echo "OK"
 }
 
@@ -54,6 +55,13 @@ function check_exports
 function load_library
 {
   $BIN/loader.exe $BIN/signals-unity-bridge.so "data/test.mp4"
+}
+
+function api_tests
+{
+  export SIGNALS_SMD_PATH=$BIN
+  g++ $scriptDir/tests.cpp -I$scriptDir/../src -o $tmpDir/tests.exe $BIN/signals-unity-bridge.so
+  $tmpDir/tests.exe
 }
 
 main "$@"
