@@ -29,8 +29,6 @@ void sleep(int ms) { usleep(ms * 1000); }
 
 #endif
 
-using namespace std;
-
 int main(int argc, char const* argv[])
 {
   if(argc != 2)
@@ -45,41 +43,40 @@ int main(int argc, char const* argv[])
 
   sub_play(handle, mediaUrl);
 
-  if(sub_get_stream_count(handle) == 0)
+  auto const streamCount = sub_get_stream_count(handle);
+
+  if(streamCount == 0)
   {
     fprintf(stderr, "No streams found\n");
     return 1;
   }
 
-  vector<uint8_t> buffer;
+  std::vector<uint8_t> buffer;
 
-  for(int i = 0; i < 100; ++i)
+  for(int i = 0;; ++i)
   {
-    FrameInfo info {};
-    buffer.resize(1024 * 1024 * 10);
-    auto size = sub_grab_frame(handle, 0, buffer.data(), buffer.size(), &info);
-    buffer.resize(size);
+    bool gotFrame = false;
 
-    if(size == 0)
+    for(int k = 0; k < streamCount; ++k)
     {
-      sleep(100);
-      continue;
-    }
+      FrameInfo info {};
+      buffer.resize(1024 * 1024 * 10);
+      auto size = sub_grab_frame(handle, k, buffer.data(), buffer.size(), &info);
+      buffer.resize(size);
 
-    printf("Frame: % 5d bytes, t=%.3f [", (int)size, info.timestamp / 1000.0);
-
-    for(int k = 0; k < (int)buffer.size(); ++k)
-    {
-      if(k == 8)
+      if(size > 0)
       {
-        printf(" ...");
-        break;
+        gotFrame = true;
+        printf("[stream %d] Frame %d: % 5d bytes, t=%.3f\n", k, i, (int)size, info.timestamp / 1000.0);
       }
-
-      printf(" %.2X", buffer[k]);
     }
 
-    printf(" ]\n");
+    if(!gotFrame)
+    {
+      printf(".");
+      fflush(stdout);
+      sleep(100);
+    }
   }
 
   sub_destroy(handle);
