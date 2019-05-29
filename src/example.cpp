@@ -17,7 +17,6 @@
 //
 #include <cstdio>
 #include <vector>
-#include <functional>
 #include "signals_unity_bridge.h"
 
 #if _WIN32
