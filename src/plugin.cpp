@@ -131,6 +131,9 @@ int sub_get_stream_count(sub_handle* h)
 {
   try
   {
+    if(!h)
+      throw runtime_error("handle can't be NULL");
+
     if(!h->pipe)
       throw runtime_error("Can only get stream count when the pipeline is playing");
 
@@ -216,6 +219,9 @@ size_t sub_grab_frame(sub_handle* h, int streamIndex, uint8_t* dst, size_t dstLe
 {
   try
   {
+    if(!h)
+      throw runtime_error("handle can't be NULL");
+
     std::unique_lock<std::mutex> lock(h->transferMutex);
 
     if(streamIndex < 0 || streamIndex >= (int)h->streams.size())
