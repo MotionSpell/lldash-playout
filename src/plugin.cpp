@@ -148,6 +148,12 @@ bool sub_play(sub_handle* h, const char* url)
 {
   try
   {
+    if(!h)
+      throw runtime_error("handle can't be NULL");
+
+    if(!url)
+      throw runtime_error("URL can't be NULL");
+
     h->pipe = make_unique<Pipeline>(&h->logger);
 
     auto& pipe = *h->pipe;
