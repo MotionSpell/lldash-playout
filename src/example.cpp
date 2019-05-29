@@ -80,5 +80,7 @@ int main(int argc, char const* argv[])
   }
 
   sub_destroy(handle);
+
+  return 0;
 }
 
