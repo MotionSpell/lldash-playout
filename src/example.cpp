@@ -9,63 +9,48 @@
 // This shows how to use the signals-unity-bridge DLL.
 //
 // Usage example:
-// $ g++ app.cpp `pkg-config sdl2 --cflags --libs` -o dissidence_player
-// $ ./dissidence_player signals-unity-bridge.dll [media url]
+// $ g++ example.cpp signals-unity-bridge.so -o example.exe
+// $ ./example.exe [media url]
 //
 // Don't introduce direct dependencies to signals here.
 // Keep this program standalone, as it's meant to be distributed as example.
 //
 #include <cstdio>
-#include <string>
-#include <exception>
 #include <vector>
 #include <functional>
-#include <stdexcept>
 #include "signals_unity_bridge.h"
 
-#include <SDL.h>
+#if _WIN32
+#include <windows.h>
+void sleep(int ms) { ::Sleep(ms); }
 
-#undef main
+#else
+#include <unistd.h>
+void sleep(int ms) { usleep(ms * 1000); }
+
+#endif
 
 using namespace std;
 
-void* safeImport(void* lib, const char* name)
+int main(int argc, char const* argv[])
 {
-  auto r = SDL_LoadFunction(lib, name);
+  if(argc != 2)
+  {
+    fprintf(stderr, "Usage: %s [media url]\n", argv[0]);
+    return 1;
+  }
 
-  if(!r)
-    throw runtime_error("Symbol not found: " + string(name));
+  auto const mediaUrl = argv[1];
 
-  return r;
-}
+  auto handle = sub_create("MyMediaPipeline");
 
-#define IMPORT(name) ((decltype(name)*)safeImport(lib, # name))
+  sub_play(handle, mediaUrl);
 
-void safeMain(int argc, char const* argv[])
-{
-  if(argc != 3)
-    throw runtime_error("Usage: app.exe <signals-unity-bridge.dll> [media url]");
-
-  const string libraryPath = argv[1];
-  const string mediaUrl = argv[2];
-
-  auto lib = SDL_LoadObject(libraryPath.c_str());
-
-  if(!lib)
-    throw runtime_error("Can't load '" + libraryPath + "': " + SDL_GetError());
-
-  auto func_sub_create = IMPORT(sub_create);
-  auto func_sub_play = IMPORT(sub_play);
-  auto func_sub_destroy = IMPORT(sub_destroy);
-  auto func_sub_grab_frame = IMPORT(sub_grab_frame);
-  auto func_sub_get_stream_count = IMPORT(sub_get_stream_count);
-
-  auto handle = func_sub_create("MyMediaPipeline");
-
-  func_sub_play(handle, mediaUrl.c_str());
-
-  if(func_sub_get_stream_count(handle) == 0)
-    throw runtime_error("No streams found");
+  if(sub_get_stream_count(handle) == 0)
+  {
+    fprintf(stderr, "No streams found\n");
+    return 1;
+  }
 
   vector<uint8_t> buffer;
 
@@ -73,45 +58,31 @@ void safeMain(int argc, char const* argv[])
   {
     FrameInfo info {};
     buffer.resize(1024 * 1024 * 10);
-    auto size = func_sub_grab_frame(handle, 0, buffer.data(), buffer.size(), &info);
+    auto size = sub_grab_frame(handle, 0, buffer.data(), buffer.size(), &info);
     buffer.resize(size);
 
     if(size == 0)
-      SDL_Delay(100);
-    else
     {
-      printf("Frame: % 5d bytes, t=%.3f [", (int)size, info.timestamp / 1000.0);
+      sleep(100);
+      continue;
+    }
 
-      for(int k = 0; k < (int)buffer.size(); ++k)
+    printf("Frame: % 5d bytes, t=%.3f [", (int)size, info.timestamp / 1000.0);
+
+    for(int k = 0; k < (int)buffer.size(); ++k)
+    {
+      if(k == 8)
       {
-        if(k == 8)
-        {
-          printf(" ...");
-          break;
-        }
-
-        printf(" %.2X", buffer[k]);
+        printf(" ...");
+        break;
       }
 
-      printf(" ]\n");
+      printf(" %.2X", buffer[k]);
     }
+
+    printf(" ]\n");
   }
 
-  func_sub_destroy(handle);
-  SDL_UnloadObject(lib);
-}
-
-int main(int argc, char const* argv[])
-{
-  try
-  {
-    safeMain(argc, argv);
-    return 0;
-  }
-  catch(exception const& e)
-  {
-    fprintf(stderr, "Fatal: %s\n", e.what());
-    return 1;
-  }
+  sub_destroy(handle);
 }
 
