@@ -70,7 +70,7 @@ static const char mpd[] = R"(<?xml version="1.0" encoding="utf-8"?>
         initialization="init.mp4"
         media="$Number$.m4s"
         startNumber="0" />
-      <Representation bandwidth="300000" codecs="cwi1" id="V300" />
+      <Representation bandwidth="300000" codecs="cwi1" id="1" />
     </AdaptationSet>
   </Period>
 </MPD>
