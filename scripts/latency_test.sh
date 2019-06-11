@@ -18,7 +18,7 @@ function main
   g++ src/main_latency.cpp $BIN/signals-unity-bridge.so \
     -o $tmpDir/main_latency.exe
 
-  $scriptDir/dash-live-simulator.sh &
+  $scriptDir/dash-live-simulator-server.sh &
   pid=$!
 
   sleep 1.0
