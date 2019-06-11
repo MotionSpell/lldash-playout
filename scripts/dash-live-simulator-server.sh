@@ -9,6 +9,7 @@ mkdir -p "$tmpDir"
 
 readonly scriptDir=$(dirname $0)
 g++ $scriptDir/dash-live-simulator-cgi.cpp -o $tmpDir/fake-server-cgi.exe
+echo "Server ready on: http://127.0.0.1:9000/latency.mpd"
 tcpserver -D 127.0.0.1 9000 $tmpDir/fake-server-cgi.exe &
 serverPid=$!
 wait $serverPid
