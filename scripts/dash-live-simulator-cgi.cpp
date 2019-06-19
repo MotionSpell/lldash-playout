@@ -8,7 +8,7 @@
 #include <chrono>
 
 static auto const SegmentDuration = 1000LL;
-static auto const FragmentDuration = 100LL;
+static auto const FragmentDuration = 200LL;
 static auto const FragmentsPerSegment = SegmentDuration / FragmentDuration;
 
 using namespace std;
@@ -276,6 +276,8 @@ int main()
     if(deltaTime > 0)
       this_thread::sleep_for(chrono::milliseconds(deltaTime));
 
+    fprintf(stderr, "\n[server] HTTP-GET segment number: %lld\n", reqNumber);
+
     sendLine("HTTP/1.1 200 OK");
     sendLine("Transfer-Encoding: chunked");
     sendLine("");
@@ -285,6 +287,7 @@ int main()
       sendChunk(fragment.data(), fragment.size());
     }
     sendChunk(nullptr, 0);
+    fprintf(stderr, "[server] Sent %d fragments\n", int(FragmentsPerSegment));
   }
   else
   {
