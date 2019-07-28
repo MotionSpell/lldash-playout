@@ -29,7 +29,7 @@ $(BIN)/loader.exe: $(LOADER_SRCS:%=$(BIN)/%.o)
 TARGETS+=$(BIN)/example.exe
 $(BIN)/example.exe: $(MYDIR)/example.cpp $(BIN)/signals-unity-bridge.so
 	@mkdir -p $(dir $@)
-	$(CXX) -o "$@" $^
+	$(CXX) $(CFLAGS) -o "$@" $^
 
 #------------------------------------------------------------------------------
 # Generic rules

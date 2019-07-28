@@ -2,17 +2,13 @@ BIN?=bin
 SRC?=signals/src
 EXTRA?=signals/sysroot
 
-CFLAGS+=-fPIC
-
-# always optimize
-CFLAGS+=-O3
-
-# default to: no debug info, full warnings
-DEBUG?=2
+CFLAGS+=-std=c++11 -fPIC
 
 ifeq ($(DEBUG), 1)
   CFLAGS+=-g3
   LDFLAGS+=-g
+else
+  CFLAGS+=-O3
 endif
 
 ifeq ($(DEBUG), 0)
