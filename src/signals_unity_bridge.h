@@ -38,6 +38,9 @@ SUB_EXPORT void sub_destroy(sub_handle* h);
 // Returns the number of compressed streams.
 SUB_EXPORT int sub_get_stream_count(sub_handle* h);
 
+// Returns the 4CC of a given stream.
+SUB_EXPORT uint32_t sub_get_stream_4cc(sub_handle* h, int streamIndex);
+
 // Plays a given URL.
 SUB_EXPORT bool sub_play(sub_handle* h, const char* URL);
 
