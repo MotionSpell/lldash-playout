@@ -2,6 +2,7 @@
 // Used for automated testing.
 #include <cassert>
 #include <cstdio>
+#include <cstring>
 #include <stdexcept>
 #include <thread>
 #include <chrono>
@@ -37,21 +38,13 @@ void safeMain(int argc, char* argv[])
 
   printf("%d stream(s)\n", func_sub_get_stream_count(pipeline));
 
-  std::vector<uint8_t> buffer(100 * 1024 * 1024);
+  std::vector<uint8_t> buffer(10 * 1024 * 1024);
 
-  int64_t cur = 0, prev = 0;
-  for(int i = 0; i < 100000; ++i)
+  for(int i = 0; i < 100; ++i)
   {
     FrameInfo info {};
-	if (!func_sub_grab_frame(pipeline, 0, buffer.data(), buffer.size(), &info)) {
-		std::this_thread::sleep_for(1ms);
-		continue;
-	}
-	memcpy(&cur, buffer.data(), sizeof(int64_t));
-	int64_t now = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
-    //printf("\tRomain: %lldms (diff=%lld, now=%lld, diffPrev=%lld)\n", info.timestamp, cur-now, now, cur-prev);
-	prev = cur;
-    //std::this_thread::sleep_for(1ms);
+    func_sub_grab_frame(pipeline, 0, buffer.data(), buffer.size(), &info);
+    std::this_thread::sleep_for(10ms);
   }
 
   func_sub_destroy(pipeline);

@@ -16,7 +16,6 @@
 #include "lib_media/demux/gpac_demux_mp4_simple.hpp"
 #include "lib_media/in/mpeg_dash_input.hpp"
 #include "lib_media/out/null.hpp"
-#include "lib_utils/tools.hpp" //safe_cast
 
 using namespace Modules;
 using namespace Pipelines;
@@ -160,7 +159,7 @@ uint32_t sub_get_stream_4cc(sub_handle* h, int streamIndex)
     if(!h->pipe)
       throw runtime_error("Can only get stream 4CC when the pipeline is playing");
 
-    if(h->streams.size() <= streamIndex)
+    if((int)h->streams.size() <= streamIndex)
       throw runtime_error("Invalid streamIndex: must be inferior to the number of streams");
 
     if (h->streams[streamIndex].fourcc.size() > 4)
@@ -196,7 +195,9 @@ bool sub_play(sub_handle* h, const char* url)
       {
         auto const idx = (int)h->streams.size();
         h->streams.push_back({});
-        h->streams[idx].fourcc = safe_cast<const MetadataPkt>(p.mod->getOutputMetadata(p.index))->codec;
+        auto meta = std::dynamic_pointer_cast<const MetadataPkt>(p.mod->getOutputMetadata(p.index));
+        if (meta)
+          h->streams[idx].fourcc = meta->codec;
 
         auto onFrame = [idx, h] (Data data)
           {
@@ -282,12 +283,15 @@ size_t sub_grab_frame(sub_handle* h, int streamIndex, uint8_t* dst, size_t dstLe
       *info = {};
       info->timestamp = s->get<PresentationTime>().time / (IClock::Rate / 1000LL);
 
-      auto dsi = safe_cast<const MetadataPkt>(s->getMetadata())->codecSpecificInfo;
-      if (dsi.size() > sizeof(info->dsi))
-        throw runtime_error("DSI buffer too small");
+      auto meta = std::dynamic_pointer_cast<const MetadataPkt>(s->getMetadata());
+      if (meta) {
+        auto dsi = meta->codecSpecificInfo;
+        if (dsi.size() > sizeof(info->dsi))
+          throw runtime_error("DSI buffer too small");
 
-      memcpy(info->dsi, dsi.data(), dsi.size());
-      info->dsi_size = dsi.size();
+        memcpy(info->dsi, dsi.data(), dsi.size());
+        info->dsi_size = dsi.size();
+      }
     }
 
     return N;
