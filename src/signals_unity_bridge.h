@@ -21,6 +21,10 @@ struct FrameInfo
 {
   // presentation timestamp, in milliseconds units.
   int64_t timestamp;
+
+  // decoder specific info
+  uint8_t dsi[256];
+  int dsi_size;
 };
 
 extern "C" {

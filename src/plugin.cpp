@@ -281,6 +281,13 @@ size_t sub_grab_frame(sub_handle* h, int streamIndex, uint8_t* dst, size_t dstLe
     {
       *info = {};
       info->timestamp = s->get<PresentationTime>().time / (IClock::Rate / 1000LL);
+
+      auto dsi = safe_cast<const MetadataPkt>(s->getMetadata())->codecSpecificInfo;
+      if (dsi.size() > sizeof(info->dsi))
+        throw runtime_error("DSI buffer too small");
+
+      memcpy(info->dsi, dsi.data(), dsi.size());
+      info->dsi_size = dsi.size();
     }
 
     return N;
@@ -292,4 +299,3 @@ size_t sub_grab_frame(sub_handle* h, int streamIndex, uint8_t* dst, size_t dstLe
     return 0;
   }
 }
-
