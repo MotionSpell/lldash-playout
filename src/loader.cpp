@@ -48,7 +48,7 @@ void safeMain(int argc, char* argv[])
 		  if (!size)
 			  continue;
 
-		  printf("[%d] %lf (size=%u)\n", j, info.timestamp / (double)1000, size);
+		  printf("[%d] %lf (size=%d)\n", j, info.timestamp / (double)1000, (int)size);
 	  }
 	  std::this_thread::sleep_for(10ms);
   }
