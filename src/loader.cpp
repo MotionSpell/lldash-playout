@@ -40,11 +40,17 @@ void safeMain(int argc, char* argv[])
 
   std::vector<uint8_t> buffer(10 * 1024 * 1024);
 
-  for(int i = 0; i < 100; ++i)
+  for (int i = 0; i < 100; ++i)
   {
-    FrameInfo info {};
-    func_sub_grab_frame(pipeline, 0, buffer.data(), buffer.size(), &info);
-    std::this_thread::sleep_for(10ms);
+	  for (int j = 0; j < func_sub_get_stream_count(pipeline); ++j) {
+		  FrameInfo info{};
+		  auto size = func_sub_grab_frame(pipeline, j, buffer.data(), buffer.size(), &info);
+		  if (!size)
+			  continue;
+
+		  printf("[%d] %lf (size=%u)\n", j, info.timestamp / (double)1000, size);
+	  }
+	  std::this_thread::sleep_for(10ms);
   }
 
   func_sub_destroy(pipeline);
