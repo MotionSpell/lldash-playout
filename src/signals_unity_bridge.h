@@ -31,6 +31,12 @@ extern "C" {
 // opaque handle to a signals pipeline
 struct sub_handle;
 
+struct streamDesc {
+    uint32_t MP4_4CC;
+    uint32_t tileNumber;
+    uint32_t quality;
+};
+
 // Creates a new pipeline.
 // name: a display name for log messages. Can be NULL.
 // The returned pipeline must be freed using 'sub_destroy'.
@@ -39,14 +45,20 @@ SUB_EXPORT sub_handle* sub_create(const char* name);
 // Destroys a pipeline. This frees all the resources.
 SUB_EXPORT void sub_destroy(sub_handle* h);
 
+// Plays a given URL.
+SUB_EXPORT bool sub_play(sub_handle* h, const char* URL);
+
 // Returns the number of compressed streams.
 SUB_EXPORT int sub_get_stream_count(sub_handle* h);
 
-// Returns the 4CC of a given stream.
-SUB_EXPORT uint32_t sub_get_stream_4cc(sub_handle* h, int streamIndex);
+// Returns the 4CC of a given stream. Desc is owned by the caller.
+SUB_EXPORT bool sub_get_stream_info(sub_handle* h, int streamIndex, struct streamDesc *desc);
 
-// Plays a given URL.
-SUB_EXPORT bool sub_play(sub_handle* h, const char* URL);
+// Enables a quality or disables a tile. There is at most one stream enabled per tile.
+// Associations between streamIndex and tiles are given by sub_get_stream_info().
+// Beware that disabling all qualities from all tiles will stop the session.
+SUB_EXPORT bool sub_enable_stream(sub_handle* h, int tileNumber, int quality);
+SUB_EXPORT bool sub_disable_stream(sub_handle* h, int tileNumber);
 
 // Copy the next received compressed frame to a buffer.
 // Returns: the size of compressed data actually copied,

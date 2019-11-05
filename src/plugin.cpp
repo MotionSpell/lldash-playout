@@ -83,6 +83,12 @@ struct sub_handle
     pipe.reset();
   }
 
+  void adaptationControlCbk(IAdaptationControl *i)
+  {
+    adaptationControl = i;
+  }
+  IAdaptationControl *adaptationControl = nullptr;
+
   Logger logger;
 
   struct Stream
@@ -149,7 +155,7 @@ int sub_get_stream_count(sub_handle* h)
   }
 }
 
-uint32_t sub_get_stream_4cc(sub_handle* h, int streamIndex)
+bool sub_get_stream_info(sub_handle* h, int streamIndex, struct streamDesc *desc)
 {
   try
   {
@@ -159,21 +165,38 @@ uint32_t sub_get_stream_4cc(sub_handle* h, int streamIndex)
     if(!h->pipe)
       throw runtime_error("Can only get stream 4CC when the pipeline is playing");
 
-    if((int)h->streams.size() <= streamIndex)
-      throw runtime_error("Invalid streamIndex: must be inferior to the number of streams");
+    if(streamIndex < 0 || streamIndex >= (int)h->streams.size())
+      throw runtime_error("Invalid streamIndex: must be positive and inferior to the number of streams");
+
+    if (!desc)
+      throw runtime_error("desc can't be NULL");
 
     if (h->streams[streamIndex].fourcc.size() > 4)
       fprintf(stderr, "[%s] 4CC \"%s\" will be truncated\n", __func__, h->streams[streamIndex].fourcc.c_str());
 
-    uint32_t ret = 0;
-    memcpy(&ret, h->streams[streamIndex].fourcc.c_str(), 4);
-    return ret;
+    memcpy(&desc->MP4_4CC, h->streams[streamIndex].fourcc.c_str(), 4);
+
+    int i = 0, as = 0, rep = 0;
+    for (as = 0; as < h->adaptationControl->getNumAdaptationSets(); ++as) {
+      for (rep = 0; rep < h->adaptationControl->getNumRepresentationsInAdaptationSet(as); ++i, ++rep) {
+        if (i == streamIndex)
+          break;
+      }
+      
+      if (i == streamIndex)
+        break;
+    }
+
+    desc->quality = as;
+    desc->tileNumber = rep;
+
+    return true;
   }
   catch(exception const& err)
   {
     fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
     fflush(stderr);
-    return 0;
+    return false;
   }
 }
 
@@ -222,6 +245,7 @@ bool sub_play(sub_handle* h, const char* url)
     {
       DashDemuxConfig cfg;
       cfg.url = url;
+      cfg.adaptationControlCbk = std::bind(&sub_handle::adaptationControlCbk, h, std::placeholders::_1);
       auto demux = pipe.add("DashDemuxer", &cfg);
 
       for(int k = 0; k < demux->getNumOutputs(); ++k)
@@ -238,6 +262,44 @@ bool sub_play(sub_handle* h, const char* url)
     }
 
     pipe.start();
+    return true;
+  }
+  catch(exception const& err)
+  {
+    fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
+    fflush(stderr);
+    return false;
+  }
+}
+
+bool sub_enable_stream(sub_handle* h, int tileNumber, int quality)
+{
+  try
+  {
+    if(!h)
+      throw runtime_error("handle can't be NULL");
+
+    h->adaptationControl->enableStream(tileNumber, quality);
+
+    return true;
+  }
+  catch(exception const& err)
+  {
+    fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
+    fflush(stderr);
+    return false;
+  }
+}
+
+bool sub_disable_stream(sub_handle* h, int tileNumber)
+{
+  try
+  {
+    if(!h)
+      throw runtime_error("handle can't be NULL");
+
+    h->adaptationControl->disableStream(tileNumber);
+
     return true;
   }
   catch(exception const& err)

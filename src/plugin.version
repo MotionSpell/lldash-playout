@@ -7,7 +7,11 @@ FOO {
     sub_play;
 
     sub_get_stream_count;
-    sub_get_stream_4cc;
+    sub_get_stream_info;
+
+    sub_enable_stream;
+    sub_disable_stream;
+
     sub_grab_frame;
 
   # hide everything else

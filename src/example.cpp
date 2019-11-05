@@ -53,9 +53,10 @@ int main(int argc, char const* argv[])
 
   printf("%d stream(s):\n", sub_get_stream_count(handle));
   for (int i = 0; i < sub_get_stream_count(handle); ++i) {
-	  auto fourcc_ = sub_get_stream_4cc(handle, i);
-	  auto fourcc = (char*)& fourcc_;
-	  printf("\tstream[%d]: %c%c%c%c\n", i, fourcc[0], fourcc[1], fourcc[2], fourcc[3]);
+    streamDesc desc = {};
+    sub_get_stream_info(handle, i, &desc);
+    auto fourcc = (char*)& desc.MP4_4CC;
+    printf("\tstream[%d]: %c%c%c%c\n", i, fourcc[0], fourcc[1], fourcc[2], fourcc[3]);
   }
 
   std::vector<uint8_t> buffer;
