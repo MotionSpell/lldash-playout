@@ -14,6 +14,7 @@
 #include "lib_media/common/metadata.hpp" // MetadataPkt
 #include "lib_media/demux/dash_demux.hpp"
 #include "lib_media/demux/gpac_demux_mp4_simple.hpp"
+#include "lib_media/demux/libav_demux.hpp"
 #include "lib_media/in/mpeg_dash_input.hpp"
 #include "lib_media/out/null.hpp"
 
@@ -249,6 +250,15 @@ bool sub_play(sub_handle* h, const char* url)
       auto demux = pipe.add("DashDemuxer", &cfg);
 
       for(int k = 0; k < demux->getNumOutputs(); ++k)
+        addStream(GetOutputPin(demux, k));
+    }
+    else if(startsWith(url, "rtmp://"))
+    {
+      DemuxConfig cfg;
+      cfg.url = url;
+      auto demux = pipe.add("LibavDemux", &cfg);
+
+      for (int k = 0; k < demux->getNumOutputs(); ++k)
         addStream(GetOutputPin(demux, k));
     }
     else
