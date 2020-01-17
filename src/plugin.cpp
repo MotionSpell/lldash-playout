@@ -177,19 +177,22 @@ bool sub_get_stream_info(sub_handle* h, int streamIndex, struct streamDesc *desc
 
     memcpy(&desc->MP4_4CC, h->streams[streamIndex].fourcc.c_str(), 4);
 
-    int i = 0, as = 0, rep = 0;
-    for (as = 0; as < h->adaptationControl->getNumAdaptationSets(); ++as) {
-      for (rep = 0; rep < h->adaptationControl->getNumRepresentationsInAdaptationSet(as); ++i, ++rep) {
+    if (h->adaptationControl)
+    {
+      int i = 0, as = 0, rep = 0;
+      for (as = 0; as < h->adaptationControl->getNumAdaptationSets(); ++as) {
+        for (rep = 0; rep < h->adaptationControl->getNumRepresentationsInAdaptationSet(as); ++i, ++rep) {
+          if (i == streamIndex)
+            break;
+        }
+
         if (i == streamIndex)
           break;
       }
-      
-      if (i == streamIndex)
-        break;
-    }
 
-    desc->quality = as;
-    desc->tileNumber = rep;
+      desc->quality = as;
+      desc->tileNumber = rep;
+    }
 
     return true;
   }
