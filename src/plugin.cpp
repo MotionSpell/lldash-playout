@@ -8,6 +8,7 @@
 #include <cstring> // memcpy
 
 #include "lib_pipeline/pipeline.hpp"
+#include "lib_utils/format.hpp"
 
 // modules
 #include "lib_media/common/attributes.hpp"
@@ -84,11 +85,12 @@ struct sub_handle
     pipe.reset();
   }
 
-  void adaptationControlCbk(IAdaptationControl *i)
+  void adaptationControlCbk(IAdaptationControl* i)
   {
     adaptationControl = i;
   }
-  IAdaptationControl *adaptationControl = nullptr;
+
+  IAdaptationControl* adaptationControl = nullptr;
 
   Logger logger;
 
@@ -104,15 +106,23 @@ struct sub_handle
   std::unique_ptr<Pipeline> pipe;
 };
 
-sub_handle* sub_create(const char* name)
+sub_handle* sub_create(const char* name, const char* api_version)
 {
   try
   {
+    if(strcmp(api_version, SUB_API_VERSION))
+      throw std::runtime_error(format("Inconsistent API version between compilation (%s) and runtime (%s). Aborting.", SUB_API_VERSION, api_version).c_str());
+
     if(!name)
       name = "UnnamedPipeline";
 
     auto h = make_unique<sub_handle>();
     h->logger.name = name;
+
+    auto f = fopen("D:\\Works\\tmp\\sub_unity.log", "at");
+    fprintf(f, "sub_create(%x) [name=%s]\n", h.get(), name);
+    fflush(f);
+    fclose(f);
     return h.release();
   }
   catch(exception const& err)
@@ -127,6 +137,10 @@ void sub_destroy(sub_handle* h)
 {
   try
   {
+    auto f = fopen("D:\\Works\\tmp\\sub_unity.log", "at");
+    fprintf(f, "sub_destroy(%x) [%d streams]\n", h, h->streams.size());
+    fflush(f);
+    fclose(f);
     delete h;
   }
   catch(exception const& err)
@@ -146,6 +160,10 @@ int sub_get_stream_count(sub_handle* h)
     if(!h->pipe)
       throw runtime_error("Can only get stream count when the pipeline is playing");
 
+    auto f = fopen("D:\\Works\\tmp\\sub_unity.log", "at");
+    fprintf(f, "sub_get_stream_count(%x) [%d streams]\n", h, h->streams.size());
+    fflush(f);
+    fclose(f);
     return (int)h->streams.size();
   }
   catch(exception const& err)
@@ -156,10 +174,15 @@ int sub_get_stream_count(sub_handle* h)
   }
 }
 
-bool sub_get_stream_info(sub_handle* h, int streamIndex, struct streamDesc *desc)
+bool sub_get_stream_info(sub_handle* h, int streamIndex, struct streamDesc* desc)
 {
   try
   {
+    auto f = fopen("D:\\Works\\tmp\\sub_unity.log", "at");
+    fprintf(f, "sub_get_stream_info(%x) [%d/%d streams]\n", h, streamIndex, h->streams.size());
+    fflush(f);
+    fclose(f);
+
     if(!h)
       throw runtime_error("handle can't be NULL");
 
@@ -169,24 +192,27 @@ bool sub_get_stream_info(sub_handle* h, int streamIndex, struct streamDesc *desc
     if(streamIndex < 0 || streamIndex >= (int)h->streams.size())
       throw runtime_error("Invalid streamIndex: must be positive and inferior to the number of streams");
 
-    if (!desc)
+    if(!desc)
       throw runtime_error("desc can't be NULL");
 
-    if (h->streams[streamIndex].fourcc.size() > 4)
+    if(h->streams[streamIndex].fourcc.size() > 4)
       fprintf(stderr, "[%s] 4CC \"%s\" will be truncated\n", __func__, h->streams[streamIndex].fourcc.c_str());
 
     memcpy(&desc->MP4_4CC, h->streams[streamIndex].fourcc.c_str(), 4);
 
-    if (h->adaptationControl)
+    if(h->adaptationControl)
     {
       int i = 0, as = 0, rep = 0;
-      for (as = 0; as < h->adaptationControl->getNumAdaptationSets(); ++as) {
-        for (rep = 0; rep < h->adaptationControl->getNumRepresentationsInAdaptationSet(as); ++i, ++rep) {
-          if (i == streamIndex)
+
+      for(as = 0; as < h->adaptationControl->getNumAdaptationSets(); ++as)
+      {
+        for(rep = 0; rep < h->adaptationControl->getNumRepresentationsInAdaptationSet(as); ++i, ++rep)
+        {
+          if(i == streamIndex)
             break;
         }
 
-        if (i == streamIndex)
+        if(i == streamIndex)
           break;
       }
 
@@ -208,6 +234,11 @@ bool sub_play(sub_handle* h, const char* url)
 {
   try
   {
+    auto f = fopen("D:\\Works\\tmp\\sub_unity.log", "at");
+    fprintf(f, "sub_play(%x): %s\n", h, url);
+    fflush(f);
+    fclose(f);
+
     if(!h)
       throw runtime_error("handle can't be NULL");
 
@@ -223,7 +254,8 @@ bool sub_play(sub_handle* h, const char* url)
         auto const idx = (int)h->streams.size();
         h->streams.push_back({});
         auto meta = std::dynamic_pointer_cast<const MetadataPkt>(p.mod->getOutputMetadata(p.index));
-        if (meta)
+
+        if(meta)
           h->streams[idx].fourcc = meta->codec;
 
         auto onFrame = [idx, h] (Data data)
@@ -261,7 +293,7 @@ bool sub_play(sub_handle* h, const char* url)
       cfg.url = url;
       auto demux = pipe.add("LibavDemux", &cfg);
 
-      for (int k = 0; k < demux->getNumOutputs(); ++k)
+      for(int k = 0; k < demux->getNumOutputs(); ++k)
         addStream(GetOutputPin(demux, k));
     }
     else
@@ -275,6 +307,12 @@ bool sub_play(sub_handle* h, const char* url)
     }
 
     pipe.start();
+    {
+      auto f = fopen("D:\\Works\\tmp\\sub_unity.log", "at");
+      fprintf(f, "sub_play(%x): %s STARTED\n", h, url);
+      fflush(f);
+      fclose(f);
+    }
     return true;
   }
   catch(exception const& err)
@@ -333,7 +371,13 @@ size_t sub_grab_frame(sub_handle* h, int streamIndex, uint8_t* dst, size_t dstLe
     std::unique_lock<std::mutex> lock(h->transferMutex);
 
     if(streamIndex < 0 || streamIndex >= (int)h->streams.size())
+    {
+      auto f = fopen("D:\\Works\\tmp\\sub_unity.log", "at");
+      fprintf(f, "sub_grab_frame(%x): %d/%d\n", h, streamIndex, h->streams.size());
+      fflush(f);
+      fclose(f);
       throw runtime_error("Invalid stream index");
+    }
 
     auto& stream = h->streams[streamIndex];
 
@@ -359,9 +403,12 @@ size_t sub_grab_frame(sub_handle* h, int streamIndex, uint8_t* dst, size_t dstLe
       info->timestamp = s->get<PresentationTime>().time / (IClock::Rate / 1000LL);
 
       auto meta = std::dynamic_pointer_cast<const MetadataPkt>(s->getMetadata());
-      if (meta) {
+
+      if(meta)
+      {
         auto dsi = meta->codecSpecificInfo;
-        if (dsi.size() > sizeof(info->dsi))
+
+        if(dsi.size() > sizeof(info->dsi))
           throw runtime_error("DSI buffer too small");
 
         memcpy(info->dsi, dsi.data(), dsi.size());
@@ -378,3 +425,4 @@ size_t sub_grab_frame(sub_handle* h, int streamIndex, uint8_t* dst, size_t dstLe
     return 0;
   }
 }
+

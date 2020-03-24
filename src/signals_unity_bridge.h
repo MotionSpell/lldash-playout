@@ -17,6 +17,10 @@
 #define SUB_EXPORT __attribute__((visibility("default")))
 #endif
 
+const char* SUB_API_VERSION =
+#include "signals_unity_bridge_version.h"
+;
+
 struct FrameInfo
 {
   // presentation timestamp, in milliseconds units.
@@ -31,16 +35,17 @@ extern "C" {
 // opaque handle to a signals pipeline
 struct sub_handle;
 
-struct streamDesc {
-    uint32_t MP4_4CC;
-    uint32_t tileNumber;
-    uint32_t quality;
+struct streamDesc
+{
+  uint32_t MP4_4CC;
+  uint32_t tileNumber;
+  uint32_t quality;
 };
 
 // Creates a new pipeline.
 // name: a display name for log messages. Can be NULL.
 // The returned pipeline must be freed using 'sub_destroy'.
-SUB_EXPORT sub_handle* sub_create(const char* name);
+SUB_EXPORT sub_handle* sub_create(const char* name, const char* api_version = SUB_API_VERSION);
 
 // Destroys a pipeline. This frees all the resources.
 SUB_EXPORT void sub_destroy(sub_handle* h);
@@ -52,7 +57,7 @@ SUB_EXPORT bool sub_play(sub_handle* h, const char* URL);
 SUB_EXPORT int sub_get_stream_count(sub_handle* h);
 
 // Returns the 4CC of a given stream. Desc is owned by the caller.
-SUB_EXPORT bool sub_get_stream_info(sub_handle* h, int streamIndex, struct streamDesc *desc);
+SUB_EXPORT bool sub_get_stream_info(sub_handle* h, int streamIndex, struct streamDesc* desc);
 
 // Enables a quality or disables a tile. There is at most one stream enabled per tile.
 // Associations between streamIndex and tiles are given by sub_get_stream_info().

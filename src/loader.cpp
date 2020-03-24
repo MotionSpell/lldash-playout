@@ -32,7 +32,7 @@ void safeMain(int argc, char* argv[])
   auto func_sub_get_stream_count = IMPORT(sub_get_stream_count);
   auto func_sub_grab_frame = IMPORT(sub_grab_frame);
 
-  auto pipeline = func_sub_create(nullptr);
+  auto pipeline = func_sub_create(nullptr, SUB_API_VERSION);
   auto ret = func_sub_play(pipeline, url);
   assert(ret);
 
@@ -40,17 +40,20 @@ void safeMain(int argc, char* argv[])
 
   std::vector<uint8_t> buffer(10 * 1024 * 1024);
 
-  for (int i = 0; i < 100; ++i)
+  for(int i = 0; i < 10000; ++i)
   {
-	  for (int j = 0; j < func_sub_get_stream_count(pipeline); ++j) {
-		  FrameInfo info{};
-		  auto size = func_sub_grab_frame(pipeline, j, buffer.data(), buffer.size(), &info);
-		  if (!size)
-			  continue;
+    for(int j = 0; j < func_sub_get_stream_count(pipeline); ++j)
+    {
+      FrameInfo info {};
+      auto size = func_sub_grab_frame(pipeline, j, buffer.data(), buffer.size(), &info);
 
-		  printf("[%d] %lf (size=%d)\n", j, info.timestamp / (double)1000, (int)size);
-	  }
-	  std::this_thread::sleep_for(10ms);
+      if(!size)
+        continue;
+
+      printf("[%d] %lf (size=%d)\n", j, info.timestamp / (double)1000, (int)size);
+    }
+
+    std::this_thread::sleep_for(10ms);
   }
 
   func_sub_destroy(pipeline);
