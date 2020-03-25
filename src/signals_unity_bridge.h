@@ -35,7 +35,7 @@ extern "C" {
 // opaque handle to a signals pipeline
 struct sub_handle;
 
-struct streamDesc
+struct StreamDesc
 {
   uint32_t MP4_4CC;
   uint32_t tileNumber;
@@ -57,7 +57,7 @@ SUB_EXPORT bool sub_play(sub_handle* h, const char* URL);
 SUB_EXPORT int sub_get_stream_count(sub_handle* h);
 
 // Returns the 4CC of a given stream. Desc is owned by the caller.
-SUB_EXPORT bool sub_get_stream_info(sub_handle* h, int streamIndex, struct streamDesc* desc);
+SUB_EXPORT bool sub_get_stream_info(sub_handle* h, int streamIndex, struct StreamDesc* desc);
 
 // Enables a quality or disables a tile. There is at most one stream enabled per tile.
 // Associations between streamIndex and tiles are given by sub_get_stream_info().

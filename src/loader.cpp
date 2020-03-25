@@ -30,6 +30,7 @@ void safeMain(int argc, char* argv[])
   auto func_sub_destroy = IMPORT(sub_destroy);
   auto func_sub_play = IMPORT(sub_play);
   auto func_sub_get_stream_count = IMPORT(sub_get_stream_count);
+  auto func_sub_get_stream_info = IMPORT(sub_get_stream_info);
   auto func_sub_grab_frame = IMPORT(sub_grab_frame);
 
   auto pipeline = func_sub_create(nullptr, SUB_API_VERSION);
@@ -37,6 +38,14 @@ void safeMain(int argc, char* argv[])
   assert(ret);
 
   printf("%d stream(s)\n", func_sub_get_stream_count(pipeline));
+
+  for(int j = 0; j < func_sub_get_stream_count(pipeline); ++j)
+  {
+    StreamDesc desc {};
+    func_sub_get_stream_info(pipeline, j, &desc);
+    auto fourCC = (char*)&desc.MP4_4CC;
+    printf("\t stream %d: 4CC=%c%c%c%c, tileNum=%u, quality=%u\n", j, fourCC[0], fourCC[1], fourCC[2], fourCC[3], desc.tileNumber, desc.quality);
+  }
 
   std::vector<uint8_t> buffer(10 * 1024 * 1024);
 

@@ -27,9 +27,9 @@ $(BIN)/loader.exe: $(LOADER_SRCS:%=$(BIN)/%.o)
 #------------------------------------------------------------------------------
 # Keep this one dead-easy to build, even without the makefile:
 TARGETS+=$(BIN)/example.exe
-$(BIN)/example.exe: $(MYDIR)/example.cpp $(BIN)/signals-unity-bridge.so
+$(BIN)/example.exe: $(MYDIR)/example.cpp
 	@mkdir -p $(dir $@)
-	$(CXX) $(CFLAGS) -o "$@" $^
+	$(CXX) $(CFLAGS) -o "$@" $^ -L$(BIN) -lsignals-unity-bridge
 
 #------------------------------------------------------------------------------
 # Generic rules

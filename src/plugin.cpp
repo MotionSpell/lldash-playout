@@ -162,7 +162,7 @@ int sub_get_stream_count(sub_handle* h)
   }
 }
 
-bool sub_get_stream_info(sub_handle* h, int streamIndex, struct streamDesc* desc)
+bool sub_get_stream_info(sub_handle* h, int streamIndex, struct StreamDesc* desc)
 {
   try
   {

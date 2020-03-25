@@ -55,7 +55,7 @@ int main(int argc, char const* argv[])
 
   for(int i = 0; i < sub_get_stream_count(handle); ++i)
   {
-    streamDesc desc = {};
+    StreamDesc desc = {};
     sub_get_stream_info(handle, i, &desc);
     auto fourcc = (char*)&desc.MP4_4CC;
     printf("\tstream[%d]: %c%c%c%c\n", i, fourcc[0], fourcc[1], fourcc[2], fourcc[3]);
