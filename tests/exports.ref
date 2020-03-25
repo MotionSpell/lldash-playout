@@ -1,6 +1,8 @@
 sub_create
 sub_destroy
-sub_get_stream_4cc
+sub_disable_stream
+sub_enable_stream
 sub_get_stream_count
+sub_get_stream_info
 sub_grab_frame
 sub_play

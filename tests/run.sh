@@ -60,7 +60,7 @@ function load_library
 function api_tests
 {
   export SIGNALS_SMD_PATH=$BIN
-  g++ -std=c++11 $scriptDir/tests.cpp -pthread -I$scriptDir/../src -o $tmpDir/tests.exe $BIN/signals-unity-bridge.so
+  g++ -std=c++11 $scriptDir/tests.cpp -pthread -I$scriptDir/../src -Ibin -o $tmpDir/tests.exe $BIN/signals-unity-bridge.so
   $tmpDir/tests.exe
 }
 

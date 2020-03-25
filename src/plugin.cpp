@@ -119,10 +119,6 @@ sub_handle* sub_create(const char* name, const char* api_version)
     auto h = make_unique<sub_handle>();
     h->logger.name = name;
 
-    auto f = fopen("D:\\Works\\tmp\\sub_unity.log", "at");
-    fprintf(f, "sub_create(%x) [name=%s]\n", h.get(), name);
-    fflush(f);
-    fclose(f);
     return h.release();
   }
   catch(exception const& err)
@@ -137,10 +133,6 @@ void sub_destroy(sub_handle* h)
 {
   try
   {
-    auto f = fopen("D:\\Works\\tmp\\sub_unity.log", "at");
-    fprintf(f, "sub_destroy(%x) [%d streams]\n", h, h->streams.size());
-    fflush(f);
-    fclose(f);
     delete h;
   }
   catch(exception const& err)
@@ -160,10 +152,6 @@ int sub_get_stream_count(sub_handle* h)
     if(!h->pipe)
       throw runtime_error("Can only get stream count when the pipeline is playing");
 
-    auto f = fopen("D:\\Works\\tmp\\sub_unity.log", "at");
-    fprintf(f, "sub_get_stream_count(%x) [%d streams]\n", h, h->streams.size());
-    fflush(f);
-    fclose(f);
     return (int)h->streams.size();
   }
   catch(exception const& err)
@@ -178,11 +166,6 @@ bool sub_get_stream_info(sub_handle* h, int streamIndex, struct streamDesc* desc
 {
   try
   {
-    auto f = fopen("D:\\Works\\tmp\\sub_unity.log", "at");
-    fprintf(f, "sub_get_stream_info(%x) [%d/%d streams]\n", h, streamIndex, h->streams.size());
-    fflush(f);
-    fclose(f);
-
     if(!h)
       throw runtime_error("handle can't be NULL");
 
@@ -234,11 +217,6 @@ bool sub_play(sub_handle* h, const char* url)
 {
   try
   {
-    auto f = fopen("D:\\Works\\tmp\\sub_unity.log", "at");
-    fprintf(f, "sub_play(%x): %s\n", h, url);
-    fflush(f);
-    fclose(f);
-
     if(!h)
       throw runtime_error("handle can't be NULL");
 
@@ -307,12 +285,7 @@ bool sub_play(sub_handle* h, const char* url)
     }
 
     pipe.start();
-    {
-      auto f = fopen("D:\\Works\\tmp\\sub_unity.log", "at");
-      fprintf(f, "sub_play(%x): %s STARTED\n", h, url);
-      fflush(f);
-      fclose(f);
-    }
+
     return true;
   }
   catch(exception const& err)
@@ -371,13 +344,7 @@ size_t sub_grab_frame(sub_handle* h, int streamIndex, uint8_t* dst, size_t dstLe
     std::unique_lock<std::mutex> lock(h->transferMutex);
 
     if(streamIndex < 0 || streamIndex >= (int)h->streams.size())
-    {
-      auto f = fopen("D:\\Works\\tmp\\sub_unity.log", "at");
-      fprintf(f, "sub_grab_frame(%x): %d/%d\n", h, streamIndex, h->streams.size());
-      fflush(f);
-      fclose(f);
       throw runtime_error("Invalid stream index");
-    }
 
     auto& stream = h->streams[streamIndex];
 

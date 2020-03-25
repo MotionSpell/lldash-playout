@@ -40,7 +40,7 @@ void safeMain(int argc, char* argv[])
 
   std::vector<uint8_t> buffer(10 * 1024 * 1024);
 
-  for(int i = 0; i < 10000; ++i)
+  for(int i = 0; i < 100; ++i)
   {
     for(int j = 0; j < func_sub_get_stream_count(pipeline); ++j)
     {
@@ -50,10 +50,10 @@ void safeMain(int argc, char* argv[])
       if(!size)
         continue;
 
-      printf("[%d] %lf (size=%d)\n", j, info.timestamp / (double)1000, (int)size);
+      //printf("[%d] %lf (size=%d)\n", j, info.timestamp / (double)1000, (int)size);
     }
 
-    std::this_thread::sleep_for(10ms);
+    //std::this_thread::sleep_for(10ms);
   }
 
   func_sub_destroy(pipeline);

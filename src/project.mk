@@ -27,14 +27,15 @@ $(BIN)/loader.exe: $(LOADER_SRCS:%=$(BIN)/%.o)
 #------------------------------------------------------------------------------
 # Keep this one dead-easy to build, even without the makefile:
 TARGETS+=$(BIN)/example.exe
-$(BIN)/example.exe: $(MYDIR)/example.cpp
+$(BIN)/example.exe: $(MYDIR)/example.cpp $(BIN)/signals-unity-bridge.so
 	@mkdir -p $(dir $@)
-	$(CXX) $(CFLAGS) -o "$@" $^ -L$(BIN) -lsignals-unity-bridge
+	$(CXX) $(CFLAGS) -o "$@" $^
 
 #------------------------------------------------------------------------------
 # Generic rules
 #
 $(BIN)/%.so:
+	@echo ROMAINNNNNNNNNNN $(MYDIR)
 	$(CXX) $(CFLAGS) -static-libstdc++ -shared -o "$@" $^ \
 		-Wl,--no-undefined \
 		-Wl,--version-script=$(MYDIR)/plugin.version \
