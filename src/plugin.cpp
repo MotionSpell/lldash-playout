@@ -106,11 +106,11 @@ struct sub_handle
   std::unique_ptr<Pipeline> pipe;
 };
 
-sub_handle* sub_create(const char* name, const char* api_version)
+sub_handle* sub_create(const char* name, uint64_t api_version)
 {
   try
   {
-    if(strcmp(api_version, SUB_API_VERSION))
+    if(api_version != SUB_API_VERSION)
       throw std::runtime_error(format("Inconsistent API version between compilation (%s) and runtime (%s). Aborting.", SUB_API_VERSION, api_version).c_str());
 
     if(!name)

@@ -17,9 +17,7 @@
 #define SUB_EXPORT __attribute__((visibility("default")))
 #endif
 
-const char* SUB_API_VERSION =
-#include "signals_unity_bridge_version.h"
-;
+const uint64_t SUB_API_VERSION = 0x20200327A;
 
 struct FrameInfo
 {
@@ -45,7 +43,7 @@ struct StreamDesc
 // Creates a new pipeline.
 // name: a display name for log messages. Can be NULL.
 // The returned pipeline must be freed using 'sub_destroy'.
-SUB_EXPORT sub_handle* sub_create(const char* name, const char* api_version = SUB_API_VERSION);
+SUB_EXPORT sub_handle* sub_create(const char* name, uint64_t api_version = SUB_API_VERSION);
 
 // Destroys a pipeline. This frees all the resources.
 SUB_EXPORT void sub_destroy(sub_handle* h);
