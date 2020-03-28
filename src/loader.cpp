@@ -44,7 +44,8 @@ void safeMain(int argc, char* argv[])
     StreamDesc desc {};
     func_sub_get_stream_info(pipeline, j, &desc);
     auto fourCC = (char*)&desc.MP4_4CC;
-    printf("\t stream %d: 4CC=%c%c%c%c, tileNum=%u, quality=%u\n", j, fourCC[0], fourCC[1], fourCC[2], fourCC[3], desc.tileNumber, desc.quality);
+    printf("\t stream %d: 4CC=%c%c%c%c, SRD { %u, %u, %u, %u, %u, %u }\n", j, fourCC[0], fourCC[1], fourCC[2], fourCC[3],
+           desc.objectX, desc.objectY, desc.objectWidth, desc.objectHeight, desc.totalWidth, desc.totalHeight);
   }
 
   std::vector<uint8_t> buffer(10 * 1024 * 1024);
@@ -59,10 +60,10 @@ void safeMain(int argc, char* argv[])
       if(!size)
         continue;
 
-      //printf("[%d] %lf (size=%d)\n", j, info.timestamp / (double)1000, (int)size);
+      // printf("[%d] %lf (size=%d)\n", j, info.timestamp / (double)1000, (int)size);
     }
 
-    //std::this_thread::sleep_for(10ms);
+    // std::this_thread::sleep_for(10ms);
   }
 
   func_sub_destroy(pipeline);

@@ -36,8 +36,14 @@ struct sub_handle;
 struct StreamDesc
 {
   uint32_t MP4_4CC;
-  uint32_t tileNumber;
-  uint32_t quality;
+
+  /*MPEG-DASH SRD parameters*/
+  uint32_t objectX;
+  uint32_t objectY;
+  uint32_t objectWidth;
+  uint32_t objectHeight;
+  uint32_t totalWidth;
+  uint32_t totalHeight;
 };
 
 // Creates a new pipeline.

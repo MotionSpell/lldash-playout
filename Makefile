@@ -25,19 +25,6 @@ CFLAGS+=-Isrc
 
 #------------------------------------------------------------------------------
 
-$(BIN)/signals_unity_bridge_version.mk:
-	@mkdir -p $(BIN)
-	$(SRC)/../scripts/version.sh > $(BIN)/signals_unity_bridge_version.h
-	@echo "" > "$@"
-
-CFLAGS+=-I$(BIN)
-
-ifneq ($(MAKECMDGOALS),clean)
-include $(BIN)/signals_unity_bridge_version.mk
-endif
-
-#------------------------------------------------------------------------------
-
 include src/project.mk
 
 #------------------------------------------------------------------------------

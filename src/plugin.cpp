@@ -35,11 +35,11 @@ bool startsWith(string s, string prefix)
 
 struct OutStub : ModuleS
 {
-  OutStub(KHost*, std::function<void(Data)> onFrame_) : onFrame(onFrame_) {}
+  OutStub(KHost*, function<void(Data)> onFrame_) : onFrame(onFrame_) {}
 
   void processOne(Data data) override { onFrame(data); }
 
-  std::function<void(Data)> const onFrame;
+  function<void(Data)> const onFrame;
 };
 
 struct Logger : LogSink
@@ -53,7 +53,7 @@ struct Logger : LogSink
     fflush(stderr);
   }
 
-  std::string name;
+  string name;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -74,7 +74,7 @@ struct sub_handle
 
     // release all data buffers (= unblock potential calls to 'alloc' inside the pipeline)
     {
-      std::unique_lock<std::mutex> lock(transferMutex);
+      unique_lock<mutex> lock(transferMutex);
 
       for(auto& s : streams)
         while(!s.fifo.empty())
@@ -96,14 +96,14 @@ struct sub_handle
 
   struct Stream
   {
-    std::queue<Data> fifo;
-    std::string fourcc;
+    queue<Data> fifo;
+    string fourcc;
   };
 
-  std::atomic<bool> dropEverything;
-  std::mutex transferMutex; // protects below members
-  std::vector<Stream> streams;
-  std::unique_ptr<Pipeline> pipe;
+  atomic<bool> dropEverything;
+  mutex transferMutex; // protects below members
+  vector<Stream> streams;
+  unique_ptr<Pipeline> pipe;
 };
 
 sub_handle* sub_create(const char* name, uint64_t api_version)
@@ -111,7 +111,7 @@ sub_handle* sub_create(const char* name, uint64_t api_version)
   try
   {
     if(api_version != SUB_API_VERSION)
-      throw std::runtime_error(format("Inconsistent API version between compilation (%s) and runtime (%s). Aborting.", SUB_API_VERSION, api_version).c_str());
+      throw runtime_error(format("Inconsistent API version between compilation (%s) and runtime (%s). Aborting.", SUB_API_VERSION, api_version).c_str());
 
     if(!name)
       name = "UnnamedPipeline";
@@ -152,7 +152,17 @@ int sub_get_stream_count(sub_handle* h)
     if(!h->pipe)
       throw runtime_error("Can only get stream count when the pipeline is playing");
 
-    return (int)h->streams.size();
+    if(h->adaptationControl)
+    {
+      int num = 0;
+
+      for(int as = 0; as < h->adaptationControl->getNumAdaptationSets(); ++as)
+        num += h->adaptationControl->getNumRepresentationsInAdaptationSet(as);
+
+      return num;
+    }
+    else
+      return (int)h->streams.size();
   }
   catch(exception const& err)
   {
@@ -162,7 +172,22 @@ int sub_get_stream_count(sub_handle* h)
   }
 }
 
-bool sub_get_stream_info(sub_handle* h, int streamIndex, struct StreamDesc* desc)
+static int get_stream_index(sub_handle* h, int i)
+{
+  if(h->adaptationControl)
+  {
+    for(int as = 0; as < h->adaptationControl->getNumAdaptationSets(); ++as)
+      for(int rep = 0; rep < h->adaptationControl->getNumRepresentationsInAdaptationSet(as); --i, ++rep)
+        if(i == 0)
+          return as;
+  }
+  else
+    return i;
+
+  throw runtime_error("Invalid stream index.");
+}
+
+bool sub_get_stream_info(sub_handle* h, int i, struct StreamDesc* desc)
 {
   try
   {
@@ -172,15 +197,18 @@ bool sub_get_stream_info(sub_handle* h, int streamIndex, struct StreamDesc* desc
     if(!h->pipe)
       throw runtime_error("Can only get stream 4CC when the pipeline is playing");
 
-    if(streamIndex < 0 || streamIndex >= (int)h->streams.size())
+    if(i < 0 || i >= sub_get_stream_count(h))
       throw runtime_error("Invalid streamIndex: must be positive and inferior to the number of streams");
 
     if(!desc)
       throw runtime_error("desc can't be NULL");
 
+    auto const streamIndex = get_stream_index(h, i);
+
     if(h->streams[streamIndex].fourcc.size() > 4)
       fprintf(stderr, "[%s] 4CC \"%s\" will be truncated\n", __func__, h->streams[streamIndex].fourcc.c_str());
 
+    *desc = {};
     memcpy(&desc->MP4_4CC, h->streams[streamIndex].fourcc.c_str(), 4);
 
     if(h->adaptationControl)
@@ -192,15 +220,29 @@ bool sub_get_stream_info(sub_handle* h, int streamIndex, struct StreamDesc* desc
         for(rep = 0; rep < h->adaptationControl->getNumRepresentationsInAdaptationSet(as); ++i, ++rep)
         {
           if(i == streamIndex)
-            break;
-        }
+          {
+            auto srd = h->adaptationControl->getSRD(as);
 
-        if(i == streamIndex)
-          break;
+            if(!srd.empty())
+            {
+              auto const parsed = sscanf(srd.c_str(), "0,%u,%u,%u,%u,%u,%u",
+                                         &desc->objectX, &desc->objectY, &desc->objectWidth, &desc->objectHeight, &desc->totalWidth, &desc->totalHeight);
+
+              if(parsed != 6)
+              {
+                fprintf(stderr, "[%s] Invalid SRD format: \"%s\"\n", __func__, srd.c_str());
+                return false;
+              }
+            }
+            else
+            {
+              return true;
+            }
+          }
+        }
       }
 
-      desc->quality = as;
-      desc->tileNumber = rep;
+      return false;
     }
 
     return true;
@@ -231,7 +273,7 @@ bool sub_play(sub_handle* h, const char* url)
       {
         auto const idx = (int)h->streams.size();
         h->streams.push_back({});
-        auto meta = std::dynamic_pointer_cast<const MetadataPkt>(p.mod->getOutputMetadata(p.index));
+        auto meta = dynamic_pointer_cast<const MetadataPkt>(p.mod->getOutputMetadata(p.index));
 
         if(meta)
           h->streams[idx].fourcc = meta->codec;
@@ -244,7 +286,7 @@ bool sub_play(sub_handle* h, const char* url)
             if(isDeclaration(data))
               return;
 
-            std::unique_lock<std::mutex> lock(h->transferMutex);
+            unique_lock<mutex> lock(h->transferMutex);
             h->streams[idx].fifo.push(data);
           };
 
@@ -259,7 +301,7 @@ bool sub_play(sub_handle* h, const char* url)
     {
       DashDemuxConfig cfg;
       cfg.url = url;
-      cfg.adaptationControlCbk = std::bind(&sub_handle::adaptationControlCbk, h, std::placeholders::_1);
+      cfg.adaptationControlCbk = bind(&sub_handle::adaptationControlCbk, h, placeholders::_1);
       auto demux = pipe.add("DashDemuxer", &cfg);
 
       for(int k = 0; k < demux->getNumOutputs(); ++k)
@@ -334,18 +376,19 @@ bool sub_disable_stream(sub_handle* h, int tileNumber)
   }
 }
 
-size_t sub_grab_frame(sub_handle* h, int streamIndex, uint8_t* dst, size_t dstLen, FrameInfo* info)
+size_t sub_grab_frame(sub_handle* h, int i, uint8_t* dst, size_t dstLen, FrameInfo* info)
 {
   try
   {
     if(!h)
       throw runtime_error("handle can't be NULL");
 
-    std::unique_lock<std::mutex> lock(h->transferMutex);
+    unique_lock<mutex> lock(h->transferMutex);
 
-    if(streamIndex < 0 || streamIndex >= (int)h->streams.size())
+    if(i < 0 || i >= sub_get_stream_count(h))
       throw runtime_error("Invalid stream index");
 
+    auto const streamIndex = get_stream_index(h, i);
     auto& stream = h->streams[streamIndex];
 
     if(stream.fifo.empty())
@@ -369,7 +412,7 @@ size_t sub_grab_frame(sub_handle* h, int streamIndex, uint8_t* dst, size_t dstLe
       *info = {};
       info->timestamp = s->get<PresentationTime>().time / (IClock::Rate / 1000LL);
 
-      auto meta = std::dynamic_pointer_cast<const MetadataPkt>(s->getMetadata());
+      auto meta = dynamic_pointer_cast<const MetadataPkt>(s->getMetadata());
 
       if(meta)
       {
