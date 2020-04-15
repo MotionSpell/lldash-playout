@@ -1,4 +1,4 @@
 [submodule "signals"]
 	path = signals
-	url = git@git.gpac-licensing.com:rbouqueau/signals.git
+	url = git@git.gpac-licensing.com:VRT/signals.git
 	branch = master
