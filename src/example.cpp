@@ -39,7 +39,7 @@ int main(int argc, char const* argv[])
 
   auto const mediaUrl = argv[1];
 
-  auto handle = sub_create("MyMediaPipeline");
+  auto handle = sub_create("MyMediaPipeline", [](const char* msg) { fprintf(stderr, "Error: %s\n", msg); });
 
   sub_play(handle, mediaUrl);
 

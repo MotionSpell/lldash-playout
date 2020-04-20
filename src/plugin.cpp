@@ -100,13 +100,14 @@ struct sub_handle
     string fourcc;
   };
 
+  std::function<void(const char*)> errorCbk;
   atomic<bool> dropEverything;
   mutex transferMutex; // protects below members
   vector<Stream> streams;
   unique_ptr<Pipeline> pipe;
 };
 
-sub_handle* sub_create(const char* name, uint64_t api_version)
+sub_handle* sub_create(const char* name, void (*onError)(const char *msg), uint64_t api_version)
 {
   try
   {
@@ -118,6 +119,7 @@ sub_handle* sub_create(const char* name, uint64_t api_version)
 
     auto h = make_unique<sub_handle>();
     h->logger.name = name;
+    h->errorCbk = onError;
 
     return h.release();
   }
@@ -268,6 +270,8 @@ bool sub_play(sub_handle* h, const char* url)
     h->pipe = make_unique<Pipeline>(&h->logger);
 
     auto& pipe = *h->pipe;
+
+    pipe.registerErrorCallback(h->errorCbk);
 
     auto addStream = [&] (OutputPin p)
       {
