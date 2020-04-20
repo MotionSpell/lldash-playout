@@ -54,7 +54,7 @@ SUB_EXPORT sub_handle* sub_create(const char* name, uint64_t api_version = SUB_A
 // Destroys a pipeline. This frees all the resources.
 SUB_EXPORT void sub_destroy(sub_handle* h);
 
-// Plays a given URL.
+// Plays a given URL. Call this function maximum once per session.
 SUB_EXPORT bool sub_play(sub_handle* h, const char* URL);
 
 // Returns the number of compressed streams.
