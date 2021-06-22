@@ -236,10 +236,7 @@ bool sub_get_stream_info(sub_handle* h, int i, struct StreamDesc* desc)
                 return false;
               }
             }
-            else
-            {
-              return true;
-            }
+            return true;
           }
         }
       }
