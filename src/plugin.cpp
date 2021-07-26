@@ -57,7 +57,7 @@ struct Logger : LogSink
   }
 
   string name;
-  void (*onError)(const char *msg) = nullptr;
+  std::function<void(const char*)> onError = nullptr;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -126,6 +126,7 @@ sub_handle* sub_create(const char* name, void (*onError)(const char *msg), uint6
     h->errorCbk = onError;
     h->logger.onError = onError;
 
+    h->logger.log(Level::Info, "xxxjack sub_create sends log message");
     return h.release();
   }
   catch(exception const& err)
@@ -383,7 +384,7 @@ bool sub_disable_stream(sub_handle* h, int tileNumber)
   }
   catch(exception const& err)
   {
-    h->logger.log(Level::Error, format("[%s] exception caught: %s\n", __func__, err.what()).c_str());
+    h->logger.log(Level::Error, format("[%s] exception caught:failure %s\n", __func__, err.what()).c_str());
     return false;
   }
 }
