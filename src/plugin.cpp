@@ -127,6 +127,11 @@ sub_handle* sub_create(const char* name, void (*onError)(const char *msg), uint6
   {
     fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
     fflush(stderr);
+    if (onError) {
+      char errbuf[128];
+      snprintf(errbuf, sizeof(errbuf), "[%s] failure: %s\n", __func__, err.what());
+      onError(errbuf);
+    }
     return nullptr;
   }
 }
@@ -141,6 +146,11 @@ void sub_destroy(sub_handle* h)
   {
     fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
     fflush(stderr);
+    if (h && h->errorCbk) {
+      char errbuf[128];
+      snprintf(errbuf, sizeof(errbuf), "[%s] failure: %s\n", __func__, err.what());
+      h->errorCbk(errbuf);
+    }
   }
 }
 
@@ -170,6 +180,11 @@ int sub_get_stream_count(sub_handle* h)
   {
     fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
     fflush(stderr);
+    if (h && h->errorCbk) {
+      char errbuf[128];
+      snprintf(errbuf, sizeof(errbuf), "[%s] failure: %s\n", __func__, err.what());
+      h->errorCbk(errbuf);
+    }
     return 0;
   }
 }
@@ -207,9 +222,15 @@ bool sub_get_stream_info(sub_handle* h, int i, struct StreamDesc* desc)
 
     auto const streamIndex = get_stream_index(h, i);
 
-    if(h->streams[streamIndex].fourcc.size() > 4)
+    if(h->streams[streamIndex].fourcc.size() > 4) {
       fprintf(stderr, "[%s] 4CC \"%s\" will be truncated\n", __func__, h->streams[streamIndex].fourcc.c_str());
-
+      fflush(stderr);
+      if (h && h->errorCbk) {
+        char errbuf[128];
+        snprintf(errbuf, sizeof(errbuf), "[%s] 4CC \"%s\" will be truncated\n", __func__, h->streams[streamIndex].fourcc.c_str());
+        h->errorCbk(errbuf);
+      }
+    }
     *desc = {};
     memcpy(&desc->MP4_4CC, h->streams[streamIndex].fourcc.c_str(), 4);
 
@@ -233,6 +254,12 @@ bool sub_get_stream_info(sub_handle* h, int i, struct StreamDesc* desc)
               if(parsed != 6)
               {
                 fprintf(stderr, "[%s] Invalid SRD format: \"%s\"\n", __func__, srd.c_str());
+                fflush(stderr);
+                if (h && h->errorCbk) {
+                  char errbuf[128];
+                  snprintf(errbuf, sizeof(errbuf), "[%s] Invalid SRD format: \"%s\"\n", __func__, srd.c_str());
+                  h->errorCbk(errbuf);
+                }
                 return false;
               }
             }
@@ -250,6 +277,11 @@ bool sub_get_stream_info(sub_handle* h, int i, struct StreamDesc* desc)
   {
     fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
     fflush(stderr);
+    if (h && h->errorCbk) {
+      char errbuf[128];
+      snprintf(errbuf, sizeof(errbuf), "[%s] failure: %s\n", __func__, err.what());
+      h->errorCbk(errbuf);
+    }
     return false;
   }
 }
@@ -335,6 +367,11 @@ bool sub_play(sub_handle* h, const char* url)
   {
     fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
     fflush(stderr);
+    if (h && h->errorCbk) {
+      char errbuf[128];
+      snprintf(errbuf, sizeof(errbuf), "[%s] failure: %s\n", __func__, err.what());
+      h->errorCbk(errbuf);
+    }
     return false;
   }
 }
@@ -354,6 +391,11 @@ bool sub_enable_stream(sub_handle* h, int tileNumber, int quality)
   {
     fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
     fflush(stderr);
+    if (h && h->errorCbk) {
+      char errbuf[128];
+      snprintf(errbuf, sizeof(errbuf), "[%s] failure: %s\n", __func__, err.what());
+      h->errorCbk(errbuf);
+    }
     return false;
   }
 }
@@ -373,6 +415,11 @@ bool sub_disable_stream(sub_handle* h, int tileNumber)
   {
     fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
     fflush(stderr);
+    if (h && h->errorCbk) {
+      char errbuf[128];
+      snprintf(errbuf, sizeof(errbuf), "[%s] failure: %s\n", __func__, err.what());
+      h->errorCbk(errbuf);
+    }
     return false;
   }
 }
@@ -433,6 +480,11 @@ size_t sub_grab_frame(sub_handle* h, int i, uint8_t* dst, size_t dstLen, FrameIn
   {
     fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
     fflush(stderr);
+    if (h && h->errorCbk) {
+      char errbuf[128];
+      snprintf(errbuf, sizeof(errbuf), "[%s] failure: %s\n", __func__, err.what());
+      h->errorCbk(errbuf);
+    }
     return 0;
   }
 }
