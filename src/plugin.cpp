@@ -49,11 +49,15 @@ struct Logger : LogSink
     if(level == Level::Debug)
       return;
 
-    fprintf(stderr, "[%s] %s\n", name.c_str(), msg);
+    fprintf(stderr, "[signals_unity_bridge::%s] %s\n", name.c_str(), msg);
     fflush(stderr);
+    if (onError) {
+      onError(format("[signals_unity_bridge::%s] %s\n", name.c_str(), msg).c_str());
+    }
   }
 
   string name;
+  void (*onError)(const char *msg) = nullptr;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -120,16 +124,17 @@ sub_handle* sub_create(const char* name, void (*onError)(const char *msg), uint6
     auto h = make_unique<sub_handle>();
     h->logger.name = name;
     h->errorCbk = onError;
+    h->logger.onError = onError;
 
     return h.release();
   }
   catch(exception const& err)
   {
-    fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
+    fprintf(stderr, "[%s] exception caught: %s\n", __func__, err.what());
     fflush(stderr);
     if (onError) {
       char errbuf[128];
-      snprintf(errbuf, sizeof(errbuf), "[%s] failure: %s\n", __func__, err.what());
+      snprintf(errbuf, sizeof(errbuf), "[%s] exception caught: %s\n", __func__, err.what());
       onError(errbuf);
     }
     return nullptr;
@@ -144,11 +149,11 @@ void sub_destroy(sub_handle* h)
   }
   catch(exception const& err)
   {
-    fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
+    fprintf(stderr, "[%s] exception caught: %s\n", __func__, err.what());
     fflush(stderr);
     if (h && h->errorCbk) {
       char errbuf[128];
-      snprintf(errbuf, sizeof(errbuf), "[%s] failure: %s\n", __func__, err.what());
+      snprintf(errbuf, sizeof(errbuf), "[%s] exception caught: %s\n", __func__, err.what());
       h->errorCbk(errbuf);
     }
   }
@@ -178,13 +183,7 @@ int sub_get_stream_count(sub_handle* h)
   }
   catch(exception const& err)
   {
-    fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
-    fflush(stderr);
-    if (h && h->errorCbk) {
-      char errbuf[128];
-      snprintf(errbuf, sizeof(errbuf), "[%s] failure: %s\n", __func__, err.what());
-      h->errorCbk(errbuf);
-    }
+    h->logger.log(Level::Error, format("[%s] exception caught: %s\n", __func__, err.what()).c_str());
     return 0;
   }
 }
@@ -223,13 +222,8 @@ bool sub_get_stream_info(sub_handle* h, int i, struct StreamDesc* desc)
     auto const streamIndex = get_stream_index(h, i);
 
     if(h->streams[streamIndex].fourcc.size() > 4) {
-      fprintf(stderr, "[%s] 4CC \"%s\" will be truncated\n", __func__, h->streams[streamIndex].fourcc.c_str());
-      fflush(stderr);
-      if (h && h->errorCbk) {
-        char errbuf[128];
-        snprintf(errbuf, sizeof(errbuf), "[%s] 4CC \"%s\" will be truncated\n", __func__, h->streams[streamIndex].fourcc.c_str());
-        h->errorCbk(errbuf);
-      }
+      h->logger.log(Level::Warning, format("[%s] 4CC \"%s\" will be truncated\n", __func__, h->streams[streamIndex].fourcc.c_str()).c_str());
+
     }
     *desc = {};
     memcpy(&desc->MP4_4CC, h->streams[streamIndex].fourcc.c_str(), 4);
@@ -253,13 +247,7 @@ bool sub_get_stream_info(sub_handle* h, int i, struct StreamDesc* desc)
 
               if(parsed != 6)
               {
-                fprintf(stderr, "[%s] Invalid SRD format: \"%s\"\n", __func__, srd.c_str());
-                fflush(stderr);
-                if (h && h->errorCbk) {
-                  char errbuf[128];
-                  snprintf(errbuf, sizeof(errbuf), "[%s] Invalid SRD format: \"%s\"\n", __func__, srd.c_str());
-                  h->errorCbk(errbuf);
-                }
+                h->logger.log(Level::Error, format("[%s] Invalid SRD format: \"%s\"\n", __func__, srd.c_str()).c_str());
                 return false;
               }
             }
@@ -275,13 +263,7 @@ bool sub_get_stream_info(sub_handle* h, int i, struct StreamDesc* desc)
   }
   catch(exception const& err)
   {
-    fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
-    fflush(stderr);
-    if (h && h->errorCbk) {
-      char errbuf[128];
-      snprintf(errbuf, sizeof(errbuf), "[%s] failure: %s\n", __func__, err.what());
-      h->errorCbk(errbuf);
-    }
+    h->logger.log(Level::Error, format("[%s] exception caught: %s\n", __func__, err.what()).c_str());
     return false;
   }
 }
@@ -365,13 +347,7 @@ bool sub_play(sub_handle* h, const char* url)
   }
   catch(exception const& err)
   {
-    fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
-    fflush(stderr);
-    if (h && h->errorCbk) {
-      char errbuf[128];
-      snprintf(errbuf, sizeof(errbuf), "[%s] failure: %s\n", __func__, err.what());
-      h->errorCbk(errbuf);
-    }
+    h->logger.log(Level::Error, format("[%s] exception caught: %s\n", __func__, err.what()).c_str());
     return false;
   }
 }
@@ -389,13 +365,7 @@ bool sub_enable_stream(sub_handle* h, int tileNumber, int quality)
   }
   catch(exception const& err)
   {
-    fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
-    fflush(stderr);
-    if (h && h->errorCbk) {
-      char errbuf[128];
-      snprintf(errbuf, sizeof(errbuf), "[%s] failure: %s\n", __func__, err.what());
-      h->errorCbk(errbuf);
-    }
+    h->logger.log(Level::Error, format("[%s] exception caught: %s\n", __func__, err.what()).c_str());
     return false;
   }
 }
@@ -413,13 +383,7 @@ bool sub_disable_stream(sub_handle* h, int tileNumber)
   }
   catch(exception const& err)
   {
-    fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
-    fflush(stderr);
-    if (h && h->errorCbk) {
-      char errbuf[128];
-      snprintf(errbuf, sizeof(errbuf), "[%s] failure: %s\n", __func__, err.what());
-      h->errorCbk(errbuf);
-    }
+    h->logger.log(Level::Error, format("[%s] exception caught: %s\n", __func__, err.what()).c_str());
     return false;
   }
 }
@@ -478,13 +442,7 @@ size_t sub_grab_frame(sub_handle* h, int i, uint8_t* dst, size_t dstLen, FrameIn
   }
   catch(exception const& err)
   {
-    fprintf(stderr, "[%s] failure: %s\n", __func__, err.what());
-    fflush(stderr);
-    if (h && h->errorCbk) {
-      char errbuf[128];
-      snprintf(errbuf, sizeof(errbuf), "[%s] failure: %s\n", __func__, err.what());
-      h->errorCbk(errbuf);
-    }
+    h->logger.log(Level::Error, format("[%s] exception caught: %s\n", __func__, err.what()).c_str());
     return 0;
   }
 }
