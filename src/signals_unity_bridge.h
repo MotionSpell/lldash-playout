@@ -49,7 +49,7 @@ struct StreamDesc
 // Creates a new pipeline.
 // name: a display name for log messages. Can be NULL.
 // The returned pipeline must be freed using 'sub_destroy'.
-SUB_EXPORT sub_handle* sub_create(const char* name, void (*onError)(int level, const char *msg), uint64_t api_version = SUB_API_VERSION);
+SUB_EXPORT sub_handle* sub_create(const char* name, void (*onError)(const char *msg, int level), uint64_t api_version = SUB_API_VERSION);
 
 // Destroys a pipeline. This frees all the resources.
 SUB_EXPORT void sub_destroy(sub_handle* h);

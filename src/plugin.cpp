@@ -52,13 +52,13 @@ struct Logger : LogSink
     fprintf(stderr, "[signals_unity_bridge::%s] %s\n", name.c_str(), msg);
     fflush(stderr);
     if (onError) {
-      onError((int)level, format("[signals_unity_bridge::%s] %s\n", name.c_str(), msg).c_str());
+      onError(format("[signals_unity_bridge::%s] %s\n", name.c_str(), msg).c_str(), (int)level);
     }
   }
 
   Level unwantedLevel = Level::Debug;
   string name;
-  std::function<void(int level, const char*)> onError = nullptr;
+  std::function<void(const char*, int level)> onError = nullptr;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -112,7 +112,7 @@ struct sub_handle
   unique_ptr<Pipeline> pipe;
 };
 
-sub_handle* sub_create(const char* name, void (*onError)(int level, const char *msg), uint64_t api_version)
+sub_handle* sub_create(const char* name, void (*onError)(const char *msg, int level), uint64_t api_version)
 {
   try
   {
@@ -125,7 +125,7 @@ sub_handle* sub_create(const char* name, void (*onError)(int level, const char *
     auto h = make_unique<sub_handle>();
     h->logger.name = name;
     h->logger.onError = onError;
-    h->errorCbk = [onError](const char *msg) { onError(Level::Error, msg); };
+    h->errorCbk = [onError](const char *msg) { onError(msg, Level::Error); };
     h->logger.log(Level::Info, "xxxjack sub_create sends log message");
     return h.release();
   }

@@ -33,7 +33,7 @@ void safeMain(int argc, char* argv[])
   auto func_sub_get_stream_info = IMPORT(sub_get_stream_info);
   auto func_sub_grab_frame = IMPORT(sub_grab_frame);
 
-  auto pipeline = func_sub_create(nullptr,  [](int level, const char* msg) { fprintf(stderr, "Level %d message: %s\n", level, msg); }, SUB_API_VERSION);
+  auto pipeline = func_sub_create(nullptr,  [](const char* msg, int level) { fprintf(stderr, "Level %d message: %s\n", level, msg); }, SUB_API_VERSION);
   auto ret = func_sub_play(pipeline, url);
   assert(ret);
 
