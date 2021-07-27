@@ -136,7 +136,7 @@ sub_handle* sub_create(const char* name, void (*onError)(const char *msg, int le
     if (onError) {
       char errbuf[128];
       snprintf(errbuf, sizeof(errbuf), "[%s] exception caught: %s\n", __func__, err.what());
-      onError(Level::Error, errbuf);
+      onError(errbuf, Level::Error);
     }
     return nullptr;
   }
