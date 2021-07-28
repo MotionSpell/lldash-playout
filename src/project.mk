@@ -35,7 +35,5 @@ $(BIN)/example.exe: $(MYDIR)/example.cpp $(BIN)/signals-unity-bridge.so
 # Generic rules
 #
 $(BIN)/%.so:
-	$(CXX) $(CFLAGS) -static-libstdc++ -shared -o "$@" $^ \
-		-Wl,--no-undefined \
-		-Wl,--version-script=$(MYDIR)/plugin.version \
+	$(CXX) $(CFLAGS) -shared -o "$@" $^ \
 		$(LDFLAGS)
