@@ -46,7 +46,7 @@ struct Logger : LogSink
 {
   void log(Level level, const char* msg) override
   {
-    if(level >= unwantedLevel)
+    if(level > maxLevel)
       return;
 
     fprintf(stderr, "[signals_unity_bridge::%s] %s\n", name.c_str(), msg);
@@ -56,7 +56,7 @@ struct Logger : LogSink
     }
   }
 
-  Level unwantedLevel = Level::Debug;
+  Level maxLevel = Level::Info;
   string name;
   std::function<void(const char*, int level)> onError = nullptr;
 };
@@ -112,7 +112,7 @@ struct sub_handle
   unique_ptr<Pipeline> pipe;
 };
 
-sub_handle* sub_create(const char* name, void (*onError)(const char *msg, int level), uint64_t api_version)
+sub_handle* sub_create(const char* name, SubMessageCallback onError, int maxLevel, uint64_t api_version)
 {
   try
   {
@@ -124,9 +124,9 @@ sub_handle* sub_create(const char* name, void (*onError)(const char *msg, int le
 
     auto h = make_unique<sub_handle>();
     h->logger.name = name;
+    h->logger.maxLevel = (Level)maxLevel;
     h->logger.onError = onError;
     h->errorCbk = [onError](const char *msg) { onError(msg, Level::Error); };
-    h->logger.log(Level::Info, "xxxjack sub_create sends log message");
     return h.release();
   }
   catch(exception const& err)
