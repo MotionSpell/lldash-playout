@@ -214,7 +214,7 @@ bool sub_get_stream_info(sub_handle* h, int streamIndex, struct StreamDesc* desc
     if(!h->pipe)
       throw runtime_error("Can only get stream 4CC when the pipeline is playing");
 
-    if(i < 0 || i >= sub_get_stream_count(h))
+    if(streamIndex < 0 || streamIndex >= sub_get_stream_count(h))
       throw runtime_error("Invalid streamIndex: must be positive and inferior to the number of streams");
 
     if(!desc)
