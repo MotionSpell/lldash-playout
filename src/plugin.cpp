@@ -204,7 +204,7 @@ static int get_stream_index(sub_handle* h, int i)
   throw runtime_error("Invalid stream index.");
 }
 
-bool sub_get_stream_info(sub_handle* h, int i, struct StreamDesc* desc)
+bool sub_get_stream_info(sub_handle* h, int streamIndex, struct StreamDesc* desc)
 {
   try
   {
@@ -220,14 +220,14 @@ bool sub_get_stream_info(sub_handle* h, int i, struct StreamDesc* desc)
     if(!desc)
       throw runtime_error("desc can't be NULL");
 
-    auto const streamIndex = get_stream_index(h, i);
+    auto const streamFirstIndex = get_stream_index(h, streamIndex);
 
     if(h->streams[streamIndex].fourcc.size() > 4) {
-      h->logger.log(Level::Warning, format("[%s] 4CC \"%s\" will be truncated\n", __func__, h->streams[streamIndex].fourcc.c_str()).c_str());
+      h->logger.log(Level::Warning, format("[%s] 4CC \"%s\" will be truncated\n", __func__, h->streams[streamFirstIndex].fourcc.c_str()).c_str());
 
     }
     *desc = {};
-    memcpy(&desc->MP4_4CC, h->streams[streamIndex].fourcc.c_str(), 4);
+    memcpy(&desc->MP4_4CC, h->streams[streamFirstIndex].fourcc.c_str(), 4);
 
     if(h->adaptationControl)
     {
