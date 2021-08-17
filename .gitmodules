@@ -1,4 +1,4 @@
 [submodule "signals"]
 	path = signals
-	url = ../MS-signals.git
+	url = ../signals
 	branch = master

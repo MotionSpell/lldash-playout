@@ -17,7 +17,7 @@
 #define SUB_EXPORT __attribute__((visibility("default")))
 #endif
 
-const uint64_t SUB_API_VERSION = 0x20200420A;
+const uint64_t SUB_API_VERSION = 0x20210729A;
 
 struct FrameInfo
 {
@@ -46,10 +46,13 @@ struct StreamDesc
   uint32_t totalHeight;
 };
 
+enum SubMessageLevel { SubMessageError=0, SubMessageWarning, SubMessageInfo, SubMessageDebug };
+typedef void (*SubMessageCallback)(const char *msg, int level);
+
 // Creates a new pipeline.
 // name: a display name for log messages. Can be NULL.
 // The returned pipeline must be freed using 'sub_destroy'.
-SUB_EXPORT sub_handle* sub_create(const char* name, void (*onError)(const char *msg), uint64_t api_version = SUB_API_VERSION);
+SUB_EXPORT sub_handle* sub_create(const char* name, SubMessageCallback onError, int maxLevel, uint64_t api_version = SUB_API_VERSION);
 
 // Destroys a pipeline. This frees all the resources.
 SUB_EXPORT void sub_destroy(sub_handle* h);
