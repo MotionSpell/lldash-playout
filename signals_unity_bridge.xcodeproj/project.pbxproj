@@ -59,7 +59,7 @@
 			buildConfigurationList = 044F3B0426B1953000F15137 /* Build configuration list for PBXLegacyTarget "signals_unity_bridge" */;
 			buildPhases = (
 			);
-			buildToolPath = /usr/local/bin/make;
+			buildToolPath = /usr/local/bin/gmake;
 			dependencies = (
 			);
 			name = signals_unity_bridge;
@@ -183,6 +183,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				LIBRARY_SEARCH_PATHS = "/usr/local/opt/libjpeg-turbo/lib";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -233,6 +234,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				LIBRARY_SEARCH_PATHS = "/usr/local/opt/libjpeg-turbo/lib";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 			};
