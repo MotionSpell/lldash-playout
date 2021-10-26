@@ -1,2 +1,4 @@
 #!/bin/bash
-make DEBUG=1 EXTRA=/opt/msprod/sysroot/osx PKG_CONFIG_PATH=/opt/msprod/sysroot/osx/lib/pkgconfig
+export EXTRA=/opt/msprod/sysroot/osx
+export PKG_CONFIG_PATH=/opt/msprod/sysroot/osx/lib/pkgconfig
+make DEBUG=1  
