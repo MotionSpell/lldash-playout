@@ -62,6 +62,7 @@ int main(int argc, char const* argv[])
   }
 
   std::vector<uint8_t> buffer;
+  buffer.resize(1024 * 1024 * 10);
 
   for(int i = 0;; ++i)
   {
@@ -70,14 +71,16 @@ int main(int argc, char const* argv[])
     for(int k = 0; k < streamCount; ++k)
     {
       FrameInfo info {};
-      buffer.resize(1024 * 1024 * 10);
       auto size = sub_grab_frame(handle, k, buffer.data(), buffer.size(), &info);
-      buffer.resize(size);
 
       if(size > 0)
       {
         gotFrame = true;
         printf("[stream %d] Frame %d: % 5d bytes, t=%.3f\n", k, i, (int)size, info.timestamp / 1000.0);
+      }
+      else
+      {
+        printf("\n");
       }
     }
 
