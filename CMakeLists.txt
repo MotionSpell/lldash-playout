@@ -19,6 +19,50 @@ else()
     message(FATAL_ERROR "Unsupported host system: ${CMAKE_SYSTEM_NAME}")
 endif()
 
+
+# Change some compiler options that are dependent on the target platform.
+# xxxjack some are actually dependent on the toolchain...
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
+    add_compile_options(-Wall -Wextra -Werror -fvisibility=default -fvisibility-inlines-hidden -Wno-deprecated-declarations)
+    set(SUB_LINK_FLAGS "-Wl,--no-undefined -Wl,--version-script=${BIN2DASH_SRC}/apps/bin2dash/plugin.version")
+
+    # Debug-specific options
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        add_compile_options(-g3)
+    endif()
+
+    # Release-specific options
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+        add_compile_options(-w -DNDEBUG)
+    endif()
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+    add_compile_options(-Wall -Wextra -Werror -fvisibility=default -fvisibility-inlines-hidden -Wno-deprecated-declarations)
+    set(SUB_LINK_FLAGS "")
+    # Debug-specific options
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        add_compile_options(-g3)
+    endif()
+
+    # Release-specific options
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+        add_compile_options(-w -DNDEBUG)
+    endif()
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    add_compile_options(-Wall -Wextra -Werror -fvisibility=default -fvisibility-inlines-hidden -Wno-deprecated-declarations)
+    set(SUB_LINK_FLAGS "-Wl,--no-undefined -Wl,--version-script=${SUB_SRC}/plugin.version")
+    # Debug-specific options
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        add_compile_options(-g3)
+    endif()
+
+    # Release-specific options
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+        add_compile_options(-w -DNDEBUG)
+    endif()
+else()
+    message(FATAL_ERROR " Unknown CMAKE_SYSTEM_NAME ${CMAKE_SYSTEM_NAME}")
+endif()
+
 # Add signals-unity-bridge shared library
 add_library(signals-unity-bridge SHARED
     ${SUB_SRC}/plugin.cpp
@@ -40,7 +84,7 @@ set_target_properties(signals-unity-bridge PROPERTIES
     OUTPUT_NAME "signals-unity-bridge"
     PREFIX ""
     SUFFIX ".so"
-    LINK_FLAGS "-Wl,--no-undefined -Wl,--version-script=${SUB_SRC}/plugin.version"
+    LINK_FLAGS "${SUB_LINK_FLAGS}"
 )
 
 # Install signals-unity-bridge shared library
