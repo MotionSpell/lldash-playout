@@ -74,7 +74,7 @@ target_include_directories(signals-unity-bridge
 )
 
 target_link_libraries(signals-unity-bridge
-    PRIVATE signals::media
+    PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,signals::media>"
     PRIVATE signals::modules
     PRIVATE signals::pipeline
     PRIVATE signals::utils
