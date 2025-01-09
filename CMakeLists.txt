@@ -80,12 +80,12 @@ target_link_libraries(signals-unity-bridge
     PRIVATE signals::utils
 )
 
-#set_target_properties(signals-unity-bridge PROPERTIES
-#    OUTPUT_NAME "signals-unity-bridge"
-#    PREFIX ""
-#    SUFFIX ".so"
-#    LINK_FLAGS "${SUB_LINK_FLAGS}"
-#)
+set_target_properties(signals-unity-bridge PROPERTIES
+    OUTPUT_NAME "signals-unity-bridge"
+    PREFIX ""
+    SUFFIX ".so"
+    LINK_FLAGS "${SUB_LINK_FLAGS}"
+)
 
 # Install signals-unity-bridge shared library
 install(TARGETS signals-unity-bridge
