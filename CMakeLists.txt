@@ -87,12 +87,7 @@ set_target_properties(signals-unity-bridge PROPERTIES
     LINK_FLAGS "${SUB_LINK_FLAGS}"
 )
 
-# Install signals-unity-bridge shared library
-install(TARGETS signals-unity-bridge
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-    RUNTIME DESTINATION bin
-)
+signals_install_plugin(signals-unity-bridge ".so")
 
 # Add loader executable
 add_executable(loader
@@ -111,10 +106,7 @@ target_link_libraries(loader
     PRIVATE signals-unity-bridge
 )
 
-set_target_properties(loader PROPERTIES
-    OUTPUT_NAME "loader"
-    SUFFIX ".exe"
-)
+signals_install_app(loader)
 
 # Add example executable
 add_executable(example
@@ -132,19 +124,4 @@ target_link_libraries(example
     PRIVATE signals-unity-bridge
 )
 
-set_target_properties(example PROPERTIES
-    OUTPUT_NAME "example"
-    SUFFIX ".exe"
-)
-
-# Install loader executable
-install(TARGETS loader
-    RUNTIME DESTINATION bin
-)
-
-# Install example executable
-install(TARGETS example
-    RUNTIME DESTINATION bin
-)
-
-
+signals_install_app(example)
