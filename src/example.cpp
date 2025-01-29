@@ -1,20 +1,3 @@
-// Copyright (C) 2019 Motion Spell
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Affero General Public License as
-// published by the Free Software Foundation, either version 3 of the
-// License, or (at your option) any later version.
-
-// Interactive standalone application, for signals-unity-bridge.so testing.
-// This shows how to use the signals-unity-bridge DLL.
-//
-// Usage example:
-// $ g++ example.cpp signals-unity-bridge.so -o example.exe
-// $ ./example.exe [media url]
-//
-// Don't introduce direct dependencies to signals here.
-// Keep this program standalone, as it's meant to be distributed as example.
-//
 #include <cstdio>
 #include <vector>
 #include "signals_unity_bridge.h"

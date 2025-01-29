@@ -1,7 +1,3 @@
-//
-// Copyright (C) 2019 Motion Spell
-//
-
 #pragma once
 
 #include <cstdint>
