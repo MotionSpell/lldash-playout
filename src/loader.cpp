@@ -35,6 +35,7 @@ void safeMain(int argc, char* argv[])
 
   auto pipeline = func_sub_create(nullptr,  [](const char* msg, int level) { fprintf(stderr, "Level %d message: %s\n", level, msg); }, 2, SUB_API_VERSION);
   auto ret = func_sub_play(pipeline, url);
+  (void)ret;
   assert(ret);
 
   printf("%d stream(s)\n", func_sub_get_stream_count(pipeline));
