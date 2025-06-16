@@ -1,3 +1,5 @@
 /bin
 *.swp
 /tags
+
+src/version.cpp

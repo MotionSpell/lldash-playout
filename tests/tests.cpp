@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
     assert(!playbackSuccessful);
   }
 
-  // parallel instanciations
+  // parallel instantiations
   {
     vector<sub_handle*> pipelines;
 
@@ -38,4 +38,3 @@ int main(int argc, char* argv[])
 
   return 0;
 }
-
