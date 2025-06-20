@@ -13,7 +13,7 @@
 #define SUB_EXPORT __attribute__((visibility("default")))
 #endif
 
-const uint64_t SUB_API_VERSION = 0x20210729A;
+const uint64_t SUB_API_VERSION = 0x20250620A;
 
 struct FrameInfo
 {
