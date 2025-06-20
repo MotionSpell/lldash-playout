@@ -448,3 +448,11 @@ size_t sub_grab_frame(sub_handle* h, int i, uint8_t* dst, size_t dstLen, FrameIn
   }
 }
 
+const char *sub_get_version() {
+#ifdef LLDASH_VERSION
+	return "LLDASH_VERSION";
+#else
+	return "unknown";
+#endif
+}
+

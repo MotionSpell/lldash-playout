@@ -75,5 +75,8 @@ SUB_EXPORT bool sub_disable_stream(sub_handle* h, int tileNumber);
 // If 'dst' is null, the frame will not be dequeued, but its size will be returned.
 // Note that you shall dequeue all data from all streams to avoid being locked.
 SUB_EXPORT size_t sub_grab_frame(sub_handle* h, int streamIndex, uint8_t* dst, size_t dstLen, FrameInfo* info);
+
+// Gets the current parent version. Used to ensure build consistency.
+SUB_EXPORT const char *sub_get_version();
 }
 
