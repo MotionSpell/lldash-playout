@@ -450,7 +450,9 @@ size_t sub_grab_frame(sub_handle* h, int i, uint8_t* dst, size_t dstLen, FrameIn
 
 const char *sub_get_version() {
 #ifdef LLDASH_VERSION
-	return "LLDASH_VERSION";
+#define LLDASH_VERSION_STRINGIFY2(x) LLDASH_VERSION_STRINGIFY(x)
+#define LLDASH_VERSION_STRINGIFY(x) #x
+  return LLDASH_VERSION_STRINGIFY2(LLDASH_VERSION);
 #else
 	return "unknown";
 #endif
