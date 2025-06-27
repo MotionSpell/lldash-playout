@@ -44,7 +44,7 @@ struct OutStub : ModuleS
 
 struct Logger : LogSink
 {
-  void log(Level level, const char* msg) override
+  void send(Level level, const char* msg) override
   {
     if(level > maxLevel)
       return;
@@ -105,7 +105,7 @@ struct sub_handle
     string fourcc;
   };
 
-  std::function<void(const char*)> errorCbk;
+  std::function<bool(const char*)> errorCbk;
   atomic<bool> dropEverything;
   mutex transferMutex; // protects below members
   vector<Stream> streams;
@@ -126,7 +126,10 @@ sub_handle* sub_create(const char* name, SubMessageCallback onError, int maxLeve
     h->logger.name = name;
     h->logger.maxLevel = (Level)maxLevel;
     h->logger.onError = onError;
-    h->errorCbk = [onError](const char *msg) { onError(msg, Level::Error); };
+    h->errorCbk = [onError](const char *msg) {
+      if (onError) onError(msg, Level::Error);
+      return true;
+    };
     return h.release();
   }
   catch(exception const& err)
