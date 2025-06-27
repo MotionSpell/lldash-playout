@@ -63,6 +63,8 @@ SUB_EXPORT int sub_get_stream_count(sub_handle* h);
 SUB_EXPORT bool sub_get_stream_info(sub_handle* h, int streamIndex, struct StreamDesc* desc);
 
 // Enables a quality or disables a tile. There is at most one stream enabled per tile.
+// These functions might not return immediately. The change will occur at the next segment boundary.
+// At startup, call them before sub_play() to avoid any delay.
 // By default the first stream of each tile is enabled.
 // Associations between streamIndex and tiles are given by sub_get_stream_info().
 // Beware that disabling all qualities from all tiles will stop the session.
