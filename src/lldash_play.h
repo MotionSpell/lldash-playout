@@ -5,15 +5,15 @@
 
 #ifdef _WIN32
 #ifdef BUILDING_DLL
-#define SUB_EXPORT __declspec(dllexport)
+#define LLDPLAY_EXPORT __declspec(dllexport)
 #else
-#define SUB_EXPORT __declspec(dllimport)
+#define LLDPLAY_EXPORT __declspec(dllimport)
 #endif
 #else
-#define SUB_EXPORT __attribute__((visibility("default")))
+#define LLDPLAY_EXPORT __attribute__((visibility("default")))
 #endif
 
-const uint64_t SUB_API_VERSION = 0x20250620A;
+const uint64_t LLDASH_PLAYOUT_API_VERSION = 0x20250620A;
 
 struct FrameInfo
 {
@@ -27,7 +27,7 @@ struct FrameInfo
 
 extern "C" {
 // opaque handle to a signals pipeline
-struct sub_handle;
+struct lldplay_handle;
 
 struct StreamDesc
 {
@@ -42,42 +42,42 @@ struct StreamDesc
   uint32_t totalHeight;
 };
 
-enum SubMessageLevel { SubMessageError=0, SubMessageWarning, SubMessageInfo, SubMessageDebug };
-typedef void (*SubMessageCallback)(const char *msg, int level);
+enum LLDashPlayoutMessageLevel { SubMessageError=0, SubMessageWarning, SubMessageInfo, SubMessageDebug };
+typedef void (*LLDashPlayoutMessageCallback)(const char *msg, int level);
 
 // Creates a new pipeline.
 // name: a display name for log messages. Can be NULL.
 // The returned pipeline must be freed using 'sub_destroy'.
-SUB_EXPORT sub_handle* sub_create(const char* name, SubMessageCallback onError, int maxLevel, uint64_t api_version = SUB_API_VERSION);
+LLDPLAY_EXPORT lldplay_handle* lldplay_create(const char* name, LLDashPlayoutMessageCallback onError, int maxLevel, uint64_t api_version = LLDASH_PLAYOUT_API_VERSION);
 
 // Destroys a pipeline. This frees all the resources.
-SUB_EXPORT void sub_destroy(sub_handle* h);
+LLDPLAY_EXPORT void lldplay_destroy(lldplay_handle* h);
 
 // Plays a given URL. Call this function maximum once per session.
-SUB_EXPORT bool sub_play(sub_handle* h, const char* URL);
+LLDPLAY_EXPORT bool lldplay_play(lldplay_handle* h, const char* URL);
 
 // Returns the number of compressed streams.
-SUB_EXPORT int sub_get_stream_count(sub_handle* h);
+LLDPLAY_EXPORT int lldplay_get_stream_count(lldplay_handle* h);
 
 // Returns the 4CC of a given stream. Desc is owned by the caller.
-SUB_EXPORT bool sub_get_stream_info(sub_handle* h, int streamIndex, struct StreamDesc* desc);
+LLDPLAY_EXPORT bool lldplay_get_stream_info(lldplay_handle* h, int streamIndex, struct StreamDesc* desc);
 
 // Enables a quality or disables a tile. There is at most one stream enabled per tile.
 // These functions might not return immediately. The change will occur at the next segment boundary.
 // By default the first stream of each tile is enabled.
 // Associations between streamIndex and tiles are given by sub_get_stream_info().
 // Beware that disabling all qualities from all tiles will stop the session.
-SUB_EXPORT bool sub_enable_stream(sub_handle* h, int tileNumber, int quality);
-SUB_EXPORT bool sub_disable_stream(sub_handle* h, int tileNumber);
+LLDPLAY_EXPORT bool lldplay_enable_stream(lldplay_handle* h, int tileNumber, int quality);
+LLDPLAY_EXPORT bool lldplay_disable_stream(lldplay_handle* h, int tileNumber);
 
 // Copy the next received compressed frame to a buffer.
 // Returns: the size of compressed data actually copied,
 // or zero, if no frame was available for this stream.
 // If 'dst' is null, the frame will not be dequeued, but its size will be returned.
 // Note that you shall dequeue all data from all streams to avoid being locked.
-SUB_EXPORT size_t sub_grab_frame(sub_handle* h, int streamIndex, uint8_t* dst, size_t dstLen, FrameInfo* info);
+LLDPLAY_EXPORT size_t lldplay_grab_frame(lldplay_handle* h, int streamIndex, uint8_t* dst, size_t dstLen, FrameInfo* info);
 
 // Gets the current parent version. Used to ensure build consistency.
-SUB_EXPORT const char *sub_get_version();
+LLDPLAY_EXPORT const char *lldplay_get_version();
 }
 

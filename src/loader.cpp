@@ -26,24 +26,24 @@ void safeMain(int argc, char* argv[])
   auto url = argv[2];
 
   auto lib = loadLibrary(libName);
-  auto func_sub_create = IMPORT(sub_create);
-  auto func_sub_destroy = IMPORT(sub_destroy);
-  auto func_sub_play = IMPORT(sub_play);
-  auto func_sub_get_stream_count = IMPORT(sub_get_stream_count);
-  auto func_sub_get_stream_info = IMPORT(sub_get_stream_info);
-  auto func_sub_grab_frame = IMPORT(sub_grab_frame);
+  auto func_lldplay_create = IMPORT(lldplay_create);
+  auto func_lldplay_destroy = IMPORT(lldplay_destroy);
+  auto func_lldplay_play = IMPORT(lldplay_play);
+  auto func_lldplay_get_stream_count = IMPORT(lldplay_get_stream_count);
+  auto func_lldplay_get_stream_info = IMPORT(lldplay_get_stream_info);
+  auto func_lldplay_grab_frame = IMPORT(lldplay_grab_frame);
 
-  auto pipeline = func_sub_create(nullptr,  [](const char* msg, int level) { fprintf(stderr, "Level %d message: %s\n", level, msg); }, 2, SUB_API_VERSION);
-  auto ret = func_sub_play(pipeline, url);
+  auto pipeline = func_lldplay_create(nullptr,  [](const char* msg, int level) { fprintf(stderr, "Level %d message: %s\n", level, msg); }, 2, LLDASH_PLAYOUT_API_VERSION);
+  auto ret = func_lldplay_play(pipeline, url);
   (void)ret;
   assert(ret);
 
-  printf("%d stream(s)\n", func_sub_get_stream_count(pipeline));
+  printf("%d stream(s)\n", func_lldplay_get_stream_count(pipeline));
 
-  for(int j = 0; j < func_sub_get_stream_count(pipeline); ++j)
+  for(int j = 0; j < func_lldplay_get_stream_count(pipeline); ++j)
   {
     StreamDesc desc {};
-    func_sub_get_stream_info(pipeline, j, &desc);
+    func_lldplay_get_stream_info(pipeline, j, &desc);
     auto fourCC = (char*)&desc.MP4_4CC;
     printf("\t stream %d: 4CC=%c%c%c%c, SRD { %u, %u, %u, %u, %u, %u }\n", j, fourCC[0], fourCC[1], fourCC[2], fourCC[3],
            desc.objectX, desc.objectY, desc.objectWidth, desc.objectHeight, desc.totalWidth, desc.totalHeight);
@@ -53,10 +53,10 @@ void safeMain(int argc, char* argv[])
 
   for(int i = 0; i < 100; ++i)
   {
-    for(int j = 0; j < func_sub_get_stream_count(pipeline); ++j)
+    for(int j = 0; j < func_lldplay_get_stream_count(pipeline); ++j)
     {
       FrameInfo info {};
-      auto size = func_sub_grab_frame(pipeline, j, buffer.data(), buffer.size(), &info);
+      auto size = func_lldplay_grab_frame(pipeline, j, buffer.data(), buffer.size(), &info);
 
       if(!size)
         continue;
@@ -67,7 +67,7 @@ void safeMain(int argc, char* argv[])
     // std::this_thread::sleep_for(10ms);
   }
 
-  func_sub_destroy(pipeline);
+  func_lldplay_destroy(pipeline);
 }
 
 int main(int argc, char* argv[])
