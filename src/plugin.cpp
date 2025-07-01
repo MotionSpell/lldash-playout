@@ -149,6 +149,8 @@ void sub_destroy(sub_handle* h)
 {
   try
   {
+    for (int i=0; i<sub_get_stream_count(h); ++i)
+      sub_disable_stream(h, i);
     delete h;
   }
   catch(exception const& err)
