@@ -11,7 +11,7 @@
 
 // API entry points. We don't call these directly,
 // as the implemtations live inside the dynamic library.
-#include "signals_unity_bridge.h"
+#include "lldash_play.h"
 
 using namespace std;
 

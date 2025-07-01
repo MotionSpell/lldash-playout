@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(sub VERSION 1.0 LANGUAGES CXX)
+project(lldplay VERSION 1.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Define the source directory for sub
-set(SUB_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(LLDPLAY_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 # Determine the host system and set the appropriate source file
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
@@ -24,7 +24,7 @@ endif()
 # xxxjack some are actually dependent on the toolchain...
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     add_compile_options(-Wall -Wextra -Werror -fvisibility=default -fvisibility-inlines-hidden -Wno-deprecated-declarations)
-    set(SUB_LINK_FLAGS "-Wl,--no-undefined -Wl,--version-script=${SUB_SRC}/plugin.version")
+    set(LLDPLAY_LINK_FLAGS "-Wl,--no-undefined -Wl,--version-script=${LLDPLAY_SRC}/plugin.version")
 
     # Debug-specific options
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -37,7 +37,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
     endif()
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     add_compile_options(-Wall -Wextra -Werror -fvisibility=default -fvisibility-inlines-hidden -Wno-deprecated-declarations)
-    set(SUB_LINK_FLAGS "")
+    set(LLDPLAY_LINK_FLAGS "")
     # Debug-specific options
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         add_compile_options(-g3)
@@ -49,7 +49,7 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     endif()
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     add_compile_options(-Wall -Wextra -Werror -fvisibility=default -fvisibility-inlines-hidden -Wno-deprecated-declarations)
-    set(SUB_LINK_FLAGS "-Wl,--no-undefined -Wl,--version-script=${SUB_SRC}/plugin.version")
+    set(LLDPLAY_LINK_FLAGS "-Wl,--no-undefined -Wl,--version-script=${LLDPLAY_SRC}/plugin.version")
     # Debug-specific options
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         add_compile_options(-g3)
@@ -63,65 +63,65 @@ else()
     message(FATAL_ERROR " Unknown CMAKE_SYSTEM_NAME ${CMAKE_SYSTEM_NAME}")
 endif()
 
-# Add signals-unity-bridge shared library
-add_library(signals-unity-bridge SHARED
-    ${SUB_SRC}/plugin.cpp
+# Add lldash_play shared library
+add_library(lldash_play SHARED
+    ${LLDPLAY_SRC}/plugin.cpp
 )
 
-target_include_directories(signals-unity-bridge
-    PRIVATE ${SUB_SRC}
+target_include_directories(lldash_play
+    PRIVATE ${LLDPLAY_SRC}
     PRIVATE ${CMAKE_SOURCE_DIR}/signals/include
 )
 
-target_link_libraries(signals-unity-bridge
+target_link_libraries(lldash_play
     PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,signals::media>"
     PRIVATE signals::modules
     PRIVATE signals::pipeline
     PRIVATE signals::utils
 )
 
-set_target_properties(signals-unity-bridge PROPERTIES
-    OUTPUT_NAME "signals-unity-bridge"
+set_target_properties(lldash_play PROPERTIES
+    OUTPUT_NAME "lldash_play"
     PREFIX ""
     SUFFIX ".so"
-    LINK_FLAGS "${SUB_LINK_FLAGS}"
+    LINK_FLAGS "${LLDPLAY_LINK_FLAGS}"
 )
 
-signals_install_plugin(signals-unity-bridge ".so")
+signals_install_plugin(lldash_play ".so")
 
 # Add loader executable
 add_executable(loader
-    ${SUB_SRC}/loader.cpp
-    ${SUB_SRC}/dynlib_${HOST}.cpp
+    ${LLDPLAY_SRC}/loader.cpp
+    ${LLDPLAY_SRC}/dynlib_${HOST}.cpp
 )
 
 target_include_directories(loader
-    PRIVATE ${SUB_SRC}
+    PRIVATE ${LLDPLAY_SRC}
     PRIVATE ${CMAKE_SOURCE_DIR}/signals/include
 )
 
 target_link_libraries(loader
     PRIVATE signals::appcommon
     PRIVATE signals::utils
-    PRIVATE signals-unity-bridge
+    PRIVATE lldash_play
 )
 
 signals_install_app(loader)
 
 # Add example executable
 add_executable(example
-    ${SUB_SRC}/example.cpp
+    ${LLDPLAY_SRC}/example.cpp
 )
 
 target_include_directories(example
-    PRIVATE ${SUB_SRC}
+    PRIVATE ${LLDPLAY_SRC}
     PRIVATE ${CMAKE_SOURCE_DIR}/signals/include
 )
 
 target_link_libraries(example
     PRIVATE signals::appcommon
     PRIVATE signals::utils
-    PRIVATE signals-unity-bridge
+    PRIVATE lldash_play
 )
 
 signals_install_app(example)

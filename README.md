@@ -1,8 +1,8 @@
-Signals Unity Bridge
+LLDash Playout
 --------------------
 
 This is a Unity native plugin for receiving compressed video from the network.
-Please see the native API documentation in signals_unity_bridge.h.
+Please see the native API documentation in lldash_play.h.
 To see how to use the API, check the example.cpp file.
 
 Check latency:
