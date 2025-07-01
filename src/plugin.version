@@ -2,19 +2,19 @@ FOO {
   # explicitly list symbols to be exported
   global:
 
-    sub_create;
-    sub_destroy;
-    sub_play;
+    lldplay_create;
+    lldplay_destroy;
+    lldplay_play;
 
-    sub_get_stream_count;
-    sub_get_stream_info;
+    lldplay_get_stream_count;
+    lldplay_get_stream_info;
 
-    sub_enable_stream;
-    sub_disable_stream;
+    lldplay_enable_stream;
+    lldplay_disable_stream;
 
-    sub_grab_frame;
+    lldplay_grab_frame;
 
-    sub_get_version;
+    lldplay_get_version;
 
   # hide everything else
   local: *;

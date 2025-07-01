@@ -22,11 +22,11 @@ int main(int argc, char const* argv[])
 
   auto const mediaUrl = argv[1];
 
-  auto handle = sub_create("MyMediaPipeline", nullptr, 3);
+  auto handle = lldplay_create("MyMediaPipeline", nullptr, 3);
 
-  sub_play(handle, mediaUrl);
+  lldplay_play(handle, mediaUrl);
 
-  auto const streamCount = sub_get_stream_count(handle);
+  auto const streamCount = lldplay_get_stream_count(handle);
 
   if(streamCount == 0)
   {
@@ -34,12 +34,12 @@ int main(int argc, char const* argv[])
     return 1;
   }
 
-  printf("%d stream(s):\n", sub_get_stream_count(handle));
+  printf("%d stream(s):\n", lldplay_get_stream_count(handle));
 
-  for(int i = 0; i < sub_get_stream_count(handle); ++i)
+  for(int i = 0; i < lldplay_get_stream_count(handle); ++i)
   {
     StreamDesc desc = {};
-    sub_get_stream_info(handle, i, &desc);
+    lldplay_get_stream_info(handle, i, &desc);
     auto fourcc = (char*)&desc.MP4_4CC;
     printf("\tstream[%d]: %c%c%c%c\n", i, fourcc[0], fourcc[1], fourcc[2], fourcc[3]);
   }
@@ -54,7 +54,7 @@ int main(int argc, char const* argv[])
     {
       FrameInfo info {};
       buffer.resize(1024 * 1024 * 10);
-      auto size = sub_grab_frame(handle, k, buffer.data(), buffer.size(), &info);
+      auto size = lldplay_grab_frame(handle, k, buffer.data(), buffer.size(), &info);
       buffer.resize(size);
 
       if(size > 0)
@@ -72,7 +72,7 @@ int main(int argc, char const* argv[])
     }
   }
 
-  sub_destroy(handle);
+  lldplay_destroy(handle);
 
   return 0;
 }

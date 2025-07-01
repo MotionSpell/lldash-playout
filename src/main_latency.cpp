@@ -14,9 +14,9 @@ int main(int argc, char const* argv[])
     return 1;
   }
 
-  auto handle = sub_create("LatencyPipeline");
-  sub_play(handle, argv[1]);
-  assert(sub_get_stream_count(handle) == 1);
+  auto handle = lldplay_create("LatencyPipeline");
+  lldplay_play(handle, argv[1]);
+  assert(lldplay_get_stream_count(handle) == 1);
 
   int frameCount = 0;
 
@@ -24,7 +24,7 @@ int main(int argc, char const* argv[])
   {
     FrameInfo info {};
     int64_t frame {};
-    auto size = sub_grab_frame(handle, 0, (uint8_t*)&frame, sizeof frame, &info);
+    auto size = lldplay_grab_frame(handle, 0, (uint8_t*)&frame, sizeof frame, &info);
 
     if(size == 0)
     {
@@ -37,7 +37,7 @@ int main(int argc, char const* argv[])
     ++frameCount;
   }
 
-  sub_destroy(handle);
+  lldplay_destroy(handle);
 
   return 0;
 }

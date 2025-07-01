@@ -49,10 +49,10 @@ struct Logger : LogSink
     if(level > maxLevel)
       return;
 
-    fprintf(stderr, "[signals_unity_bridge::%s] %s\n", name.c_str(), msg);
+    fprintf(stderr, "[lldash playout::%s] %s\n", name.c_str(), msg);
     fflush(stderr);
     if (onError) {
-      onError(format("[signals_unity_bridge::%s] %s\n", name.c_str(), msg).c_str(), (int)level);
+      onError(format("[lldash playout::%s] %s\n", name.c_str(), msg).c_str(), (int)level);
     }
   }
 
@@ -65,14 +65,14 @@ struct Logger : LogSink
 // API
 ///////////////////////////////////////////////////////////////////////////////
 
-struct sub_handle
+struct lldplay_handle
 {
-  sub_handle()
+  lldplay_handle()
   {
     dropEverything = false;
   }
 
-  ~sub_handle()
+  ~lldplay_handle()
   {
     // prevent queuing further data buffers
     dropEverything = true;
@@ -112,17 +112,17 @@ struct sub_handle
   unique_ptr<Pipeline> pipe;
 };
 
-sub_handle* sub_create(const char* name, SubMessageCallback onError, int maxLevel, uint64_t api_version)
+lldplay_handle* lldplay_create(const char* name, LLDashPlayoutMessageCallback onError, int maxLevel, uint64_t api_version)
 {
   try
   {
-    if(api_version != SUB_API_VERSION)
-      throw runtime_error(format("Inconsistent API version between compilation (%s) and runtime (%s). Aborting.", SUB_API_VERSION, api_version).c_str());
+    if(api_version != LLDASH_PLAYOUT_API_VERSION)
+      throw runtime_error(format("Inconsistent API version between compilation (%s) and runtime (%s). Aborting.", LLDASH_PLAYOUT_API_VERSION, api_version).c_str());
 
     if(!name)
       name = "UnnamedPipeline";
 
-    auto h = make_unique<sub_handle>();
+    auto h = make_unique<lldplay_handle>();
     h->logger.name = name;
     h->logger.maxLevel = (Level)maxLevel;
     h->logger.onError = onError;
@@ -142,7 +142,7 @@ sub_handle* sub_create(const char* name, SubMessageCallback onError, int maxLeve
   }
 }
 
-void sub_destroy(sub_handle* h)
+void lldplay_destroy(lldplay_handle* h)
 {
   try
   {
@@ -160,7 +160,7 @@ void sub_destroy(sub_handle* h)
   }
 }
 
-int sub_get_stream_count(sub_handle* h)
+int lldplay_get_stream_count(lldplay_handle* h)
 {
   try
   {
@@ -189,7 +189,7 @@ int sub_get_stream_count(sub_handle* h)
   }
 }
 
-static int get_stream_index(sub_handle* h, int i)
+static int get_stream_index(lldplay_handle* h, int i)
 {
   if(h->adaptationControl)
   {
@@ -204,7 +204,7 @@ static int get_stream_index(sub_handle* h, int i)
   throw runtime_error("Invalid stream index.");
 }
 
-bool sub_get_stream_info(sub_handle* h, int streamIndex, struct StreamDesc* desc)
+bool lldplay_get_stream_info(lldplay_handle* h, int streamIndex, struct StreamDesc* desc)
 {
   try
   {
@@ -214,7 +214,7 @@ bool sub_get_stream_info(sub_handle* h, int streamIndex, struct StreamDesc* desc
     if(!h->pipe)
       throw runtime_error("Can only get stream 4CC when the pipeline is playing");
 
-    if(streamIndex < 0 || streamIndex >= sub_get_stream_count(h))
+    if(streamIndex < 0 || streamIndex >= lldplay_get_stream_count(h))
       throw runtime_error("Invalid streamIndex: must be positive and inferior to the number of streams");
 
     if(!desc)
@@ -269,7 +269,7 @@ bool sub_get_stream_info(sub_handle* h, int streamIndex, struct StreamDesc* desc
   }
 }
 
-bool sub_play(sub_handle* h, const char* url)
+bool lldplay_play(lldplay_handle* h, const char* url)
 {
   try
   {
@@ -317,7 +317,7 @@ bool sub_play(sub_handle* h, const char* url)
     {
       DashDemuxConfig cfg;
       cfg.url = url;
-      cfg.adaptationControlCbk = bind(&sub_handle::adaptationControlCbk, h, placeholders::_1);
+      cfg.adaptationControlCbk = bind(&lldplay_handle::adaptationControlCbk, h, placeholders::_1);
       auto demux = pipe.add("DashDemuxer", &cfg);
 
       for(int k = 0; k < demux->getNumOutputs(); ++k)
@@ -353,7 +353,7 @@ bool sub_play(sub_handle* h, const char* url)
   }
 }
 
-bool sub_enable_stream(sub_handle* h, int tileNumber, int quality)
+bool lldplay_enable_stream(lldplay_handle* h, int tileNumber, int quality)
 {
   try
   {
@@ -371,7 +371,7 @@ bool sub_enable_stream(sub_handle* h, int tileNumber, int quality)
   }
 }
 
-bool sub_disable_stream(sub_handle* h, int tileNumber)
+bool lldplay_disable_stream(lldplay_handle* h, int tileNumber)
 {
   try
   {
@@ -389,7 +389,7 @@ bool sub_disable_stream(sub_handle* h, int tileNumber)
   }
 }
 
-size_t sub_grab_frame(sub_handle* h, int i, uint8_t* dst, size_t dstLen, FrameInfo* info)
+size_t lldplay_grab_frame(lldplay_handle* h, int i, uint8_t* dst, size_t dstLen, FrameInfo* info)
 {
   try
   {
@@ -398,7 +398,7 @@ size_t sub_grab_frame(sub_handle* h, int i, uint8_t* dst, size_t dstLen, FrameIn
 
     unique_lock<mutex> lock(h->transferMutex);
 
-    if(i < 0 || i >= sub_get_stream_count(h))
+    if(i < 0 || i >= lldplay_get_stream_count(h))
       throw runtime_error("Invalid stream index");
 
     auto const streamIndex = get_stream_index(h, i);
@@ -448,7 +448,7 @@ size_t sub_grab_frame(sub_handle* h, int i, uint8_t* dst, size_t dstLen, FrameIn
   }
 }
 
-const char *sub_get_version() {
+const char *lldplay_get_version() {
 #ifdef LLDASH_VERSION
 #define LLDASH_VERSION_STRINGIFY2(x) LLDASH_VERSION_STRINGIFY(x)
 #define LLDASH_VERSION_STRINGIFY(x) #x
