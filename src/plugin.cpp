@@ -9,6 +9,7 @@
 
 #include "lib_pipeline/pipeline.hpp"
 #include "lib_utils/format.hpp"
+#include "lib_utils/log.hpp"
 
 // modules
 #include "lib_media/common/attributes.hpp"
@@ -49,11 +50,8 @@ struct Logger : LogSink
     if(level > maxLevel)
       return;
 
-    fprintf(stderr, "[signals_unity_bridge::%s] %s\n", name.c_str(), msg);
-    fflush(stderr);
-    if (onError) {
+    if (onError)
       onError(format("[signals_unity_bridge::%s] %s\n", name.c_str(), msg).c_str(), (int)level);
-    }
   }
 
   Level maxLevel = Level::Info;
@@ -130,6 +128,8 @@ sub_handle* sub_create(const char* name, SubMessageCallback onError, int maxLeve
       if (onError) onError(msg, Level::Error);
       return true;
     };
+    setGlobalLogger(h->logger);
+
     return h.release();
   }
   catch(exception const& err)
