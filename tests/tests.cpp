@@ -8,32 +8,32 @@ using namespace std;
 int main(int argc, char* argv[])
 {
   {
-    auto pipeline = sub_create("MyPipeline");
-    auto playbackSuccessful = sub_play(pipeline, "http://example.com/I_dont_exist.mpd");
-    sub_destroy(pipeline);
+    auto pipeline = lldplay_create("MyPipeline");
+    auto playbackSuccessful = lldplay_play(pipeline, "http://example.com/I_dont_exist.mpd");
+    lldplay_destroy(pipeline);
 
     assert(!playbackSuccessful);
   }
 
   // parallel instantiations
   {
-    vector<sub_handle*> pipelines;
+    vector<lldplay_handle*> pipelines;
 
     for(int i=0;i < 2;++i)
-      pipelines.push_back(sub_create("MyPipeline"));
+      pipelines.push_back(lldplay_create("MyPipeline"));
 
     for(auto pipeline : pipelines)
     {
       auto play = [pipeline]()
       {
-        sub_play(pipeline, "http://example.com/I_dont_exist.mpd");
+        lldplay_play(pipeline, "http://example.com/I_dont_exist.mpd");
       };
 
       std::async(std::launch::async, play);
     }
 
     for(auto pipeline : pipelines)
-      sub_destroy(pipeline);
+      lldplay_destroy(pipeline);
   }
 
   return 0;
