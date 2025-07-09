@@ -45,7 +45,7 @@ struct OutStub : ModuleS
 
 struct Logger : LogSink
 {
-  void send(Level leveset_target_propertiesl, const char* msg) override
+  void send(Level level, const char* msg) override
   {
     if(level > maxLevel)
       return;
@@ -152,8 +152,8 @@ void lldplay_destroy(lldplay_handle* h)
 {
   try
   {
-    for (int i=0; i<sub_get_stream_count(h); ++i)
-      sub_disable_stream(h, i);
+    for (int i=0; i<lldplay_get_stream_count(h); ++i)
+      lldplay_disable_stream(h, i);
     delete h;
   }
   catch(exception const& err)
