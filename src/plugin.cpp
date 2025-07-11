@@ -150,13 +150,8 @@ void lldplay_destroy(lldplay_handle* h)
 {
   try
   {
-<<<<<<< HEAD
     for (int i=0; i<lldplay_get_stream_count(h); ++i)
       lldplay_disable_stream(h, i);
-=======
-    for (int i=0; i<sub_get_stream_count(h); ++i)
-      sub_disable_stream(h, i);
->>>>>>> 774f73755919d9de32b5597171db3a65d0f08103
     delete h;
   }
   catch(exception const& err)
