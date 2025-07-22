@@ -13,7 +13,7 @@
 #define LLDPLAY_EXPORT __attribute__((visibility("default")))
 #endif
 
-const uint64_t LLDASH_PLAYOUT_API_VERSION = 0x20250620A;
+const uint64_t LLDASH_PLAYOUT_API_VERSION = 0x20250722;
 
 struct FrameInfo
 {
