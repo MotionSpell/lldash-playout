@@ -51,7 +51,10 @@ struct Logger : LogSink
       return;
 
     if (onError) {
-      onError(format("[lldash playout::%s] %s\n", name.c_str(), msg).c_str(), (int)level);
+      onError(format("[lldplay::%s] %s\n", name.c_str(), msg).c_str(), (int)level);
+    } else {
+      fprintf(stderr, "[lldplay::%s] %s\n", name.c_str(), msg);
+      fflush(stderr);
     }
   }
 
@@ -124,6 +127,7 @@ lldplay_handle* lldplay_create(const char* name, LLDashPlayoutMessageCallback on
     auto h = make_unique<lldplay_handle>();
     h->logger.name = name;
     h->logger.maxLevel = (Level)maxLevel;
+    h->logger.setLevel((Level)maxLevel);
     h->logger.onError = onError;
     h->errorCbk = [onError](const char *msg) {
       if (onError) onError(msg, Level::Error);
